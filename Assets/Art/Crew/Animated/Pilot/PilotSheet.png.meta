@@ -1,0 +1,305 @@
+fileFormatVersion: 2
+guid: 0249e85af1419f21a992f87d7a0815fc
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 21300000
+    second: Pilot_Idle_0
+  - first:
+      213: 21300002
+    second: Pilot_Idle_1
+  - first:
+      213: 21300004
+    second: Pilot_Idle_2
+  - first:
+      213: 21300006
+    second: Pilot_Idle_3
+  - first:
+      213: 21300008
+    second: Pilot_Walk_0
+  - first:
+      213: 21300010
+    second: Pilot_Walk_1
+  - first:
+      213: 21300012
+    second: Pilot_Walk_2
+  - first:
+      213: 21300014
+    second: Pilot_Walk_3
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    enableMipMap: 0
+  isReadable: 0
+  textureType: 8
+  textureShape: 1
+  spriteMode: 2
+  spritePixelsToUnits: 201.59090909090907
+  spritePivot:
+    x: 0.5
+    y: 0.06
+  spriteMeshType: 0
+  alphaIsTransparency: 1
+  maxTextureSize: 4096
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  textureCompression: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 100
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Pilot_Idle_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 444
+        width: 444
+        height: 443
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.06
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 891b6727bb904ed5a0bc94b2ccaa764f
+      internalID: 21300000
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pilot_Idle_1
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 444
+        width: 443
+        height: 443
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.06
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b90ed7e95e724b858ca53b41ba2a5140
+      internalID: 21300002
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pilot_Idle_2
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 444
+        width: 443
+        height: 443
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.06
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25c16361007c4b3fb7443fb49612d87d
+      internalID: 21300004
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pilot_Idle_3
+      rect:
+        serializedVersion: 2
+        x: 1330
+        y: 444
+        width: 444
+        height: 443
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.06
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f68ed37a0d51406abd7d2acab20ca22d
+      internalID: 21300006
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pilot_Walk_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 444
+        height: 444
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.06
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f6e40e9aa3f4ca595a5691348feea9c
+      internalID: 21300008
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pilot_Walk_1
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 0
+        width: 443
+        height: 444
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.06
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a07cbfc749d7416bac22ed795911f347
+      internalID: 21300010
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pilot_Walk_2
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 0
+        width: 443
+        height: 444
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.06
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe5440935ee948a0aeea947d8164a0df
+      internalID: 21300012
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pilot_Walk_3
+      rect:
+        serializedVersion: 2
+        x: 1330
+        y: 0
+        width: 444
+        height: 444
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.06
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf24832388ea4070b70ebd7f7aa7a4c9
+      internalID: 21300014
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 3e852aae2e5c4371b75c787d218994b3
+    internalID: 0
+    vertices: []
+    indices: ''
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      Pilot_Idle_0: 21300000
+      Pilot_Idle_1: 21300002
+      Pilot_Idle_2: 21300004
+      Pilot_Idle_3: 21300006
+      Pilot_Walk_0: 21300008
+      Pilot_Walk_1: 21300010
+      Pilot_Walk_2: 21300012
+      Pilot_Walk_3: 21300014
+  userData: ''
+  assetBundleName: ''
+  assetBundleVariant: ''

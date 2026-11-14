@@ -1,0 +1,305 @@
+fileFormatVersion: 2
+guid: 1ced0d0ab95fe0370831025f8ab4a3c7
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 21300000
+    second: Commander_Idle_0
+  - first:
+      213: 21300002
+    second: Commander_Idle_1
+  - first:
+      213: 21300004
+    second: Commander_Idle_2
+  - first:
+      213: 21300006
+    second: Commander_Idle_3
+  - first:
+      213: 21300008
+    second: Commander_Walk_0
+  - first:
+      213: 21300010
+    second: Commander_Walk_1
+  - first:
+      213: 21300012
+    second: Commander_Walk_2
+  - first:
+      213: 21300014
+    second: Commander_Walk_3
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    enableMipMap: 0
+  isReadable: 0
+  textureType: 8
+  textureShape: 1
+  spriteMode: 2
+  spritePixelsToUnits: 201.59090909090907
+  spritePivot:
+    x: 0.5
+    y: 0.06
+  spriteMeshType: 0
+  alphaIsTransparency: 1
+  maxTextureSize: 4096
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  textureCompression: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 100
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Commander_Idle_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 444
+        width: 444
+        height: 443
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.06
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b03fdedb65064490a3d587966b79e897
+      internalID: 21300000
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Commander_Idle_1
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 444
+        width: 443
+        height: 443
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.06
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 265aee4318034f16ac2e2d4a9d1fbd3d
+      internalID: 21300002
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Commander_Idle_2
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 444
+        width: 443
+        height: 443
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.06
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f723f207cbb04d50a91071fba16907a1
+      internalID: 21300004
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Commander_Idle_3
+      rect:
+        serializedVersion: 2
+        x: 1330
+        y: 444
+        width: 444
+        height: 443
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.06
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c0796c1241d4b44b4435597c67b346d
+      internalID: 21300006
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Commander_Walk_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 444
+        height: 444
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.06
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2957d4897d0d482baa39c3b4ebecca69
+      internalID: 21300008
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Commander_Walk_1
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 0
+        width: 443
+        height: 444
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.06
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c0b34b57b8af4af584437cd77c97ad7c
+      internalID: 21300010
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Commander_Walk_2
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 0
+        width: 443
+        height: 444
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.06
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c81fed6448354e0e82434df77cd82ce9
+      internalID: 21300012
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Commander_Walk_3
+      rect:
+        serializedVersion: 2
+        x: 1330
+        y: 0
+        width: 444
+        height: 444
+      alignment: 9
+      pivot:
+        x: 0.5
+        y: 0.06
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8307ff55fda04708bb7cdd8156cc72d7
+      internalID: 21300014
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 28c60a06b58f458589824130fa2d1eac
+    internalID: 0
+    vertices: []
+    indices: ''
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      Commander_Idle_0: 21300000
+      Commander_Idle_1: 21300002
+      Commander_Idle_2: 21300004
+      Commander_Idle_3: 21300006
+      Commander_Walk_0: 21300008
+      Commander_Walk_1: 21300010
+      Commander_Walk_2: 21300012
+      Commander_Walk_3: 21300014
+  userData: ''
+  assetBundleName: ''
+  assetBundleVariant: ''
