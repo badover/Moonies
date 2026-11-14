@@ -18,10 +18,13 @@ public sealed class CrewMenu : MonoBehaviour
     private Image shade;
     private RawImage stars;
     private Image[] cards = new Image[4];
-    private Text status, confirmText;
+    private Image missionProgress;
+    private Text status, confirmText, missionTime;
     private Font font;
     private int selected, frame;
     private float elapsed;
+    private float missionElapsed;
+    private const float MissionGoalSeconds = 10 * 60f;
     private float[] durations;
 
     private void Start()
@@ -97,6 +100,13 @@ public sealed class CrewMenu : MonoBehaviour
         confirmText = Button(roles.transform, "CONFIRM ROLE", .63f,.06f,.935f,.14f, Confirm);
         missionHud = Node("Mission HUD", root.transform, Vector2.zero, Vector2.one).gameObject;
         Label(missionHud.transform, "A / D  MOVE    ·    W / S  LADDER    ·    SCROLL  ZOOM    ·    ESC  CREW MENU", .05f,.02f,.95f,.09f, 18, cyan);
+        missionTime = Label(missionHud.transform, "MISSION TIME  00:00 / 10:00", .35f,.91f,.65f,.96f, 18, cyan);
+        Panel(missionHud.transform, "Mission Progress Track", new Vector2(.35f,.875f), new Vector2(.65f,.895f), new Color(.02f,.08f,.12f,.9f));
+        missionProgress = Panel(missionHud.transform, "Mission Progress", new Vector2(.35f,.875f), new Vector2(.65f,.895f), cyan);
+        missionProgress.type = Image.Type.Filled;
+        missionProgress.fillMethod = Image.FillMethod.Horizontal;
+        missionProgress.fillOrigin = (int)Image.OriginHorizontal.Left;
+        missionProgress.fillAmount = 0;
         missionHud.SetActive(false);
         roles.SetActive(false);
         Select(selected);
@@ -104,7 +114,19 @@ public sealed class CrewMenu : MonoBehaviour
 
     private void Update()
     {
-        if (durations == null || mission != null) return;
+        if (mission != null)
+        {
+            missionElapsed = Mathf.Min(missionElapsed + Time.deltaTime, MissionGoalSeconds);
+            missionProgress.fillAmount = missionElapsed / MissionGoalSeconds;
+            int seconds = Mathf.FloorToInt(missionElapsed);
+            int minutes = seconds / 60;
+            seconds %= 60;
+            missionTime.text = missionElapsed >= MissionGoalSeconds
+                ? "MISSION TIME  10:00 / 10:00  ·  GOAL REACHED"
+                : $"MISSION TIME  {minutes:00}:{seconds:00} / 10:00";
+            return;
+        }
+        if (durations == null) return;
         int previous = frame;
         elapsed += Time.unscaledDeltaTime;
         while (elapsed >= durations[frame]) { elapsed -= durations[frame]; frame = (frame + 1) % durations.Length; }
@@ -130,6 +152,9 @@ public sealed class CrewMenu : MonoBehaviour
             candidate = new GameObject("Ship Mission").AddComponent<ShipMission>();
             candidate.Begin(prefab, ReturnToMenu);
             mission = candidate;
+            missionElapsed = 0;
+            missionProgress.fillAmount = 0;
+            missionTime.text = "MISSION TIME  00:00 / 10:00";
             home.SetActive(false); roles.SetActive(false);
             shade.gameObject.SetActive(false); backgroundCanvas.gameObject.SetActive(false);
             missionHud.SetActive(true);
