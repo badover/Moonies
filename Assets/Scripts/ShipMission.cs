@@ -1,0 +1,129 @@
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+/// <summary>Side-view walking constrained to the decks and two connecting ladders.</summary>
+public sealed class ShipMission : MonoBehaviour
+{
+    private static readonly float[] Decks = { -3.35f, -.9f, 1.3f };
+    private static readonly float[] Ladders = { -4.7f, 6.3f };
+    private CrewCharacter player;
+    private Camera view;
+    private System.Action onExit;
+    private SpriteRenderer background;
+    private Sprite[] frames;
+    private float[] durations;
+    private int frame;
+    private float clock;
+    private int deck = 1;
+    private int destination = -1;
+    private Vector3 velocity;
+    private float zoom = 4.5f;
+    private Sprite shipSprite;
+    private bool ready;
+
+    public void Begin(CrewCharacter prefab, System.Action exit)
+    {
+        onExit = exit;
+        if (prefab == null) throw new System.InvalidOperationException("Selected crew prefab is missing.");
+        var texture = Resources.Load<Texture2D>("Menu/Spacecraft");
+        var atlas = Resources.Load<Texture2D>("Menu/Starfield");
+        var material = Resources.Load<Material>("ShipSprite");
+        if (texture == null || atlas == null || material == null)
+            throw new System.InvalidOperationException("Ship assets are missing. Wait for Unity to finish importing.");
+        view = Camera.main;
+        if (view == null) throw new System.InvalidOperationException("Main Camera is missing.");
+        view.orthographic = true;
+        view.enabled = true;
+        view.cullingMask = -1;
+        view.rect = new Rect(0,0,1,1);
+        view.transform.rotation = Quaternion.identity;
+        view.orthographicSize = zoom;
+        view.backgroundColor = Color.black;
+        QualitySettings.vSyncCount = 1;
+        Application.targetFrameRate = 60;
+        shipSprite = Sprite.Create(texture, new Rect(0,0,texture.width,texture.height), new Vector2(.5f,.5f), 40);
+        var ship = new GameObject("Spacecraft — three decks", typeof(SpriteRenderer));
+        ship.transform.SetParent(transform, false);
+        var renderer = ship.GetComponent<SpriteRenderer>();
+        renderer.sprite = shipSprite;
+        renderer.sharedMaterial = material;
+        player = Instantiate(prefab, new Vector3(-9, Decks[deck], -1), Quaternion.identity, transform);
+        player.transform.localScale = Vector3.one * .95f;
+        var playerRenderer = player.GetComponent<SpriteRenderer>();
+        playerRenderer.sharedMaterial = material;
+        playerRenderer.sortingOrder = 10;
+        playerRenderer.color = Color.white;
+        player.GetComponent<Animator>().cullingMode = AnimatorCullingMode.AlwaysAnimate;
+        player.GetComponent<Animator>().Update(0);
+        if (playerRenderer.sprite == null)
+            throw new System.InvalidOperationException("Crew animation has missing sprite references. Rebuild Animated Characters from Tools/Crew.");
+        var sky = new GameObject("Starfield", typeof(SpriteRenderer));
+        sky.transform.SetParent(transform, false);
+        background = sky.GetComponent<SpriteRenderer>();
+        background.sharedMaterial = renderer.sharedMaterial;
+        background.sortingOrder = -20;
+        durations = JsonUtility.FromJson<FrameTiming>(Resources.Load<TextAsset>("Menu/StarfieldTiming").text).durations;
+        frames = new Sprite[durations.Length];
+        int w = atlas.width / 10, h = atlas.height / 8;
+        for (int i = 0; i < frames.Length; i++)
+            frames[i] = Sprite.Create(atlas, new Rect(i % 10 * w, (7-i/10)*h, w,h), new Vector2(.5f,.5f), 100);
+        background.sprite = frames[0];
+        view.transform.position = new Vector3(player.transform.position.x, 0, -10);
+        ready = true;
+    }
+    [System.Serializable] private class FrameTiming { public float[] durations; }
+    private void Update()
+    {
+        if (!ready || player == null) return;
+        var keys = Keyboard.current;
+        if (keys == null) return;
+        if (keys.escapeKey.wasPressedThisFrame) { onExit(); return; }
+        float x = (keys.dKey.isPressed || keys.rightArrowKey.isPressed ? 1 : 0) - (keys.aKey.isPressed || keys.leftArrowKey.isPressed ? 1 : 0);
+        float y = (keys.wKey.isPressed || keys.upArrowKey.isPressed ? 1 : 0) - (keys.sKey.isPressed || keys.downArrowKey.isPressed ? 1 : 0);
+        Vector3 p = player.transform.position;
+        if (destination < 0 && y != 0)
+        {
+            foreach (float ladder in Ladders)
+                if (Mathf.Abs(p.x-ladder) < .65f && deck+(int)y >= 0 && deck+(int)y < Decks.Length)
+                { p.x = ladder; destination = deck+(int)y; break; }
+        }
+        bool moving;
+        if (destination >= 0)
+        {
+            p.y = Mathf.MoveTowards(p.y, Decks[destination], 2.2f * Time.deltaTime);
+            moving = true;
+            if (Mathf.Abs(p.y-Decks[destination]) < .001f) { deck = destination; destination = -1; }
+        }
+        else
+        {
+            float left = deck == 1 ? -17 : -13;
+            float next = Mathf.Clamp(p.x + x * 3.3f * Time.deltaTime, left, 12);
+            moving = Mathf.Abs(next-p.x) > .0001f; p.x = next;
+            if (x != 0) player.SetFacingLeft(x < 0);
+        }
+        player.transform.position = p;
+        player.SetWalking(moving);
+        if (Mouse.current != null) zoom = Mathf.Clamp(zoom - Mouse.current.scroll.ReadValue().y * .003f, 3, 8);
+        clock += Time.deltaTime;
+        int previous = frame;
+        while (clock >= durations[frame]) { clock -= durations[frame]; frame = (frame+1)%frames.Length; }
+        if (previous != frame) background.sprite = frames[frame];
+    }
+    private void LateUpdate()
+    {
+        if (!ready || player == null) return;
+        view.orthographicSize = Mathf.Lerp(view.orthographicSize, zoom, 1-Mathf.Exp(-8*Time.deltaTime));
+        float halfWidth = view.orthographicSize * view.aspect;
+        float limit = Mathf.Max(0, 20-halfWidth);
+        Vector3 target = new Vector3(Mathf.Clamp(player.transform.position.x, -limit,limit), player.transform.position.y*.3f, -10);
+        view.transform.position = Vector3.SmoothDamp(view.transform.position, target, ref velocity, .16f);
+        background.transform.position = new Vector3(view.transform.position.x, view.transform.position.y, 10);
+        background.transform.localScale = new Vector3(2*view.orthographicSize*view.aspect/background.sprite.bounds.size.x, 2*view.orthographicSize/background.sprite.bounds.size.y, 1);
+    }
+    private void OnDestroy()
+    {
+        if (frames != null) foreach (var sprite in frames) Destroy(sprite);
+        if (shipSprite != null) Destroy(shipSprite);
+
+    }
+}

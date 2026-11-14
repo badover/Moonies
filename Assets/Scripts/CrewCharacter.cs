@@ -9,15 +9,24 @@ public sealed class CrewCharacter : MonoBehaviour
     [SerializeField] private CrewRole role = CrewRole.Commander;
     private static readonly int Walking = Animator.StringToHash("Walking");
 
+    private Animator animator;
+    private SpriteRenderer spriteRenderer;
+
+    private void Awake()
+    {
+        animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
     public CrewRole Role => role;
 
     public void SetWalking(bool walking)
     {
-        GetComponent<Animator>().SetBool(Walking, walking);
+        animator.SetBool(Walking, walking);
     }
 
     public void SetFacingLeft(bool facingLeft)
     {
-        GetComponent<SpriteRenderer>().flipX = facingLeft;
+        spriteRenderer.flipX = facingLeft;
     }
 }

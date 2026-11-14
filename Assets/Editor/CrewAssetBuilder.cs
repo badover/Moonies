@@ -22,13 +22,13 @@ public static class CrewAssetBuilder
     {
         if (Application.isBatchMode || EditorApplication.isPlayingOrWillChangePlaymode) return;
         if (Roles.All(role => File.Exists($"{Root}/{role}/{role}Sheet.png")) &&
-            Roles.Any(role => !File.Exists($"Assets/Prefabs/Crew/{role}.prefab"))) Build();
+            Roles.Any(role => !File.Exists($"Assets/Resources/Crew/{role}.prefab"))) Build();
     }
 
     [MenuItem("Tools/Crew/Rebuild Animated Characters")]
     public static void Build()
     {
-        Directory.CreateDirectory("Assets/Prefabs/Crew");
+        Directory.CreateDirectory("Assets/Resources/Crew");
         AssetDatabase.Refresh();
         foreach (string role in Roles) BuildRole(role);
         AssetDatabase.SaveAssets();
@@ -115,13 +115,13 @@ public static class CrewAssetBuilder
         {
             var renderer = character.AddComponent<SpriteRenderer>();
             renderer.sprite = sprites[0];
-            renderer.sharedMaterial = AssetDatabase.GetBuiltinExtraResource<Material>("Sprites-Default.mat");
+            renderer.sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/Resources/ShipSprite.mat");
             character.AddComponent<Animator>().runtimeAnimatorController = controller;
             var component = character.AddComponent<CrewCharacter>();
             var serialized = new SerializedObject(component);
             serialized.FindProperty("role").enumValueIndex = Array.IndexOf(Roles, role);
             serialized.ApplyModifiedPropertiesWithoutUndo();
-            PrefabUtility.SaveAsPrefabAsset(character, $"Assets/Prefabs/Crew/{role}.prefab");
+            PrefabUtility.SaveAsPrefabAsset(character, $"Assets/Resources/Crew/{role}.prefab");
         }
         finally { UnityEngine.Object.DestroyImmediate(character); }
     }
