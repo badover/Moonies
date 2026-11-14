@@ -72,9 +72,6 @@ Shader "EarthGame/CrewInterior"
 
             half4 UnlitFragment(Varyings input) : SV_Target
             {
-                // Match the coarser painted background instead of retaining every suit microdetail.
-                float2 grid = _MainTex_TexelSize.zw / max(1, _PixelSize);
-                input.uv = (floor(input.uv * grid) + .5) / grid;
                 half4 color = CommonUnlitFragment(input, input.color);
                 half luminance = dot(color.rgb, half3(.299,.587,.114));
                 color.rgb = lerp(luminance.xxx, color.rgb, _Saturation);

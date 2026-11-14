@@ -2,68 +2,62 @@ using UnityEngine;
 
 public enum CrewRole { Commander, Medic, Pilot, Engineer }
 
-/// <summary>Visual character only. Movement and role abilities are intentionally separate.</summary>
 [RequireComponent(typeof(Animator), typeof(SpriteRenderer))]
 public sealed class CrewCharacter : MonoBehaviour
 {
-    [SerializeField] private CrewRole role = CrewRole.Commander;
-    private static readonly int Walking = Animator.StringToHash("Walking");
-
+    [SerializeField] private CrewRole role=CrewRole.Commander;
+    [System.Serializable] private class Layout { public float ppu; public int[] bottoms; }
+    private static readonly string[] Names={"Commander","Medic","Pilot","Engineer"};
     private Animator animator;
     private SpriteRenderer spriteRenderer;
-
-    private void Awake()
+    private Sprite[] frames;
+    private float clock,climbDirection;
+    private bool walking;
+    public bool IsClimbing {get;private set;}
+    public CrewRole Role=>role;
+    private void Awake(){animator=GetComponent<Animator>();spriteRenderer=GetComponent<SpriteRenderer>();}
+    public void UseInteriorAnimations()
     {
-        animator = GetComponent<Animator>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        var sheet=Resources.Load<Texture2D>("InteriorCrew/"+Names[(int)role]);
+        var data=Resources.Load<TextAsset>("InteriorCrew/"+Names[(int)role]);
+        if(sheet==null||data==null) throw new System.InvalidOperationException("Interior crew animation is missing: "+role);
+        var layout=JsonUtility.FromJson<Layout>(data.text);
+        frames=new Sprite[12];
+        for(int i=0;i<12;i++)
+        {
+            int row=i/4,col=i%4;
+            int x0=Mathf.RoundToInt(col*sheet.width/4f),x1=Mathf.RoundToInt((col+1)*sheet.width/4f);
+            int y0=Mathf.RoundToInt((2-row)*sheet.height/3f),y1=Mathf.RoundToInt((3-row)*sheet.height/3f);
+            frames[i]=Sprite.Create(sheet,new Rect(x0,y0,x1-x0,y1-y0),new Vector2(.5f,(float)layout.bottoms[i]/(y1-y0)),layout.ppu,0,SpriteMeshType.FullRect);
+            frames[i].name=Names[(int)role]+"_"+(row==0?"Idle":row==1?"Walk":"Climb")+"_"+col;
+        }
+        animator.enabled=false;
+        ApplyFrame();
     }
-
-    private Sprite[] climbFrames;
-    private float climbClock, climbDirection;
-    public bool IsClimbing { get; private set; }
-    public CrewRole Role => role;
-
-    public void SetClimbing(bool climbing, float direction)
+    public void SetClimbing(bool climbing,float direction)
     {
-        if (climbing && climbFrames == null)
-        {
-            var sheet = Resources.Load<Texture2D>("CrewClimb");
-            if (sheet == null) throw new System.InvalidOperationException("CrewClimb sheet is missing.");
-            float width = sheet.width/4f, height = sheet.height/4f;
-            climbFrames = new Sprite[4];
-            for (int i=0; i<4; i++)
-                climbFrames[i] = Sprite.Create(sheet, new Rect(i*width,(3-(int)role)*height,width,height), new Vector2(.5f,.06f),height/2.55f);
-        }
-        if (climbing != IsClimbing)
-        {
-            IsClimbing = climbing;
-            animator.enabled = !climbing;
-            if (!climbing) { animator.SetBool(Walking,false); animator.Play("Idle",0,0); animator.Update(0); }
-            else spriteRenderer.flipX = false;
-        }
-        climbDirection = direction;
-        if (climbing) UpdateClimbSprite();
+        if(IsClimbing!=climbing) clock=0;
+        IsClimbing=climbing;climbDirection=direction;
+        if(climbing){walking=false;spriteRenderer.flipX=false;}
+        ApplyFrame();
     }
-
+    public void SetWalking(bool value)
+    {
+        if(walking!=value && !IsClimbing) clock=0;
+        walking=value;
+        if(frames==null) animator.SetBool("Walking",value);
+    }
+    public void SetFacingLeft(bool value)=>spriteRenderer.flipX=value;
     private void LateUpdate()
     {
-        if (!IsClimbing) return;
-        climbClock = Mathf.Repeat(climbClock + Time.deltaTime*6*climbDirection,4);
-        UpdateClimbSprite();
+        if(frames==null) return;
+        float rate=IsClimbing?6*climbDirection:walking?6:3;
+        clock=Mathf.Repeat(clock+Time.deltaTime*rate,4);
+        ApplyFrame();
     }
-    private void UpdateClimbSprite() => spriteRenderer.sprite = climbFrames[Mathf.FloorToInt(climbClock)%4];
-    private void OnDestroy()
+    private void ApplyFrame()
     {
-        if (climbFrames != null) foreach (var frame in climbFrames) Destroy(frame);
+        if(frames!=null) spriteRenderer.sprite=frames[(IsClimbing?8:walking?4:0)+Mathf.FloorToInt(clock)%4];
     }
-
-    public void SetWalking(bool walking)
-    {
-        if (!IsClimbing) animator.SetBool(Walking, walking);
-    }
-
-    public void SetFacingLeft(bool facingLeft)
-    {
-        spriteRenderer.flipX = facingLeft;
-    }
+    private void OnDestroy(){if(frames!=null)foreach(var frame in frames)Destroy(frame);}
 }

@@ -19,7 +19,7 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _PixelSize: 3
-    - _Saturation: 0.42
+    - _PixelSize: 1
+    - _Saturation: 0.85
     m_Colors:
-    - _Color: {r: 0.78, g: 0.74, b: 0.68, a: 1}
+    - _Color: {r: 0.88, g: 0.94, b: 1, a: 1}

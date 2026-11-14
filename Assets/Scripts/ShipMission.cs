@@ -16,6 +16,7 @@ public sealed class ShipMission : MonoBehaviour
     private int activeLadder = -1;
     private Vector3 velocity;
     private float zoom = 4.5f;
+    private float zoomVelocity;
     private Sprite shipSprite;
     private bool ready;
 
@@ -23,7 +24,7 @@ public sealed class ShipMission : MonoBehaviour
     {
         onExit = exit;
         if (prefab == null) throw new System.InvalidOperationException("Selected crew prefab is missing.");
-        var texture = Resources.Load<Texture2D>("Menu/Spacecraft");
+        var texture = Resources.Load<Texture2D>("Menu/ModernSpacecraft");
         var atlas = Resources.Load<Texture2D>("Menu/Starfield");
         var material = Resources.Load<Material>("ShipSprite");
         if (texture == null || atlas == null || material == null)
@@ -39,20 +40,21 @@ public sealed class ShipMission : MonoBehaviour
         view.backgroundColor = Color.black;
         QualitySettings.vSyncCount = 1;
         Application.targetFrameRate = 60;
-        shipSprite = Sprite.Create(texture, new Rect(0,0,texture.width,texture.height), new Vector2(.5f,.5f), 40);
-        var ship = new GameObject("Spacecraft — three decks", typeof(SpriteRenderer));
+        shipSprite = Sprite.Create(texture, new Rect(0,0,texture.width,texture.height), new Vector2(.5f,.5f), ShipLayout.PixelsPerUnit, 0, SpriteMeshType.FullRect);
+        var ship = new GameObject("Modern spacecraft — three decks", typeof(SpriteRenderer));
         ship.transform.SetParent(transform, false);
         var renderer = ship.GetComponent<SpriteRenderer>();
         renderer.sprite = shipSprite;
         renderer.sharedMaterial = material;
         player = Instantiate(prefab, new Vector3(-9, ShipLayout.FloorY(deck, -9), -1), Quaternion.identity, transform);
         player.transform.localScale = Vector3.one * ShipLayout.CrewScale;
+        player.UseInteriorAnimations();
         var playerRenderer = player.GetComponent<SpriteRenderer>();
         playerRenderer.sharedMaterial = Resources.Load<Material>("CrewInterior");
         playerRenderer.sortingOrder = 10;
         playerRenderer.color = Color.white;
         player.GetComponent<Animator>().cullingMode = AnimatorCullingMode.AlwaysAnimate;
-        player.GetComponent<Animator>().Update(0);
+
         if (playerRenderer.sprite == null)
             throw new System.InvalidOperationException("Crew animation has missing sprite references. Rebuild Animated Characters from Tools/Crew.");
         var sky = new GameObject("Starfield", typeof(SpriteRenderer));
@@ -84,7 +86,7 @@ public sealed class ShipMission : MonoBehaviour
         while (clock >= durations[frame]) { clock -= durations[frame]; frame = (frame+1)%frames.Length; }
         if (previous != frame) background.sprite = frames[frame];
     }
-    /// <summary>Move on deck floors or between the two endpoints of one ladder; never enter the service tanks.</summary>
+    /// <summary>Move on deck floors or between the two endpoints of one ladder; never enter propulsion machinery or leave the hull.</summary>
     public void MoveCrew(float x, float y, float delta)
     {
         if (!ready) return;
@@ -110,7 +112,7 @@ public sealed class ShipMission : MonoBehaviour
         }
         else
         {
-            float next = ShipLayout.ClampX(deck, p.x + x * 2.8f * delta);
+            float next = ShipLayout.MoveOnDeck(deck, p.x, p.x + x * 2.8f * delta);
             player.SetWalking(Mathf.Abs(next-p.x) > .0001f);
             if (x != 0) player.SetFacingLeft(x < 0);
             p.x = next;
@@ -121,11 +123,11 @@ public sealed class ShipMission : MonoBehaviour
     private void LateUpdate()
     {
         if (!ready || player == null) return;
-        view.orthographicSize = Mathf.Lerp(view.orthographicSize, zoom, 1-Mathf.Exp(-8*Time.deltaTime));
+        view.orthographicSize = Mathf.SmoothDamp(view.orthographicSize, zoom, ref zoomVelocity, .09f, Mathf.Infinity, Time.unscaledDeltaTime);
         float halfWidth = view.orthographicSize * view.aspect;
         float limit = Mathf.Max(0, 20-halfWidth);
         Vector3 target = new Vector3(Mathf.Clamp(player.transform.position.x, -limit,limit), player.transform.position.y*.3f, -10);
-        view.transform.position = Vector3.SmoothDamp(view.transform.position, target, ref velocity, .16f);
+        view.transform.position = Vector3.SmoothDamp(view.transform.position, target, ref velocity, .09f, Mathf.Infinity, Time.unscaledDeltaTime);
         background.transform.position = new Vector3(view.transform.position.x, view.transform.position.y, 10);
         background.transform.localScale = new Vector3(2*view.orthographicSize*view.aspect/background.sprite.bounds.size.x, 2*view.orthographicSize/background.sprite.bounds.size.y, 1);
     }

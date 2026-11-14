@@ -8,3 +8,7 @@ All menu images originate exclusively from:
 No generated crew animation sheets are used by the menu. UI labels are in English.
 
 - Spacecraft.jpeg: exact copy of spacecraft.jpeg in the source directory.
+
+- AfterStart.jpg: exact copy of After start.JPG; four role panels have interactive hotspots.
+
+- ModernSpacecraft.png: edited from ModernSpacecraft.png in the source directory; exterior background and Artemis branding removed, room labels translated to English. Geometry is traced in ShipLayout using the 2172 x 724 image.

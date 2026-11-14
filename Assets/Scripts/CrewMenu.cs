@@ -8,7 +8,7 @@ public sealed class CrewMenu : MonoBehaviour
 {
     [System.Serializable] private class Timing { public float[] durations; }
     public static CrewRole SelectedRole => (CrewRole)Mathf.Clamp(PlayerPrefs.GetInt("CrewRole", 0), 0, 3);
-    private readonly string[] names = { "Commander", "Medic", "Pilot", "Engineer" };
+    private readonly string[] names = { "Scientist", "Medic", "Pilot", "Engineer" };
     private readonly string[] descriptions = { "Coordinate your crew\nand lead the mission.", "Monitor crew health\nand provide medical care.", "Control the flight\nand navigate to the Moon.", "Maintain ship systems\nand repair equipment." };
     private readonly string[] assets = { "Commander", "Medic", "Pilot", "Engineer" };
     private readonly Color cyan = new Color(.25f, .86f, .94f);
@@ -33,7 +33,7 @@ public sealed class CrewMenu : MonoBehaviour
         if (FindAnyObjectByType<EventSystem>() == null)
         {
             var events = new GameObject("Menu Event System", typeof(EventSystem));
-            events.AddComponent<InputSystemUIInputModule>();
+            events.AddComponent<InputSystemUIInputModule>().AssignDefaultActions();
         }
         var root = new GameObject("Mission Menu", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
         root.transform.SetParent(transform, false);
@@ -73,28 +73,20 @@ public sealed class CrewMenu : MonoBehaviour
         startButton.colors = startColors;
         startHit.color = Color.white;
         roles = Node("Role Selection", root.transform, Vector2.zero, Vector2.one).gameObject;
-        Label(roles.transform, "02 / CREW ASSIGNMENT", .08f,.86f,.92f,.93f, 18, cyan);
-        Label(roles.transform, "Choose your role", .08f,.75f,.92f,.86f, 44, Color.white);
-        for (int i = 0; i < 4; i++)
-        {
-            int index = i; float left = .065f + i * .222f;
-            var card = Panel(roles.transform, assets[i], new Vector2(left,.25f), new Vector2(left+.205f,.71f), Color.black);
-            cards[i] = card;
-            var click = card.gameObject.AddComponent<Button>();
-            click.onClick.AddListener(() => Select(index));
-            var portraitBounds = Node("Portrait Bounds", card.transform, new Vector2(.05f,.25f), new Vector2(.95f,.83f));
-            var portrait = Node("Source crew portrait", portraitBounds, Vector2.zero, Vector2.one).gameObject.AddComponent<RawImage>();
-            portrait.texture = Resources.Load<Texture2D>("Menu/" + assets[i]);
-            portrait.raycastTarget = false;
-            var fit = portrait.gameObject.AddComponent<AspectRatioFitter>();
-            fit.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
-            fit.aspectRatio = (float)portrait.texture.width / portrait.texture.height;
-            Label(card.transform, names[i], .02f,.85f,.98f,.98f, 25, cyan);
-            Label(card.transform, descriptions[i], .03f,.02f,.97f,.23f, 17, Color.white);
-        }
-        status = Label(roles.transform, "", .1f,.16f,.9f,.23f, 19, cyan);
-        Button(roles.transform, "BACK", .065f,.06f,.25f,.14f, () => ShowRoles(false));
-        confirmText = Button(roles.transform, "CONFIRM ROLE", .63f,.06f,.935f,.14f, Confirm);
+        var roleBounds = Node("Role Artwork Bounds", roles.transform, new Vector2(.04f,.04f), new Vector2(.96f,.96f));
+        var roleArt = Node("After Start Artwork", roleBounds, Vector2.zero, Vector2.one).gameObject.AddComponent<RawImage>();
+        roleArt.texture = Resources.Load<Texture2D>("Menu/AfterStart");
+        roleArt.raycastTarget = false;
+        var roleFit = roleArt.gameObject.AddComponent<AspectRatioFitter>();
+        roleFit.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+        roleFit.aspectRatio = (float)roleArt.texture.width/roleArt.texture.height;
+        RoleArea(roleArt.transform,2,new Vector2(.098f,.402f),new Vector2(.484f,.548f));
+        RoleArea(roleArt.transform,3,new Vector2(.516f,.402f),new Vector2(.905f,.548f));
+        RoleArea(roleArt.transform,0,new Vector2(.098f,.241f),new Vector2(.484f,.385f));
+        RoleArea(roleArt.transform,1,new Vector2(.516f,.241f),new Vector2(.905f,.385f));
+        status = Label(roleArt.transform,"",.2f,.195f,.8f,.238f,18,cyan);
+        Button(roleArt.transform,"BACK",.065f,.085f,.23f,.155f,()=>ShowRoles(false));
+        confirmText = Button(roleArt.transform,"BOARD SHIP",.38f,.09f,.62f,.185f,Confirm);
         missionHud = Node("Mission HUD", root.transform, Vector2.zero, Vector2.one).gameObject;
         Label(missionHud.transform, "A / D  MOVE    ·    W / S  LADDER    ·    SCROLL  ZOOM    ·    ESC  CREW MENU", .05f,.02f,.95f,.09f, 18, cyan);
         missionHud.SetActive(false);
@@ -115,9 +107,9 @@ public sealed class CrewMenu : MonoBehaviour
     private void Select(int index)
     {
         selected = index;
-        for (int i = 0; i < cards.Length; i++) cards[i].color = i == index ? new Color(.06f,.23f,.3f,.97f) : new Color(.025f,.055f,.09f,.95f);
+        for (int i = 0; i < cards.Length; i++) cards[i].color = i == index ? new Color(.15f,.8f,1,.22f) : Color.clear;
         status.text = "Selected: " + names[index];
-        confirmText.text = "CONFIRM ROLE";
+        confirmText.text = "BOARD SHIP";
     }
     private void Confirm()
     {
@@ -140,6 +132,13 @@ public sealed class CrewMenu : MonoBehaviour
             status.text = "Unable to board: " + error.Message;
             Debug.LogException(error);
         }
+    }
+    private void RoleArea(Transform parent,int role,Vector2 min,Vector2 max)
+    {
+        var image=Panel(parent,"Choose "+names[role],min,max,Color.clear);
+        cards[role]=image;
+        var button=image.gameObject.AddComponent<Button>();
+        button.onClick.AddListener(()=>Select(role));
     }
     private void ReturnToMenu()
     {
