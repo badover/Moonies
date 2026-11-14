@@ -18,8 +18,11 @@ void Click(string name){
 try{
  if(!UnityEngine.Object.FindObjectsByType<UnityEngine.UI.Button>().Any(x=>x.name=="START"))Click("BACK");
  Click("START");Check(UnityEngine.GameObject.Find("After Start Artwork")!=null,"Role screen absent");
- foreach(string role in new[]{"Pilot","Engineer","Scientist","Medic"})Click("Choose "+role);
+ foreach(string role in new[]{"Pilot","Engineer","Commander","Medic"})Click("Choose "+role);
  Render();UnityEngine.RenderTexture.active=target;var picture=new UnityEngine.Texture2D(1600,900,UnityEngine.TextureFormat.RGB24,false);picture.ReadPixels(new UnityEngine.Rect(0,0,1600,900),0,0);picture.Apply();System.IO.File.WriteAllBytes(System.IO.Path.Combine(System.IO.Path.GetTempPath(),"after-start-proof.png"),picture.EncodeToPNG());UnityEngine.Object.Destroy(picture);
- Click("BACK");Click("START");
- return "PASS: START/BACK/START and all four role buttons have correct rendered raycast targets and pointer click handlers at 1600x900";
+ Click("BACK");Click("START");Click("BOARD SHIP");
+ Check(UnityEngine.Object.FindAnyObjectByType<ShipMission>()!=null,"Board button did not start mission");
+ UnityEngine.Object.FindAnyObjectByType<CrewMenu>().SendMessage("ReturnToMenu");
+ await System.Threading.Tasks.Task.Delay(100);
+ return "PASS: START/BACK/START BOARD SHIP and all four role buttons have correct rendered raycast targets and pointer click handlers at 1600x900";
 }finally{camera.targetTexture=null;UnityEngine.RenderTexture.active=null;foreach(var canvas in canvases){if(canvas!=null){canvas.renderMode=UnityEngine.RenderMode.ScreenSpaceOverlay;canvas.worldCamera=null;}}target.Release();UnityEngine.Object.Destroy(target);}

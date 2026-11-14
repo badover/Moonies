@@ -55,6 +55,16 @@ public static class ShipLayout
         }
         return index>=0;
     }
+    public static int Continuation(int index,int direction)
+    {
+        var current=Ladders[index];
+        for(int i=0;i<Ladders.Length;i++)
+        {
+            if(i==index || Mathf.Abs(Ladders[i].x-current.x)>.01f) continue;
+            if(direction>0 && current.top==Ladders[i].bottom || direction<0 && current.bottom==Ladders[i].top) return i;
+        }
+        return -1;
+    }
     public static float ZoomAfterScroll(float size,float scroll)
     {
         float notches=Mathf.Abs(scroll)>10?scroll/120:scroll;

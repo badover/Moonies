@@ -46,12 +46,14 @@ public sealed class CrewCharacter : MonoBehaviour
         if(walking!=value && !IsClimbing) clock=0;
         walking=value;
         if(frames==null) animator.SetBool("Walking",value);
+        else ApplyFrame();
     }
     public void SetFacingLeft(bool value)=>spriteRenderer.flipX=value;
     private void LateUpdate()
     {
         if(frames==null || Time.timeScale==0) return;
-        float rate=IsClimbing?6*climbDirection:walking?6:3;
+        if(!IsClimbing && !walking){clock=0;ApplyFrame();return;}
+        float rate=IsClimbing?6*climbDirection:6;
         clock=Mathf.Repeat(clock+Time.deltaTime*rate,4);
         ApplyFrame();
     }

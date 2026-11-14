@@ -8,7 +8,7 @@ public sealed class CrewMenu : MonoBehaviour
 {
     [System.Serializable] private class Timing { public float[] durations; }
     public static CrewRole SelectedRole => (CrewRole)Mathf.Clamp(PlayerPrefs.GetInt("CrewRole", 0), 0, 3);
-    private readonly string[] names = { "Scientist", "Medic", "Pilot", "Engineer" };
+    private readonly string[] names = { "Commander", "Medic", "Pilot", "Engineer" };
     private readonly string[] descriptions = { "Coordinate your crew\nand lead the mission.", "Monitor crew health\nand provide medical care.", "Control the flight\nand navigate to the Moon.", "Maintain ship systems\nand repair equipment." };
     private readonly string[] assets = { "Commander", "Medic", "Pilot", "Engineer" };
     private readonly Color cyan = new Color(.25f, .86f, .94f);
@@ -25,6 +25,7 @@ public sealed class CrewMenu : MonoBehaviour
     private float elapsed;
     private float missionElapsed;
     private const float MissionGoalSeconds = 10 * 60f;
+    private static readonly Color MissionProgressGold = new Color(1f, .72f, .18f);
     private int lastMissionSecond=-1;
     private Sprite progressSprite;
     private float[] durations;
@@ -81,19 +82,20 @@ public sealed class CrewMenu : MonoBehaviour
         roles = Node("Role Selection", root.transform, Vector2.zero, Vector2.one).gameObject;
         var roleBounds = Node("Role Artwork Bounds", roles.transform, new Vector2(.04f,.04f), new Vector2(.96f,.96f));
         var roleArt = Node("After Start Artwork", roleBounds, Vector2.zero, Vector2.one).gameObject.AddComponent<RawImage>();
-        roleArt.texture = Resources.Load<Texture2D>("Menu/AfterStart");
+        roleArt.texture = Resources.Load<Texture2D>("Menu/HolographicRoles");
         roleArt.raycastTarget = false;
         var roleFit = roleArt.gameObject.AddComponent<AspectRatioFitter>();
         roleFit.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
         roleFit.aspectRatio = (float)roleArt.texture.width/roleArt.texture.height;
-        RoleArea(roleArt.transform,2,new Vector2(.098f,.402f),new Vector2(.484f,.548f));
-        RoleArea(roleArt.transform,3,new Vector2(.516f,.402f),new Vector2(.905f,.548f));
-        RoleArea(roleArt.transform,0,new Vector2(.098f,.241f),new Vector2(.484f,.385f));
-        RoleArea(roleArt.transform,1,new Vector2(.516f,.241f),new Vector2(.905f,.385f));
-        status = Label(roleArt.transform,"",.2f,.195f,.8f,.238f,18,cyan);
+        RoleArea(roleArt.transform,2,new Vector2(.095f,.447f),new Vector2(.483f,.586f));
+        RoleArea(roleArt.transform,3,new Vector2(.515f,.447f),new Vector2(.904f,.586f));
+        RoleArea(roleArt.transform,0,new Vector2(.095f,.282f),new Vector2(.483f,.421f));
+        RoleArea(roleArt.transform,1,new Vector2(.515f,.282f),new Vector2(.904f,.421f));
+        status = Label(roleArt.transform,"",.2f,.245f,.8f,.278f,18,cyan);
         status.gameObject.SetActive(false);
-        Button(roleArt.transform,"BACK",.065f,.085f,.23f,.155f,()=>ShowRoles(false));
-        confirmText = Button(roleArt.transform,"BOARD SHIP",.38f,.09f,.62f,.185f,Confirm);
+        Button(roleArt.transform,"BACK",.065f,.06f,.23f,.12f,()=>ShowRoles(false));
+        confirmText = Button(roleArt.transform,"BOARD SHIP",.384f,.128f,.617f,.218f,Confirm);
+        confirmText.transform.parent.GetComponent<Image>().color=new Color(.015f,.06f,.08f,1);
         missionHud = Node("Mission HUD", root.transform, Vector2.zero, Vector2.one).gameObject;
         Label(missionHud.transform, "A / D  MOVE    ·    W / S  LADDER    ·    SCROLL  ZOOM    ·    ESC  PAUSE", .05f,.02f,.95f,.09f, 18, cyan);
         missionTime = Label(missionHud.transform, "MISSION TIME  00:00 / 10:00", .35f,.91f,.65f,.96f, 18, cyan);
@@ -126,7 +128,9 @@ public sealed class CrewMenu : MonoBehaviour
             // Update text only when it changes: avoid formatting strings and rebuilding UI every frame.
             if(seconds==lastMissionSecond) return;
             lastMissionSecond=seconds;
-            missionProgress.fillAmount = missionElapsed / MissionGoalSeconds;
+            float progress = missionElapsed / MissionGoalSeconds;
+            missionProgress.fillAmount = progress;
+            missionProgress.color = Color.Lerp(cyan, MissionProgressGold, progress);
             int minutes = seconds / 60;
             seconds %= 60;
             missionTime.text = missionElapsed >= MissionGoalSeconds
@@ -164,6 +168,7 @@ public sealed class CrewMenu : MonoBehaviour
             missionElapsed = 0;
             lastMissionSecond=-1;
             missionProgress.fillAmount = 0;
+            missionProgress.color = cyan;
             missionTime.text = "MISSION TIME  00:00 / 10:00";
             home.SetActive(false); roles.SetActive(false);
             shade.gameObject.SetActive(false); backgroundCanvas.gameObject.SetActive(false);

@@ -2,10 +2,10 @@
 
 Open this repository folder in Unity Hub using Unity **6000.6.9f1**. Wait for package restoration and asset import, then open `Assets/Scenes/SampleScene.unity` and press Play.
 
-Click START, select a role on the After Start screen, and click BOARD SHIP.
+Click START, select a role on the holographic role screen, and click BOARD SHIP.
 
 - A/D or arrow keys: walk inside the hull.
-- W/S or up/down: climb the central ladder; release to pause, reverse to descend; A/D steps off beside a floor. Release W/S before continuing to the next deck.
+- W/S or up/down: climb the continuous central ladder through the middle deck; release to hold position, reverse to descend. A/D steps off beside a floor. W/S never automatically steps off.
 - Mouse wheel: smooth zoom.
 - Escape: pause/resume the current mission. Pause freezes movement, camera zoom, animation and the mission timer.
 

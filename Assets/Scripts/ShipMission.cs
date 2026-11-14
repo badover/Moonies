@@ -20,7 +20,6 @@ public sealed class ShipMission : MonoBehaviour
     private Sprite shipSprite;
     private bool ready;
     private bool ladderNeedsRelease;
-    private float preferredExitDirection=1;
     private float runningTimeScale=1;
     public bool IsPaused {get;private set;}
 
@@ -96,39 +95,50 @@ public sealed class ShipMission : MonoBehaviour
     {
         if(!ready || IsPaused) return;
         Vector3 p=player.transform.position;
-        if(x!=0) preferredExitDirection=Mathf.Sign(x);
-        if(y==0 && activeLadder<0) ladderNeedsRelease=false;
+        if(y==0) ladderNeedsRelease=false;
         if(activeLadder<0 && !ladderNeedsRelease && y!=0 && ShipLayout.FindLadder(deck,p.x,y,out int found))
-        {
-            activeLadder=found;p.x=ShipLayout.Ladders[found].x;
-        }
+            activeLadder=found;
         if(activeLadder>=0)
         {
             var ladder=ShipLayout.Ladders[activeLadder];
-            float bottom=ShipLayout.FloorY(ladder.bottom,p.x),top=ShipLayout.FloorY(ladder.top,p.x);
-            // Sideways input exits only beside a real floor, never in the middle of the shaft.
+            float bottom=ShipLayout.FloorY(ladder.bottom,ladder.x),top=ShipLayout.FloorY(ladder.top,ladder.x);
             int landing=-1;
             if(x!=0)
             {
                 if(Mathf.Abs(p.y-bottom)<=.35f) landing=ladder.bottom;
                 else if(Mathf.Abs(p.y-top)<=.35f) landing=ladder.top;
             }
-            if(landing<0)
-            {
-                p.y=Mathf.Clamp(p.y+y*1.65f*delta,bottom,top);
-                player.SetClimbing(true,y);
-                if(y>0 && top-p.y<=.12f) landing=ladder.top;
-                else if(y<0 && p.y-bottom<=.12f) landing=ladder.bottom;
-            }
             if(landing>=0)
             {
-                deck=landing;activeLadder=-1;ladderNeedsRelease=true;
+                deck=landing;activeLadder=-1;ladderNeedsRelease=y!=0;
                 player.SetClimbing(false,0);
-                float side=x!=0?Mathf.Sign(x):preferredExitDirection;
-                p.x=ShipLayout.MoveOnDeck(deck,p.x,p.x+side*(ShipLayout.BodyHalfWidth+.65f));
+                // Step off at walking speed: never teleport across the shaft.
+                p.x=ShipLayout.MoveOnDeck(deck,p.x,p.x+x*2.8f*delta);
                 p.y=ShipLayout.FloorY(deck,p.x);
-                player.SetWalking(x!=0);
-                if(x!=0) player.SetFacingLeft(x<0);
+                player.SetWalking(true);player.SetFacingLeft(x<0);
+            }
+            else
+            {
+                float beforeY=p.y;
+                if(y!=0) p.x=Mathf.MoveTowards(p.x,ladder.x,3.5f*delta);
+                float requested=p.y;
+                if(Mathf.Abs(p.x-ladder.x)<.02f) requested+=y*1.65f*delta;
+                // Continue into the next connected segment while W/S remains held.
+                // At the middle deck we stay on the ladder until A/D requests an exit.
+                for(int step=0;step<ShipLayout.Ladders.Length;step++)
+                {
+                    ladder=ShipLayout.Ladders[activeLadder];
+                    bottom=ShipLayout.FloorY(ladder.bottom,ladder.x);top=ShipLayout.FloorY(ladder.top,ladder.x);
+                    int direction=requested>top?1:requested<bottom?-1:0;
+                    int next=direction==0?-1:ShipLayout.Continuation(activeLadder,direction);
+                    if(next<0) break;
+                    deck=direction>0?ladder.top:ladder.bottom;
+                    activeLadder=next;
+                }
+                ladder=ShipLayout.Ladders[activeLadder];
+                bottom=ShipLayout.FloorY(ladder.bottom,ladder.x);top=ShipLayout.FloorY(ladder.top,ladder.x);
+                p.y=Mathf.Clamp(requested,bottom,top);
+                player.SetClimbing(true,Mathf.Abs(p.y-beforeY)>.00001f?Mathf.Sign(p.y-beforeY):0);
             }
         }
         else

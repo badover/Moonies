@@ -14,4 +14,6 @@ Verified in Unity 6000.6.9f1, Play Mode, in an isolated project copy.
 
 Renders: ship-check.png, ship-ladder.png, role-selection.png, modern-with-progress.png.
 
-Pause and ladder exit regression: all four roles passed W/D deck exits, held-W re-grab prevention, no exit into an empty shaft, the pause callback binding, frozen movement/camera/animation/timer, RESUME, and role preservation. Selected-caption removal and brighter material values were verified. ESC now opens PAUSED/RESUME rather than role selection.
+Integrated origin/adrian commit 5b191c62: updated starfield and playback timing, and progress color transitioning from cyan to gold. Pause remains intact.
+
+Current ladder regression: continuous W/S passes the middle deck without detaching; A/D is the only exit command beside a floor. Entry alignment and horizontal exit move at bounded speed, never teleport. No-input movement holds position. A fixed Idle pose eliminates frame-to-frame visual drift; 200 idle updates were checked for each role. New holographic role artwork is used with Commander/Pilot/Engineer/Medic click areas.
