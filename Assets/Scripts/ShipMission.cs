@@ -1,11 +1,9 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// <summary>Side-view walking constrained to the decks and two connecting ladders.</summary>
+/// <summary>Side-view walking constrained to the hull, deck floors and connecting ladders.</summary>
 public sealed class ShipMission : MonoBehaviour
 {
-    private static readonly float[] Decks = { -3.35f, -.9f, 1.3f };
-    private static readonly float[] Ladders = { -4.7f, 6.3f };
     private CrewCharacter player;
     private Camera view;
     private System.Action onExit;
@@ -15,7 +13,7 @@ public sealed class ShipMission : MonoBehaviour
     private int frame;
     private float clock;
     private int deck = 1;
-    private int destination = -1;
+    private int activeLadder = -1;
     private Vector3 velocity;
     private float zoom = 4.5f;
     private Sprite shipSprite;
@@ -47,10 +45,10 @@ public sealed class ShipMission : MonoBehaviour
         var renderer = ship.GetComponent<SpriteRenderer>();
         renderer.sprite = shipSprite;
         renderer.sharedMaterial = material;
-        player = Instantiate(prefab, new Vector3(-9, Decks[deck], -1), Quaternion.identity, transform);
-        player.transform.localScale = Vector3.one * .95f;
+        player = Instantiate(prefab, new Vector3(-9, ShipLayout.FloorY(deck, -9), -1), Quaternion.identity, transform);
+        player.transform.localScale = Vector3.one * ShipLayout.CrewScale;
         var playerRenderer = player.GetComponent<SpriteRenderer>();
-        playerRenderer.sharedMaterial = material;
+        playerRenderer.sharedMaterial = Resources.Load<Material>("CrewInterior");
         playerRenderer.sortingOrder = 10;
         playerRenderer.color = Color.white;
         player.GetComponent<Animator>().cullingMode = AnimatorCullingMode.AlwaysAnimate;
@@ -76,38 +74,49 @@ public sealed class ShipMission : MonoBehaviour
     {
         if (!ready || player == null) return;
         var keys = Keyboard.current;
-        if (keys == null) return;
-        if (keys.escapeKey.wasPressedThisFrame) { onExit(); return; }
-        float x = (keys.dKey.isPressed || keys.rightArrowKey.isPressed ? 1 : 0) - (keys.aKey.isPressed || keys.leftArrowKey.isPressed ? 1 : 0);
-        float y = (keys.wKey.isPressed || keys.upArrowKey.isPressed ? 1 : 0) - (keys.sKey.isPressed || keys.downArrowKey.isPressed ? 1 : 0);
-        Vector3 p = player.transform.position;
-        if (destination < 0 && y != 0)
-        {
-            foreach (float ladder in Ladders)
-                if (Mathf.Abs(p.x-ladder) < .65f && deck+(int)y >= 0 && deck+(int)y < Decks.Length)
-                { p.x = ladder; destination = deck+(int)y; break; }
-        }
-        bool moving;
-        if (destination >= 0)
-        {
-            p.y = Mathf.MoveTowards(p.y, Decks[destination], 2.2f * Time.deltaTime);
-            moving = true;
-            if (Mathf.Abs(p.y-Decks[destination]) < .001f) { deck = destination; destination = -1; }
-        }
-        else
-        {
-            float left = deck == 1 ? -17 : -13;
-            float next = Mathf.Clamp(p.x + x * 3.3f * Time.deltaTime, left, 12);
-            moving = Mathf.Abs(next-p.x) > .0001f; p.x = next;
-            if (x != 0) player.SetFacingLeft(x < 0);
-        }
-        player.transform.position = p;
-        player.SetWalking(moving);
-        if (Mouse.current != null) zoom = Mathf.Clamp(zoom - Mouse.current.scroll.ReadValue().y * .003f, 3, 8);
+        if (keys != null && keys.escapeKey.wasPressedThisFrame) { onExit(); return; }
+        float x = keys == null ? 0 : (keys.dKey.isPressed || keys.rightArrowKey.isPressed ? 1 : 0) - (keys.aKey.isPressed || keys.leftArrowKey.isPressed ? 1 : 0);
+        float y = keys == null ? 0 : (keys.wKey.isPressed || keys.upArrowKey.isPressed ? 1 : 0) - (keys.sKey.isPressed || keys.downArrowKey.isPressed ? 1 : 0);
+        MoveCrew(x, y, Time.deltaTime);
+        if (Mouse.current != null) zoom = ShipLayout.ZoomAfterScroll(zoom, Mouse.current.scroll.ReadValue().y);
         clock += Time.deltaTime;
         int previous = frame;
         while (clock >= durations[frame]) { clock -= durations[frame]; frame = (frame+1)%frames.Length; }
         if (previous != frame) background.sprite = frames[frame];
+    }
+    /// <summary>Move on deck floors or between the two endpoints of one ladder; never enter the service tanks.</summary>
+    public void MoveCrew(float x, float y, float delta)
+    {
+        if (!ready) return;
+        Vector3 p = player.transform.position;
+        if (activeLadder < 0 && y != 0 && ShipLayout.FindLadder(deck, p.x, y, out int found))
+        {
+            activeLadder = found;
+            p.x = ShipLayout.Ladders[found].x;
+        }
+        if (activeLadder >= 0)
+        {
+            var ladder = ShipLayout.Ladders[activeLadder];
+            float bottom = ShipLayout.FloorY(ladder.bottom, p.x);
+            float top = ShipLayout.FloorY(ladder.top, p.x);
+            p.y = Mathf.Clamp(p.y + y * 1.65f * delta, bottom, top);
+            player.SetClimbing(true, y);
+            if (y > 0 && p.y >= top || y < 0 && p.y <= bottom)
+            {
+                deck = y > 0 ? ladder.top : ladder.bottom;
+                activeLadder = -1;
+                player.SetClimbing(false, 0);
+            }
+        }
+        else
+        {
+            float next = ShipLayout.ClampX(deck, p.x + x * 2.8f * delta);
+            player.SetWalking(Mathf.Abs(next-p.x) > .0001f);
+            if (x != 0) player.SetFacingLeft(x < 0);
+            p.x = next;
+            p.y = ShipLayout.FloorY(deck, p.x);
+        }
+        player.transform.position = p;
     }
     private void LateUpdate()
     {

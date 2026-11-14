@@ -27,3 +27,6 @@ Validation: C# compiled against installed Unity 6000.6 assemblies. Sheet alpha,
 eight sprite rectangles per character, asset references and loop/transition
 settings were checked. Playback in Unity could not be verified from the execution
 environment because the Unity Licensing Client was unavailable.
+
+
+Ladder animation: Assets/Resources/CrewClimb.png is a generated four-role, four-frame transparent sheet based on the existing crew sprites. CrewCharacter plays the rows in enum order, reverses the cycle on descent, and pauses it when ladder input stops. ShipLayout traces playable deck boundaries in spacecraft image pixels. CrewInterior shades the world character to match the ship; menu portraits remain unchanged.
