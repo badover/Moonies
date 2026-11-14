@@ -20,6 +20,11 @@ public sealed class CrewMenu : MonoBehaviour
     private Image[] cards = new Image[4];
     private Image missionProgress;
     private Text status, confirmText, missionTime;
+    private Text missionHint, missionCardTitle, missionCardMeta, missionCardLocation, missionCardBriefing, missionCardStatus;
+    private Text missionStartButton, missionSkipButton, missionCloseButton;
+    private GameObject missionCardShade, missionCard, missionTaskProgressTrack;
+    private Image missionTaskProgress;
+    private ShipMissionDefinition selectedMission;
     private Font font;
     private int selected, frame;
     private float elapsed;
@@ -108,6 +113,26 @@ public sealed class CrewMenu : MonoBehaviour
         missionProgress.fillMethod = Image.FillMethod.Horizontal;
         missionProgress.fillOrigin = (int)Image.OriginHorizontal.Left;
         missionProgress.fillAmount = 0;
+        missionHint = Label(missionHud.transform, "", .20f,.105f,.80f,.15f,18,cyan);
+        missionHint.gameObject.SetActive(false);
+        missionCardShade = Panel(missionHud.transform,"Mission Card Shade",Vector2.zero,Vector2.one,new Color(.005f,.015f,.03f,.82f)).gameObject;
+        missionCard = Panel(missionHud.transform,"Mission Briefing",new Vector2(.18f,.18f),new Vector2(.82f,.82f),new Color(.015f,.055f,.08f,.99f)).gameObject;
+        missionCardTitle = Label(missionCard.transform,"",.05f,.82f,.95f,.96f,34,cyan);
+        missionCardMeta = Label(missionCard.transform,"",.05f,.74f,.95f,.82f,20,Color.white);
+        missionCardLocation = Label(missionCard.transform,"",.05f,.68f,.95f,.74f,16,cyan);
+        missionCardBriefing = Label(missionCard.transform,"",.08f,.39f,.92f,.66f,22,Color.white);
+        missionCardStatus = Label(missionCard.transform,"",.05f,.32f,.95f,.39f,18,cyan);
+        missionTaskProgressTrack = Panel(missionCard.transform,"Check Progress Track",new Vector2(.14f,.275f),new Vector2(.86f,.30f),new Color(.02f,.12f,.16f,1)).gameObject;
+        var taskFillRect = Node("Check Progress Fill",missionTaskProgressTrack.transform,Vector2.zero,Vector2.zero);
+        taskFillRect.anchorMax = new Vector2(0,1);
+        taskFillRect.pivot = new Vector2(0,.5f);
+        missionTaskProgress = taskFillRect.gameObject.AddComponent<Image>();
+        missionTaskProgress.color = cyan;
+        missionStartButton = Button(missionCard.transform,"START CHECK",.06f,.08f,.37f,.20f,StartSelectedMission);
+        missionSkipButton = Button(missionCard.transform,"SKIP CHECK",.385f,.08f,.69f,.20f,SkipSelectedMission);
+        missionCloseButton = Button(missionCard.transform,"CLOSE",.71f,.08f,.94f,.20f,CloseMissionCard);
+        missionCardShade.SetActive(false);
+        missionCard.SetActive(false);
         missionHud.SetActive(false);
         pauseScreen=Node("Pause Screen",root.transform,Vector2.zero,Vector2.one).gameObject;
         Panel(pauseScreen.transform,"Pause Shade",Vector2.zero,Vector2.one,new Color(.01f,.025f,.05f,.88f));
@@ -123,6 +148,8 @@ public sealed class CrewMenu : MonoBehaviour
         if (mission != null)
         {
             if(mission.IsPaused) return;
+            UpdateMissionHint();
+            if (missionCard.activeSelf) UpdateMissionCard();
             missionElapsed = Mathf.Min(missionElapsed + Time.deltaTime, MissionGoalSeconds);
             int seconds = Mathf.FloorToInt(missionElapsed);
             // Update text only when it changes: avoid formatting strings and rebuilding UI every frame.
@@ -163,6 +190,7 @@ public sealed class CrewMenu : MonoBehaviour
         try
         {
             candidate = new GameObject("Ship Mission").AddComponent<ShipMission>();
+            candidate.MissionInteractionRequested += OpenMissionCard;
             candidate.Begin(prefab, TogglePause);
             mission = candidate;
             missionElapsed = 0;
@@ -197,6 +225,84 @@ public sealed class CrewMenu : MonoBehaviour
         mission.SetPaused(paused);pauseScreen.SetActive(paused);
         if(EventSystem.current!=null)
             EventSystem.current.SetSelectedGameObject(paused?pauseScreen.GetComponentInChildren<Button>().gameObject:null);
+    }
+    private void UpdateMissionHint()
+    {
+        string hint = null;
+        if (mission.NearbyMission != null)
+        {
+            var status = mission.GetMissionStatus(mission.NearbyMission);
+            hint = status == ShipMissionStatus.InProgress
+                ? "PRESS E TO VIEW CHECK  ·  " + mission.NearbyMission.title
+                : "PRESS E TO INTERACT  ·  " + mission.NearbyMission.title;
+        }
+        else if (mission.ActiveMission != null)
+            hint = "CHECK PAUSED  ·  RETURN TO " + mission.ActiveMission.locationName.ToUpperInvariant();
+        bool visible = !string.IsNullOrEmpty(hint);
+        if (missionHint.gameObject.activeSelf != visible) missionHint.gameObject.SetActive(visible);
+        if (visible && missionHint.text != hint) missionHint.text = hint;
+    }
+    private void OpenMissionCard(ShipMissionDefinition definition)
+    {
+        selectedMission = definition;
+        mission.SetPaused(true);
+        missionCardShade.SetActive(true);
+        missionCard.SetActive(true);
+        UpdateMissionCard();
+    }
+    private void UpdateMissionCard()
+    {
+        if (selectedMission == null || mission == null) return;
+        missionCardTitle.text = selectedMission.missionId + " — " + selectedMission.title;
+        missionCardMeta.text = selectedMission.timeWindowLabel + " · " + Mathf.CeilToInt(selectedMission.durationSeconds) + "s · " + selectedMission.difficulty;
+        missionCardLocation.text = selectedMission.locationName.ToUpperInvariant() + "  ·  DECK " + (selectedMission.deck + 1);
+        missionCardBriefing.text = selectedMission.briefing;
+        var state = mission.GetMissionStatus(selectedMission);
+        bool available = state == ShipMissionStatus.Available;
+        bool active = state == ShipMissionStatus.InProgress;
+        missionStartButton.transform.parent.gameObject.SetActive(available);
+        missionSkipButton.transform.parent.gameObject.SetActive(available);
+        missionCloseButton.transform.parent.gameObject.SetActive(true);
+        missionTaskProgressTrack.SetActive(active || state == ShipMissionStatus.Completed);
+        float progress = state == ShipMissionStatus.Completed ? 1 : active ? mission.ActiveMissionProgress : 0;
+        var fillRect = missionTaskProgress.rectTransform;
+        fillRect.anchorMax = new Vector2(progress,1);
+        fillRect.offsetMin = fillRect.offsetMax = Vector2.zero;
+        if (active)
+        {
+            bool atStation = mission.NearbyMission == selectedMission;
+            int remaining = Mathf.CeilToInt(selectedMission.durationSeconds * (1-progress));
+            missionCardStatus.text = atStation
+                ? "SYSTEMS CHECK IN PROGRESS  ·  " + remaining + "s REMAINING"
+                : "CHECK PAUSED  ·  RETURN TO " + selectedMission.locationName.ToUpperInvariant();
+        }
+        else if (state == ShipMissionStatus.Completed) missionCardStatus.text = "SYSTEMS CHECK COMPLETE";
+        else if (state == ShipMissionStatus.Skipped) missionCardStatus.text = "CHECK SKIPPED  ·  THE FAULT REMAINS UNCHECKED";
+        else if (state == ShipMissionStatus.Expired) missionCardStatus.text = "MISSION WINDOW CLOSED";
+        else missionCardStatus.text = "START THE CHECK OR SKIP THIS MISSION";
+    }
+    private void StartSelectedMission()
+    {
+        if (mission != null && mission.StartMission(selectedMission))
+        {
+            mission.SetPaused(false);
+            UpdateMissionCard();
+        }
+    }
+    private void SkipSelectedMission()
+    {
+        if (mission != null && mission.SkipMission(selectedMission))
+        {
+            mission.SetPaused(false);
+            UpdateMissionCard();
+        }
+    }
+    private void CloseMissionCard()
+    {
+        if (mission != null) mission.SetPaused(false);
+        missionCard.SetActive(false);
+        missionCardShade.SetActive(false);
+        selectedMission = null;
     }
     private void ReturnToMenu()
     {

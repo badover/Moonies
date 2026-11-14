@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System;
+using System.Collections.Generic;
 
 /// <summary>Side-view walking constrained to the hull, deck floors and connecting ladders.</summary>
 public sealed class ShipMission : MonoBehaviour
@@ -21,11 +23,22 @@ public sealed class ShipMission : MonoBehaviour
     private bool ready;
     private bool ladderNeedsRelease;
     private float runningTimeScale=1;
+    private float missionClock;
+    private float activeMissionElapsed;
+    private ShipMissionDefinition[] missionDefinitions;
+    private ShipMissionDefinition nearbyMission;
+    private ShipMissionDefinition activeMission;
+    private readonly Dictionary<ShipMissionDefinition, ShipMissionStatus> missionStatuses = new Dictionary<ShipMissionDefinition, ShipMissionStatus>();
     public bool IsPaused {get;private set;}
+    public event Action<ShipMissionDefinition> MissionInteractionRequested;
+    public ShipMissionDefinition NearbyMission => nearbyMission;
+    public ShipMissionDefinition ActiveMission => activeMission;
+    public float ActiveMissionProgress => activeMission == null ? 0 : Mathf.Clamp01(activeMissionElapsed / activeMission.durationSeconds);
 
     public void Begin(CrewCharacter prefab, System.Action pauseRequested)
     {
         onPauseRequested = pauseRequested;
+        missionDefinitions = Resources.LoadAll<ShipMissionDefinition>("Missions");
         if (prefab == null) throw new System.InvalidOperationException("Selected crew prefab is missing.");
         var texture = Resources.Load<Texture2D>("Menu/ModernSpacecraft");
         var atlas = Resources.Load<Texture2D>("Menu/Starfield");
@@ -81,14 +94,80 @@ public sealed class ShipMission : MonoBehaviour
         var keys = Keyboard.current;
         if (keys != null && keys.escapeKey.wasPressedThisFrame) { onPauseRequested(); return; }
         if (IsPaused) return;
+        float delta = Time.deltaTime;
+        missionClock += delta;
         float x = keys == null ? 0 : (keys.dKey.isPressed || keys.rightArrowKey.isPressed ? 1 : 0) - (keys.aKey.isPressed || keys.leftArrowKey.isPressed ? 1 : 0);
         float y = keys == null ? 0 : (keys.wKey.isPressed || keys.upArrowKey.isPressed ? 1 : 0) - (keys.sKey.isPressed || keys.downArrowKey.isPressed ? 1 : 0);
-        MoveCrew(x, y, Time.deltaTime);
+        MoveCrew(x, y, delta);
+        UpdateActiveMission(delta);
+        UpdateNearbyMission();
+        if (keys != null && keys.eKey.wasPressedThisFrame && nearbyMission != null)
+            MissionInteractionRequested?.Invoke(nearbyMission);
         if (Mouse.current != null) zoom = ShipLayout.ZoomAfterScroll(zoom, Mouse.current.scroll.ReadValue().y);
         clock += Time.deltaTime;
         int previous = frame;
         while (clock >= durations[frame]) { clock -= durations[frame]; frame = (frame+1)%frames.Length; }
         if (previous != frame) background.sprite = frames[frame];
+    }
+    public ShipMissionStatus GetMissionStatus(ShipMissionDefinition definition)
+    {
+        if (definition == null) return ShipMissionStatus.Unavailable;
+        if (missionStatuses.TryGetValue(definition, out var status)) return status;
+        if (missionClock < definition.availableFromSeconds) return ShipMissionStatus.Unavailable;
+        return missionClock <= definition.availableUntilSeconds ? ShipMissionStatus.Available : ShipMissionStatus.Expired;
+    }
+    public bool StartMission(ShipMissionDefinition definition)
+    {
+        if (definition == null || activeMission != null || nearbyMission != definition || GetMissionStatus(definition) != ShipMissionStatus.Available)
+            return false;
+        activeMission = definition;
+        activeMissionElapsed = 0;
+        missionStatuses[definition] = ShipMissionStatus.InProgress;
+        return true;
+    }
+    public bool SkipMission(ShipMissionDefinition definition)
+    {
+        if (definition == null || nearbyMission != definition || GetMissionStatus(definition) != ShipMissionStatus.Available)
+            return false;
+        missionStatuses[definition] = ShipMissionStatus.Skipped;
+        UpdateNearbyMission();
+        return true;
+    }
+    private void UpdateActiveMission(float delta)
+    {
+        if (activeMission == null || !IsNearMission(activeMission)) return;
+        activeMissionElapsed += delta;
+        if (activeMissionElapsed >= activeMission.durationSeconds)
+        {
+            activeMissionElapsed = activeMission.durationSeconds;
+            missionStatuses[activeMission] = ShipMissionStatus.Completed;
+            activeMission = null;
+        }
+    }
+    private void UpdateNearbyMission()
+    {
+        nearbyMission = null;
+        if (player == null || missionDefinitions == null) return;
+        if (activeMission != null)
+        {
+            if (IsNearMission(activeMission)) nearbyMission = activeMission;
+            return;
+        }
+        float closest = float.PositiveInfinity;
+        foreach (var definition in missionDefinitions)
+        {
+            if (definition == null || !definition.AllowsRole(player.Role)) continue;
+            var status = GetMissionStatus(definition);
+            if (status != ShipMissionStatus.Available && status != ShipMissionStatus.InProgress) continue;
+            if (!IsNearMission(definition)) continue;
+            float distance = Mathf.Abs(player.transform.position.x - definition.WorldPosition.x);
+            if (distance < closest) { closest = distance; nearbyMission = definition; }
+        }
+    }
+    private bool IsNearMission(ShipMissionDefinition definition)
+    {
+        if (definition == null || player == null || deck != definition.deck) return false;
+        return Vector2.Distance(player.transform.position, definition.WorldPosition) <= definition.interactionRadius;
     }
     /// <summary>Move on deck floors or between the two endpoints of one ladder; never enter propulsion machinery or leave the hull.</summary>
     public void MoveCrew(float x,float y,float delta)
