@@ -18,10 +18,15 @@ public sealed class CrewMenu : MonoBehaviour
     private Image shade;
     private RawImage stars;
     private Image[] cards = new Image[4];
-    private Text status, confirmText;
+    private Image missionProgress;
+    private Text status, confirmText, missionTime;
     private Font font;
     private int selected, frame;
     private float elapsed;
+    private float missionElapsed;
+    private const float MissionGoalSeconds = 10 * 60f;
+    private int lastMissionSecond=-1;
+    private Sprite progressSprite;
     private float[] durations;
 
     private void Start()
@@ -72,6 +77,7 @@ public sealed class CrewMenu : MonoBehaviour
         startColors.selectedColor = startColors.highlightedColor;
         startButton.colors = startColors;
         startHit.color = Color.white;
+        startHit.canvasRenderer.cullTransparentMesh=false;
         roles = Node("Role Selection", root.transform, Vector2.zero, Vector2.one).gameObject;
         var roleBounds = Node("Role Artwork Bounds", roles.transform, new Vector2(.04f,.04f), new Vector2(.96f,.96f));
         var roleArt = Node("After Start Artwork", roleBounds, Vector2.zero, Vector2.one).gameObject.AddComponent<RawImage>();
@@ -89,6 +95,16 @@ public sealed class CrewMenu : MonoBehaviour
         confirmText = Button(roleArt.transform,"BOARD SHIP",.38f,.09f,.62f,.185f,Confirm);
         missionHud = Node("Mission HUD", root.transform, Vector2.zero, Vector2.one).gameObject;
         Label(missionHud.transform, "A / D  MOVE    ·    W / S  LADDER    ·    SCROLL  ZOOM    ·    ESC  CREW MENU", .05f,.02f,.95f,.09f, 18, cyan);
+        missionTime = Label(missionHud.transform, "MISSION TIME  00:00 / 10:00", .35f,.91f,.65f,.96f, 18, cyan);
+        Panel(missionHud.transform, "Mission Progress Track", new Vector2(.35f,.875f), new Vector2(.65f,.895f), new Color(.02f,.08f,.12f,.9f));
+        missionProgress = Panel(missionHud.transform, "Mission Progress", new Vector2(.35f,.875f), new Vector2(.65f,.895f), cyan);
+        progressSprite=Sprite.Create(Texture2D.whiteTexture,new Rect(0,0,Texture2D.whiteTexture.width,Texture2D.whiteTexture.height),new Vector2(.5f,.5f));
+        missionProgress.sprite=progressSprite;
+        missionProgress.raycastTarget=false;
+        missionProgress.type = Image.Type.Filled;
+        missionProgress.fillMethod = Image.FillMethod.Horizontal;
+        missionProgress.fillOrigin = (int)Image.OriginHorizontal.Left;
+        missionProgress.fillAmount = 0;
         missionHud.SetActive(false);
         roles.SetActive(false);
         Select(selected);
@@ -96,7 +112,22 @@ public sealed class CrewMenu : MonoBehaviour
 
     private void Update()
     {
-        if (durations == null || mission != null) return;
+        if (mission != null)
+        {
+            missionElapsed = Mathf.Min(missionElapsed + Time.deltaTime, MissionGoalSeconds);
+            int seconds = Mathf.FloorToInt(missionElapsed);
+            // Update text only when it changes: avoid formatting strings and rebuilding UI every frame.
+            if(seconds==lastMissionSecond) return;
+            lastMissionSecond=seconds;
+            missionProgress.fillAmount = missionElapsed / MissionGoalSeconds;
+            int minutes = seconds / 60;
+            seconds %= 60;
+            missionTime.text = missionElapsed >= MissionGoalSeconds
+                ? "MISSION TIME  10:00 / 10:00  ·  GOAL REACHED"
+                : $"MISSION TIME  {minutes:00}:{seconds:00} / 10:00";
+            return;
+        }
+        if (durations == null) return;
         int previous = frame;
         elapsed += Time.unscaledDeltaTime;
         while (elapsed >= durations[frame]) { elapsed -= durations[frame]; frame = (frame + 1) % durations.Length; }
@@ -122,6 +153,10 @@ public sealed class CrewMenu : MonoBehaviour
             candidate = new GameObject("Ship Mission").AddComponent<ShipMission>();
             candidate.Begin(prefab, ReturnToMenu);
             mission = candidate;
+            missionElapsed = 0;
+            lastMissionSecond=-1;
+            missionProgress.fillAmount = 0;
+            missionTime.text = "MISSION TIME  00:00 / 10:00";
             home.SetActive(false); roles.SetActive(false);
             shade.gameObject.SetActive(false); backgroundCanvas.gameObject.SetActive(false);
             missionHud.SetActive(true);
@@ -137,6 +172,7 @@ public sealed class CrewMenu : MonoBehaviour
     {
         var image=Panel(parent,"Choose "+names[role],min,max,Color.clear);
         cards[role]=image;
+        image.canvasRenderer.cullTransparentMesh=false;
         var button=image.gameObject.AddComponent<Button>();
         button.onClick.AddListener(()=>Select(role));
     }
@@ -147,6 +183,7 @@ public sealed class CrewMenu : MonoBehaviour
         shade.gameObject.SetActive(true); backgroundCanvas.gameObject.SetActive(true);
         ShowRoles(true);
     }
+    private void OnDestroy(){if(progressSprite!=null)Destroy(progressSprite);}
     private RectTransform Node(string name, Transform parent, Vector2 min, Vector2 max)
     {
         var rect = new GameObject(name, typeof(RectTransform)).GetComponent<RectTransform>();
