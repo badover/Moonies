@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
+  m_Name: G01_LEO_Check
+  m_EditorClassIdentifier: 
+  missionId: G-01
+  title: LEO Check
+  timeWindowLabel: 0:00–1:20
+  availableFromSeconds: 0
+  availableUntilSeconds: 80
+  durationSeconds: 30
+  difficulty: Easy
+  briefing: You are in the cockpit. Mission Control requests a systems check before leaving orbit. If you skip the check, a fault will go undetected and cause trouble later.
+  locationName: Bridge
+  deck: 2
+  shipPixelX: 420
+  interactionRadius: 1.6
+  allowedRoles: []
