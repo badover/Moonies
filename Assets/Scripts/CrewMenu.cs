@@ -25,6 +25,7 @@ public sealed class CrewMenu : MonoBehaviour
     private float elapsed;
     private float missionElapsed;
     private const float MissionGoalSeconds = 10 * 60f;
+    private static readonly Color MissionProgressGold = new Color(1f, .72f, .18f);
     private int lastMissionSecond=-1;
     private Sprite progressSprite;
     private float[] durations;
@@ -119,7 +120,9 @@ public sealed class CrewMenu : MonoBehaviour
             // Update text only when it changes: avoid formatting strings and rebuilding UI every frame.
             if(seconds==lastMissionSecond) return;
             lastMissionSecond=seconds;
-            missionProgress.fillAmount = missionElapsed / MissionGoalSeconds;
+            float progress = missionElapsed / MissionGoalSeconds;
+            missionProgress.fillAmount = progress;
+            missionProgress.color = Color.Lerp(cyan, MissionProgressGold, progress);
             int minutes = seconds / 60;
             seconds %= 60;
             missionTime.text = missionElapsed >= MissionGoalSeconds
@@ -156,6 +159,7 @@ public sealed class CrewMenu : MonoBehaviour
             missionElapsed = 0;
             lastMissionSecond=-1;
             missionProgress.fillAmount = 0;
+            missionProgress.color = cyan;
             missionTime.text = "MISSION TIME  00:00 / 10:00";
             home.SetActive(false); roles.SetActive(false);
             shade.gameObject.SetActive(false); backgroundCanvas.gameObject.SetActive(false);
