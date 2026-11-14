@@ -2,11 +2,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
+using UnityEngine.Video;
+using System.IO;
 
 /// <summary>Two-screen entry flow with persistent crew selection and ship boarding.</summary>
 public sealed class CrewMenu : MonoBehaviour
 {
-    [System.Serializable] private class Timing { public float[] durations; }
     public static CrewRole SelectedRole => (CrewRole)Mathf.Clamp(PlayerPrefs.GetInt("CrewRole", 0), 0, 3);
     private readonly string[] names = { "Commander", "Medic", "Pilot", "Engineer" };
     private readonly string[] descriptions = { "Coordinate your crew\nand lead the mission.", "Monitor crew health\nand provide medical care.", "Control the flight\nand navigate to the Moon.", "Maintain ship systems\nand repair equipment." };
@@ -17,6 +18,8 @@ public sealed class CrewMenu : MonoBehaviour
     private Canvas backgroundCanvas;
     private Image shade;
     private RawImage stars;
+    private VideoPlayer backgroundVideo;
+    private RenderTexture backgroundVideoTexture;
     private Image[] cards = new Image[4];
     private Image missionProgress;
     private Text status, confirmText, missionTime;
@@ -26,14 +29,12 @@ public sealed class CrewMenu : MonoBehaviour
     private Image missionTaskProgress;
     private ShipMissionDefinition selectedMission;
     private Font font;
-    private int selected, frame;
-    private float elapsed;
+    private int selected;
     private float missionElapsed;
     private const float MissionGoalSeconds = 10 * 60f;
     private static readonly Color MissionProgressGold = new Color(1f, .72f, .18f);
     private int lastMissionSecond=-1;
     private Sprite progressSprite;
-    private float[] durations;
 
     private void Start()
     {
@@ -59,10 +60,8 @@ public sealed class CrewMenu : MonoBehaviour
         backgroundCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
         backgroundCanvas.sortingOrder = -10;
         stars = Node("Animated Bg.gif", skyCanvas.transform, Vector2.zero, Vector2.one).gameObject.AddComponent<RawImage>();
-        stars.texture = Resources.Load<Texture2D>("Menu/Starfield");
         stars.raycastTarget = false;
-        durations = JsonUtility.FromJson<Timing>(Resources.Load<TextAsset>("Menu/StarfieldTiming").text).durations;
-        SetFrame();
+        SetupBackgroundVideo();
         shade = Panel(root.transform, "Shade", Vector2.zero, Vector2.one, new Color(.01f,.025f,.05f,.45f));
         shade.raycastTarget = false;
         home = Node("Start Screen", root.transform, Vector2.zero, Vector2.one).gameObject;
@@ -165,13 +164,47 @@ public sealed class CrewMenu : MonoBehaviour
                 : $"MISSION TIME  {minutes:00}:{seconds:00} / 10:00";
             return;
         }
-        if (durations == null) return;
-        int previous = frame;
-        elapsed += Time.unscaledDeltaTime;
-        while (elapsed >= durations[frame]) { elapsed -= durations[frame]; frame = (frame + 1) % durations.Length; }
-        if (previous != frame) SetFrame();
     }
-    private void SetFrame() => stars.uvRect = new Rect((frame % 10) / 10f, 1f - (frame / 10 + 1) / 8f, .1f, .125f);
+    private void SetupBackgroundVideo()
+    {
+        backgroundVideoTexture = new RenderTexture(2560,1440,0,RenderTextureFormat.ARGB32);
+        backgroundVideoTexture.name = "Starfield Video Output";
+        backgroundVideoTexture.Create();
+        stars.texture = backgroundVideoTexture;
+
+        var playerObject = new GameObject("Starfield Video Player");
+        playerObject.transform.SetParent(transform,false);
+        backgroundVideo = playerObject.AddComponent<VideoPlayer>();
+        backgroundVideo.playOnAwake = false;
+        backgroundVideo.isLooping = true;
+        backgroundVideo.source = VideoSource.Url;
+        backgroundVideo.url = Path.Combine(Application.streamingAssetsPath,"StarfieldLoop.webm");
+        backgroundVideo.renderMode = VideoRenderMode.RenderTexture;
+        backgroundVideo.targetTexture = backgroundVideoTexture;
+        backgroundVideo.aspectRatio = VideoAspectRatio.FitOutside;
+        backgroundVideo.audioOutputMode = VideoAudioOutputMode.None;
+        backgroundVideo.waitForFirstFrame = true;
+        backgroundVideo.skipOnDrop = true;
+        backgroundVideo.errorReceived += (player,error) => Debug.LogError("Unable to play starfield video: " + error);
+        backgroundVideo.prepareCompleted += player => player.Play();
+        backgroundVideo.Prepare();
+    }
+    private void ShowVideoBehindShip(Camera camera)
+    {
+        backgroundVideo.renderMode = VideoRenderMode.CameraFarPlane;
+        backgroundVideo.targetTexture = null;
+        backgroundVideo.targetCamera = camera;
+        backgroundVideo.aspectRatio = VideoAspectRatio.FitOutside;
+        backgroundVideo.Play();
+    }
+    private void ShowVideoInMenu()
+    {
+        if (backgroundVideo == null) return;
+        backgroundVideo.renderMode = VideoRenderMode.RenderTexture;
+        backgroundVideo.targetTexture = backgroundVideoTexture;
+        backgroundVideo.targetCamera = null;
+        backgroundVideo.Play();
+    }
     private void ShowRoles(bool show) { home.SetActive(!show); roles.SetActive(show); }
     private void Select(int index)
     {
@@ -191,7 +224,8 @@ public sealed class CrewMenu : MonoBehaviour
         {
             candidate = new GameObject("Ship Mission").AddComponent<ShipMission>();
             candidate.MissionInteractionRequested += OpenMissionCard;
-            candidate.Begin(prefab, TogglePause);
+            candidate.Begin(prefab, TogglePause, backgroundVideo);
+            ShowVideoBehindShip(Camera.main);
             mission = candidate;
             missionElapsed = 0;
             lastMissionSecond=-1;
@@ -310,10 +344,16 @@ public sealed class CrewMenu : MonoBehaviour
         pauseScreen.SetActive(false);
         Destroy(mission.gameObject); mission = null;
         missionHud.SetActive(false);
+        ShowVideoInMenu();
         shade.gameObject.SetActive(true); backgroundCanvas.gameObject.SetActive(true);
         ShowRoles(true);
     }
-    private void OnDestroy(){if(progressSprite!=null)Destroy(progressSprite);}
+    private void OnDestroy()
+    {
+        if(backgroundVideo!=null) backgroundVideo.Stop();
+        if(backgroundVideoTexture!=null){backgroundVideoTexture.Release();Destroy(backgroundVideoTexture);}
+        if(progressSprite!=null) Destroy(progressSprite);
+    }
     private RectTransform Node(string name, Transform parent, Vector2 min, Vector2 max)
     {
         var rect = new GameObject(name, typeof(RectTransform)).GetComponent<RectTransform>();

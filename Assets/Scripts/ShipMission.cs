@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Video;
 using System;
 using System.Collections.Generic;
 
@@ -9,11 +10,6 @@ public sealed class ShipMission : MonoBehaviour
     private CrewCharacter player;
     private Camera view;
     private System.Action onPauseRequested;
-    private SpriteRenderer background;
-    private Sprite[] frames;
-    private float[] durations;
-    private int frame;
-    private float clock;
     private int deck = 1;
     private int activeLadder = -1;
     private Vector3 velocity;
@@ -35,15 +31,14 @@ public sealed class ShipMission : MonoBehaviour
     public ShipMissionDefinition ActiveMission => activeMission;
     public float ActiveMissionProgress => activeMission == null ? 0 : Mathf.Clamp01(activeMissionElapsed / activeMission.durationSeconds);
 
-    public void Begin(CrewCharacter prefab, System.Action pauseRequested)
+    public void Begin(CrewCharacter prefab, System.Action pauseRequested, VideoPlayer videoBackground)
     {
         onPauseRequested = pauseRequested;
         missionDefinitions = Resources.LoadAll<ShipMissionDefinition>("Missions");
         if (prefab == null) throw new System.InvalidOperationException("Selected crew prefab is missing.");
         var texture = Resources.Load<Texture2D>("Menu/ModernSpacecraft");
-        var atlas = Resources.Load<Texture2D>("Menu/Starfield");
         var material = Resources.Load<Material>("ShipSprite");
-        if (texture == null || atlas == null || material == null)
+        if (texture == null || material == null || videoBackground == null)
             throw new System.InvalidOperationException("Ship assets are missing. Wait for Unity to finish importing.");
         view = Camera.main;
         if (view == null) throw new System.InvalidOperationException("Main Camera is missing.");
@@ -73,21 +68,9 @@ public sealed class ShipMission : MonoBehaviour
 
         if (playerRenderer.sprite == null)
             throw new System.InvalidOperationException("Crew animation has missing sprite references. Rebuild Animated Characters from Tools/Crew.");
-        var sky = new GameObject("Starfield", typeof(SpriteRenderer));
-        sky.transform.SetParent(transform, false);
-        background = sky.GetComponent<SpriteRenderer>();
-        background.sharedMaterial = renderer.sharedMaterial;
-        background.sortingOrder = -20;
-        durations = JsonUtility.FromJson<FrameTiming>(Resources.Load<TextAsset>("Menu/StarfieldTiming").text).durations;
-        frames = new Sprite[durations.Length];
-        int w = atlas.width / 10, h = atlas.height / 8;
-        for (int i = 0; i < frames.Length; i++)
-            frames[i] = Sprite.Create(atlas, new Rect(i % 10 * w, (7-i/10)*h, w,h), new Vector2(.5f,.5f), 100);
-        background.sprite = frames[0];
         view.transform.position = new Vector3(player.transform.position.x, 0, -10);
         ready = true;
     }
-    [System.Serializable] private class FrameTiming { public float[] durations; }
     private void Update()
     {
         if (!ready || player == null) return;
@@ -104,10 +87,6 @@ public sealed class ShipMission : MonoBehaviour
         if (keys != null && keys.eKey.wasPressedThisFrame && nearbyMission != null)
             MissionInteractionRequested?.Invoke(nearbyMission);
         if (Mouse.current != null) zoom = ShipLayout.ZoomAfterScroll(zoom, Mouse.current.scroll.ReadValue().y);
-        clock += Time.deltaTime;
-        int previous = frame;
-        while (clock >= durations[frame]) { clock -= durations[frame]; frame = (frame+1)%frames.Length; }
-        if (previous != frame) background.sprite = frames[frame];
     }
     public ShipMissionStatus GetMissionStatus(ShipMissionDefinition definition)
     {
@@ -244,13 +223,10 @@ public sealed class ShipMission : MonoBehaviour
         float limit = Mathf.Max(0, 20-halfWidth);
         Vector3 target = new Vector3(Mathf.Clamp(player.transform.position.x, -limit,limit), player.transform.position.y*.3f, -10);
         view.transform.position = Vector3.SmoothDamp(view.transform.position, target, ref velocity, .09f, Mathf.Infinity, Time.unscaledDeltaTime);
-        background.transform.position = new Vector3(view.transform.position.x, view.transform.position.y, 10);
-        background.transform.localScale = new Vector3(2*view.orthographicSize*view.aspect/background.sprite.bounds.size.x, 2*view.orthographicSize/background.sprite.bounds.size.y, 1);
     }
     private void OnDestroy()
     {
         if(IsPaused) Time.timeScale=runningTimeScale;
-        if (frames != null) foreach (var sprite in frames) Destroy(sprite);
         if (shipSprite != null) Destroy(shipSprite);
 
     }
