@@ -50,7 +50,7 @@ public sealed class CrewCharacter : MonoBehaviour
     public void SetFacingLeft(bool value)=>spriteRenderer.flipX=value;
     private void LateUpdate()
     {
-        if(frames==null) return;
+        if(frames==null || Time.timeScale==0) return;
         float rate=IsClimbing?6*climbDirection:walking?6:3;
         clock=Mathf.Repeat(clock+Time.deltaTime*rate,4);
         ApplyFrame();

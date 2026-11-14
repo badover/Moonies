@@ -6,7 +6,7 @@ public sealed class ShipMission : MonoBehaviour
 {
     private CrewCharacter player;
     private Camera view;
-    private System.Action onExit;
+    private System.Action onPauseRequested;
     private SpriteRenderer background;
     private Sprite[] frames;
     private float[] durations;
@@ -19,10 +19,14 @@ public sealed class ShipMission : MonoBehaviour
     private float zoomVelocity;
     private Sprite shipSprite;
     private bool ready;
+    private bool ladderNeedsRelease;
+    private float preferredExitDirection=1;
+    private float runningTimeScale=1;
+    public bool IsPaused {get;private set;}
 
-    public void Begin(CrewCharacter prefab, System.Action exit)
+    public void Begin(CrewCharacter prefab, System.Action pauseRequested)
     {
-        onExit = exit;
+        onPauseRequested = pauseRequested;
         if (prefab == null) throw new System.InvalidOperationException("Selected crew prefab is missing.");
         var texture = Resources.Load<Texture2D>("Menu/ModernSpacecraft");
         var atlas = Resources.Load<Texture2D>("Menu/Starfield");
@@ -76,7 +80,8 @@ public sealed class ShipMission : MonoBehaviour
     {
         if (!ready || player == null) return;
         var keys = Keyboard.current;
-        if (keys != null && keys.escapeKey.wasPressedThisFrame) { onExit(); return; }
+        if (keys != null && keys.escapeKey.wasPressedThisFrame) { onPauseRequested(); return; }
+        if (IsPaused) return;
         float x = keys == null ? 0 : (keys.dKey.isPressed || keys.rightArrowKey.isPressed ? 1 : 0) - (keys.aKey.isPressed || keys.leftArrowKey.isPressed ? 1 : 0);
         float y = keys == null ? 0 : (keys.wKey.isPressed || keys.upArrowKey.isPressed ? 1 : 0) - (keys.sKey.isPressed || keys.downArrowKey.isPressed ? 1 : 0);
         MoveCrew(x, y, Time.deltaTime);
@@ -87,42 +92,64 @@ public sealed class ShipMission : MonoBehaviour
         if (previous != frame) background.sprite = frames[frame];
     }
     /// <summary>Move on deck floors or between the two endpoints of one ladder; never enter propulsion machinery or leave the hull.</summary>
-    public void MoveCrew(float x, float y, float delta)
+    public void MoveCrew(float x,float y,float delta)
     {
-        if (!ready) return;
-        Vector3 p = player.transform.position;
-        if (activeLadder < 0 && y != 0 && ShipLayout.FindLadder(deck, p.x, y, out int found))
+        if(!ready || IsPaused) return;
+        Vector3 p=player.transform.position;
+        if(x!=0) preferredExitDirection=Mathf.Sign(x);
+        if(y==0 && activeLadder<0) ladderNeedsRelease=false;
+        if(activeLadder<0 && !ladderNeedsRelease && y!=0 && ShipLayout.FindLadder(deck,p.x,y,out int found))
         {
-            activeLadder = found;
-            p.x = ShipLayout.Ladders[found].x;
+            activeLadder=found;p.x=ShipLayout.Ladders[found].x;
         }
-        if (activeLadder >= 0)
+        if(activeLadder>=0)
         {
-            var ladder = ShipLayout.Ladders[activeLadder];
-            float bottom = ShipLayout.FloorY(ladder.bottom, p.x);
-            float top = ShipLayout.FloorY(ladder.top, p.x);
-            p.y = Mathf.Clamp(p.y + y * 1.65f * delta, bottom, top);
-            player.SetClimbing(true, y);
-            if (y > 0 && p.y >= top || y < 0 && p.y <= bottom)
+            var ladder=ShipLayout.Ladders[activeLadder];
+            float bottom=ShipLayout.FloorY(ladder.bottom,p.x),top=ShipLayout.FloorY(ladder.top,p.x);
+            // Sideways input exits only beside a real floor, never in the middle of the shaft.
+            int landing=-1;
+            if(x!=0)
             {
-                deck = y > 0 ? ladder.top : ladder.bottom;
-                activeLadder = -1;
-                player.SetClimbing(false, 0);
+                if(Mathf.Abs(p.y-bottom)<=.35f) landing=ladder.bottom;
+                else if(Mathf.Abs(p.y-top)<=.35f) landing=ladder.top;
+            }
+            if(landing<0)
+            {
+                p.y=Mathf.Clamp(p.y+y*1.65f*delta,bottom,top);
+                player.SetClimbing(true,y);
+                if(y>0 && top-p.y<=.12f) landing=ladder.top;
+                else if(y<0 && p.y-bottom<=.12f) landing=ladder.bottom;
+            }
+            if(landing>=0)
+            {
+                deck=landing;activeLadder=-1;ladderNeedsRelease=true;
+                player.SetClimbing(false,0);
+                float side=x!=0?Mathf.Sign(x):preferredExitDirection;
+                p.x=ShipLayout.MoveOnDeck(deck,p.x,p.x+side*(ShipLayout.BodyHalfWidth+.65f));
+                p.y=ShipLayout.FloorY(deck,p.x);
+                player.SetWalking(x!=0);
+                if(x!=0) player.SetFacingLeft(x<0);
             }
         }
         else
         {
-            float next = ShipLayout.MoveOnDeck(deck, p.x, p.x + x * 2.8f * delta);
-            player.SetWalking(Mathf.Abs(next-p.x) > .0001f);
-            if (x != 0) player.SetFacingLeft(x < 0);
-            p.x = next;
-            p.y = ShipLayout.FloorY(deck, p.x);
+            float next=ShipLayout.MoveOnDeck(deck,p.x,p.x+x*2.8f*delta);
+            player.SetWalking(Mathf.Abs(next-p.x)>.0001f);
+            if(x!=0) player.SetFacingLeft(x<0);
+            p.x=next;p.y=ShipLayout.FloorY(deck,p.x);
         }
-        player.transform.position = p;
+        player.transform.position=p;
+    }
+    public void SetPaused(bool value)
+    {
+        if(value==IsPaused) return;
+        if(value){runningTimeScale=Time.timeScale;Time.timeScale=0;}
+        else Time.timeScale=runningTimeScale;
+        IsPaused=value;
     }
     private void LateUpdate()
     {
-        if (!ready || player == null) return;
+        if (!ready || player == null || IsPaused) return;
         view.orthographicSize = Mathf.SmoothDamp(view.orthographicSize, zoom, ref zoomVelocity, .09f, Mathf.Infinity, Time.unscaledDeltaTime);
         float halfWidth = view.orthographicSize * view.aspect;
         float limit = Mathf.Max(0, 20-halfWidth);
@@ -133,6 +160,7 @@ public sealed class ShipMission : MonoBehaviour
     }
     private void OnDestroy()
     {
+        if(IsPaused) Time.timeScale=runningTimeScale;
         if (frames != null) foreach (var sprite in frames) Destroy(sprite);
         if (shipSprite != null) Destroy(shipSprite);
 

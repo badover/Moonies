@@ -5,12 +5,14 @@ Open this repository folder in Unity Hub using Unity **6000.6.9f1**. Wait for pa
 Click START, select a role on the After Start screen, and click BOARD SHIP.
 
 - A/D or arrow keys: walk inside the hull.
-- W/S or up/down: climb the central ladder; release to pause, reverse to descend.
+- W/S or up/down: climb the central ladder; release to pause, reverse to descend; A/D steps off beside a floor. Release W/S before continuing to the next deck.
 - Mouse wheel: smooth zoom.
-- Escape: return to role selection.
+- Escape: pause/resume the current mission. Pause freezes movement, camera zoom, animation and the mission timer.
 
 The modern ship uses the source artwork with transparent surroundings and English room labels. All gameplay sprites, images, animations and frame metadata are included in the repository; no files outside the project are needed to run it.
 
 The mission HUD includes a ten-minute progress timer.
 
-For automated verification with the Unity Pipeline CLI, start Play Mode, then run `unity command --project-path . "script eval" --file Tools/ValidateMenuClicks.csx` and `unity command --project-path . "script eval" --file Tools/ValidateModernShip.csx`. They run UI pointer/raycast checks and verify all roles, floor bounds, ladders, smooth zoom and progress fill geometry. Test render captures are written to the system temporary directory.
+For automated verification with the Unity Pipeline CLI, start Play Mode, then run `unity command --project-path . "script eval" --file Tools/ValidateMenuClicks.cs` and `unity command --project-path . "script eval" --file Tools/ValidateModernShip.cs`. They run UI pointer/raycast checks and verify all roles, floor bounds, ladders, smooth zoom and progress fill geometry. Test render captures are written to the system temporary directory.
+
+Pause/ladder regression check: `unity command --project-path . "script eval" --file Tools/ValidatePauseAndLadders.cs`.

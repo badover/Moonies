@@ -36,7 +36,7 @@ for(int role=0;role<4;role++){
  mission.MoveCrew(0,1,10);Check(!p.IsClimbing && render.sprite.texture==texture,"Upper landing changed model");
  Check(UnityEngine.Mathf.Abs(p.transform.position.y-ShipLayout.FloorY(2,p.transform.position.x))<.001,"Upper floor failed");
  mission.MoveCrew(1,0,10000);Check(p.transform.position.x<=ShipLayout.ToWorldX(1665)-ShipLayout.BodyHalfWidth+.001,"Propulsion barrier failed");
- p.transform.position=new UnityEngine.Vector3(ladder,ShipLayout.FloorY(2,ladder),-1);mission.MoveCrew(0,-1,10);mission.MoveCrew(0,-1,10);
+ p.transform.position=new UnityEngine.Vector3(ladder,ShipLayout.FloorY(2,ladder),-1);mission.MoveCrew(0,-1,10);mission.MoveCrew(0,0,0);p.transform.position=new UnityEngine.Vector3(ladder,ShipLayout.FloorY(1,ladder),-1);mission.MoveCrew(0,-1,10);
  Check(UnityEngine.Mathf.Abs(p.transform.position.y-ShipLayout.FloorY(0,p.transform.position.x))<.001,"Lower landing failed");
  mission.MoveCrew(-1,0,10000);Check(p.transform.position.x>=ShipLayout.ToWorldX(320)+ShipLayout.BodyHalfWidth-.001,"Lower bow failed");
  Check(UnityEngine.Mathf.Abs(p.transform.position.y-ShipLayout.FloorY(0,p.transform.position.x))<.001,"Feet left lower floor");

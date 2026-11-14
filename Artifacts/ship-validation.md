@@ -13,3 +13,5 @@ Verified in Unity 6000.6.9f1, Play Mode, in an isolated project copy.
 - No C# or shader compiler errors in the final verification.
 
 Renders: ship-check.png, ship-ladder.png, role-selection.png, modern-with-progress.png.
+
+Pause and ladder exit regression: all four roles passed W/D deck exits, held-W re-grab prevention, no exit into an empty shaft, the pause callback binding, frozen movement/camera/animation/timer, RESUME, and role preservation. Selected-caption removal and brighter material values were verified. ESC now opens PAUSED/RESUME rather than role selection.
