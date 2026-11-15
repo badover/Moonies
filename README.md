@@ -1,6 +1,6 @@
 # Moonies
 
-### One crew. One spacecraft. A journey to the Moon.
+### Are you ready to go to the moon?
 
 A 2D space adventure where every decision matters. Choose your crew character, explore a three-deck spacecraft, and keep its systems running from Earth orbit to the Moon and back.
 
