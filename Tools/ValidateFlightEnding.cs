@@ -13,9 +13,9 @@ void CompletePlan(){var statuses=(System.Collections.IDictionary)typeof(ShipMiss
 void Finish(){typeof(ShipMission).GetField("missionClock",flags).SetValue(mission,600f);mission.SendMessage("FinishRun");}
 await NewFlight();mission.SetPaused(true);Check(presentation.MusicPlaying,"Pause stops soundtrack");mission.SetPaused(false);
 CompletePlan();Check(!mission.RunSucceeded&&presentation.CurrentPhase==FlightPresentation.Phase.Game,"Ending starts before timer fills");
-// Completed time with missing work is not a successful flight.
+// Recovery must still show the ending when optional work was missed.
 ((System.Collections.IDictionary)typeof(ShipMission).GetField("missionStatuses",flags).GetValue(mission))[mission.RunPlan.Last().definition]=ShipMissionStatus.Skipped;
-Finish();Check(!mission.RunSucceeded&&presentation.CurrentPhase==FlightPresentation.Phase.Game&&presentation.MusicPlaying,"Incomplete flight plays victory cinematic");
+Finish();Check(mission.RunSucceeded&&presentation.CurrentPhase==FlightPresentation.Phase.Cinematic&&!presentation.MusicPlaying,"A missed side task blocks the recovery cinematic");
 await NewFlight();mission.Health.TakeDamage(100);Check(presentation.CurrentPhase==FlightPresentation.Phase.Game&&presentation.MusicPlaying,"Death starts victory cinematic or disables soundtrack");
 await NewFlight();CompletePlan();Finish();
 Check(mission.RunSucceeded&&UnityEngine.Time.timeScale==0&&presentation.CurrentPhase==FlightPresentation.Phase.Cinematic&&!presentation.MusicPlaying,"Successful full progress does not start exclusive cinematic");
@@ -34,5 +34,5 @@ try{
  Click("RETURN TO MAIN MENU");await System.Threading.Tasks.Task.Delay(100);Check(UnityEngine.GameObject.Find("Start Screen")!=null&&UnityEngine.GameObject.Find("Role Selection")==null&&UnityEngine.Object.FindAnyObjectByType<ShipMission>()==null&&UnityEngine.Time.timeScale==1&&presentation.MusicPlaying,"Credits do not return to actual title / restore music and time scale");
  await NewFlight();CompletePlan();Finish();Click("SKIP CINEMATIC");Check(presentation.CurrentPhase==FlightPresentation.Phase.Credits&&presentation.MusicPlaying&&!movie.isPlaying,"Skip does not cleanly transition to Credits");Click("RETURN TO MAIN MENU");await System.Threading.Tasks.Task.Delay(100);
  await NewFlight();CompletePlan();Finish();typeof(FlightPresentation).GetMethod("OnError",flags).Invoke(presentation,new object[]{movie,"Validation fallback"});Check(presentation.CurrentPhase==FlightPresentation.Phase.Credits&&presentation.MusicPlaying,"Decoder failure leaves a dead-end screen");Click("RETURN TO MAIN MENU");
- return "PASS: streamed music plays in title/game/pause and actually loops; victory requires all tasks + alive + full 600s; incomplete/dead flights excluded; real 17s video decodes and finishes at timeScale zero with music off and its audio routed; natural Credits, music resume, rendered main-menu/skip clicks, replay and error fallback";
+ return "PASS: streamed music plays in title/game/pause and actually loops; victory requires mandatory checkout + alive + full 600s; missed side tasks still show ending, dead flights excluded; real 17s video decodes and finishes at timeScale zero with music off and its audio routed; natural Credits, music resume, rendered main-menu/skip clicks, replay and error fallback";
 }finally{camera.targetTexture=null;UnityEngine.RenderTexture.active=null;for(int i=0;i<canvases.Length;i++){if(canvases[i]!=null){canvases[i].renderMode=UnityEngine.RenderMode.ScreenSpaceOverlay;canvases[i].worldCamera=null;canvases[i].sortingOrder=orders[i];}}target.Release();UnityEngine.Object.Destroy(target);}

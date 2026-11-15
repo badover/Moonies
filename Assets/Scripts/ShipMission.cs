@@ -50,7 +50,8 @@ public sealed class ShipMission : MonoBehaviour
     private string procedureFeedback;
     public int RunSeed { get; private set; }
     public bool RunFinished { get; private set; }
-    public bool RunSucceeded => RunFinished && Health!=null && Health.Current>0 && runPlan!=null && runPlan.All(x=>GetMissionStatus(x.definition)==ShipMissionStatus.Completed);
+    // Reaching recovery alive wins the flight; side-task results affect health and score, not the ending.
+    public bool RunSucceeded => RunFinished && CheckoutComplete && missionClock>=MissionRunPlan.RunSeconds && Health!=null && Health.Current>0;
     private bool interfaceOpen;
     public bool IsInterfaceOpen {get=>interfaceOpen;set{interfaceOpen=value;if(value && player!=null){player.SetWalking(false);if(player.IsClimbing)player.SetClimbing(true,0);}}}
     public float MissionSeconds => missionClock;
