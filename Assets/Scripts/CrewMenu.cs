@@ -26,7 +26,7 @@ public sealed class CrewMenu : MonoBehaviour
     private Image[] cards = new Image[4];
     private Image missionProgress;
     private Text status, confirmText, missionTime;
-    private Text missionHint, missionCardTitle, missionCardMeta, missionCardLocation, missionCardBriefing, missionCardStatus;
+    private Text missionHint, missionCardTitle, missionCardBriefing, missionCardStatus;
     private Text missionStartButton, missionSkipButton, missionCloseButton;
     private GameObject missionCardShade, missionCard, missionTaskProgressTrack;
     private Image missionTaskProgress;
@@ -131,10 +131,8 @@ public sealed class CrewMenu : MonoBehaviour
         bridgeCheck=Resources.Load<ShipMissionDefinition>("Missions/G01_LEO_Check");
         missionCardShade = Panel(missionHud.transform,"Mission Card Shade",Vector2.zero,Vector2.one,new Color(.005f,.015f,.03f,.82f)).gameObject;
         missionCard = Panel(missionHud.transform,"Mission Briefing",new Vector2(.18f,.18f),new Vector2(.82f,.82f),new Color(.015f,.055f,.08f,.99f)).gameObject;
-        missionCardTitle = Label(missionCard.transform,"",.05f,.82f,.95f,.96f,34,cyan);
-        missionCardMeta = Label(missionCard.transform,"",.05f,.74f,.95f,.82f,20,Color.white);
-        missionCardLocation = Label(missionCard.transform,"",.05f,.68f,.95f,.74f,16,cyan);
-        missionCardBriefing = Label(missionCard.transform,"",.08f,.39f,.92f,.66f,22,Color.white);
+        missionCardTitle = Label(missionCard.transform,"",.05f,.77f,.95f,.93f,34,cyan);
+        missionCardBriefing = Label(missionCard.transform,"",.08f,.42f,.92f,.75f,22,Color.white);
         missionCardStatus = Label(missionCard.transform,"",.05f,.32f,.95f,.39f,18,cyan);
         missionTaskProgressTrack = Panel(missionCard.transform,"Check Progress Track",new Vector2(.14f,.275f),new Vector2(.86f,.30f),new Color(.02f,.12f,.16f,1)).gameObject;
         var taskFillRect = Node("Check Progress Fill",missionTaskProgressTrack.transform,Vector2.zero,Vector2.zero);
@@ -301,8 +299,8 @@ public sealed class CrewMenu : MonoBehaviour
         {
             var status = mission.GetMissionStatus(mission.NearbyMission);
             hint = status == ShipMissionStatus.Available
-                ? "PRESS E TO INTERACT  ·  " + mission.NearbyMission.title
-                : "PRESS E TO VIEW CHECK  ·  " + mission.NearbyMission.title;
+                ? "PRESS E TO INTERACT  ·  " + mission.NearbyMission.locationName.ToUpperInvariant() + " CONTROL"
+                : "PRESS E TO VIEW CHECK  ·  " + mission.NearbyMission.locationName.ToUpperInvariant() + " CONTROL";
         }
         else if (mission.ActiveMission != null)
             hint = "CHECK PAUSED  ·  RETURN TO " + mission.ActiveMission.locationName.ToUpperInvariant();
@@ -330,9 +328,7 @@ public sealed class CrewMenu : MonoBehaviour
     private void UpdateMissionCard()
     {
         if (selectedMission == null || mission == null) return;
-        missionCardTitle.text = selectedMission.missionId + " — " + selectedMission.title;
-        missionCardMeta.text = selectedMission.timeWindowLabel + " · " + Mathf.CeilToInt(selectedMission.durationSeconds) + "s · " + selectedMission.difficulty;
-        missionCardLocation.text = selectedMission.locationName.ToUpperInvariant() + "  ·  DECK " + (selectedMission.deck + 1);
+        missionCardTitle.text = selectedMission.locationName.ToUpperInvariant() + " CONTROL";
         missionCardBriefing.text = selectedMission.briefing;
         var state = mission.GetMissionStatus(selectedMission);
         bool available = state == ShipMissionStatus.Available;
