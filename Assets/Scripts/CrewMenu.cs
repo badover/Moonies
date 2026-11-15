@@ -29,6 +29,10 @@ public sealed class CrewMenu : MonoBehaviour
     private CrewHealth playerHealth;
     private Text status, confirmText, missionTime, radiationStatus;
     private int lastRadiationLevel=-1;
+    private float radiationNoticeRemaining;
+    private Text stormAlertTitle, stormAlertInstruction;
+    private int lastStormAlertSecond=-1;
+    private string lastStormAlertTitle;
     private Text missionHint, missionCardTitle, missionCardBriefing, missionCardStatus;
     private Text missionStartButton, missionSkipButton, missionCloseButton;
     private GameObject missionCardShade, missionCard, missionTaskProgressTrack;
@@ -116,7 +120,12 @@ public sealed class CrewMenu : MonoBehaviour
         introText.alignment=TextAnchor.MiddleLeft;
         controlsIntro.SetActive(false);
         missionTime = Label(missionHud.transform, "MISSION TIME  00:00 / 10:00", .35f,.91f,.65f,.96f, 18, cyan);
-        radiationStatus = Label(missionHud.transform, "RADIATION  0%  ·  LOW", .68f,.91f,.96f,.96f, 16, cyan);
+        var radiationFrame=Panel(missionHud.transform,"Radiation Status Frame",new Vector2(.73f,.90f),new Vector2(.975f,.97f),new Color(.19f,.49f,.54f,1));
+        radiationFrame.raycastTarget=false;
+        var radiationBacking=Panel(radiationFrame.transform,"Radiation Opaque Backing",Vector2.zero,Vector2.one,new Color(.015f,.035f,.05f,1));
+        radiationBacking.raycastTarget=false;
+        radiationBacking.rectTransform.offsetMin=new Vector2(2,2);radiationBacking.rectTransform.offsetMax=new Vector2(-2,-2);
+        radiationStatus=Label(radiationFrame.transform,"RADIATION  0%  ·  LOW",.025f,.10f,.975f,.90f,18,cyan);
         Panel(missionHud.transform, "Mission Progress Track", new Vector2(.35f,.875f), new Vector2(.65f,.895f), new Color(.02f,.08f,.12f,.9f));
         missionProgress = Panel(missionHud.transform, "Mission Progress", new Vector2(.35f,.875f), new Vector2(.65f,.895f), cyan);
         progressSprite=Sprite.Create(Texture2D.whiteTexture,new Rect(0,0,Texture2D.whiteTexture.width,Texture2D.whiteTexture.height),new Vector2(.5f,.5f));
@@ -139,9 +148,13 @@ public sealed class CrewMenu : MonoBehaviour
         bridgeSuggestion.SetActive(false);
         bridgeCheck=Resources.Load<ShipMissionDefinition>("Missions/G01_LEO_Check");
         solarStorm=Resources.Load<ShipMissionDefinition>("Missions/G02_Solar_Storm");
-        stormSuggestion=Panel(missionHud.transform,"Solar Storm Alert",new Vector2(.20f,.72f),new Vector2(.80f,.80f),new Color(.32f,.035f,.025f,.97f)).gameObject;
+        stormSuggestion=Panel(missionHud.transform,"Solar Storm Alert",new Vector2(.18f,.72f),new Vector2(.82f,.84f),new Color(1f,.65f,.13f,1)).gameObject;
         stormSuggestion.GetComponent<Image>().raycastTarget=false;
-        Label(stormSuggestion.transform,"RED ALERT  ·  SOLAR STORM  ·  GO TO COMMUNICATIONS",.025f,.05f,.975f,.95f,20,Color.white);
+        var stormBacking=Panel(stormSuggestion.transform,"Alert Opaque Backing",Vector2.zero,Vector2.one,new Color(.13f,.025f,.012f,1));
+        stormBacking.raycastTarget=false;
+        stormBacking.rectTransform.offsetMin=new Vector2(3,3);stormBacking.rectTransform.offsetMax=new Vector2(-3,-3);
+        stormAlertTitle=Label(stormSuggestion.transform,"",.025f,.48f,.975f,.92f,24,new Color(1f,.77f,.25f));
+        stormAlertInstruction=Label(stormSuggestion.transform,"",.025f,.08f,.975f,.47f,18,Color.white);
         stormSuggestion.SetActive(false);
         missionCardShade = Panel(missionHud.transform,"Mission Card Shade",Vector2.zero,Vector2.one,new Color(.005f,.015f,.03f,.82f)).gameObject;
         missionCard = Panel(missionHud.transform,"Mission Briefing",new Vector2(.18f,.18f),new Vector2(.82f,.82f),new Color(.015f,.055f,.08f,.99f)).gameObject;
@@ -187,6 +200,7 @@ public sealed class CrewMenu : MonoBehaviour
             UpdateMissionHint();
             UpdateBridgeSuggestion();
             UpdateStormSuggestion();
+            if(stormSuggestion.activeSelf && radiationNoticeRemaining>0) radiationNoticeRemaining=Mathf.Max(0,radiationNoticeRemaining-Time.deltaTime);
             if(missionFeedbackRemaining>0) missionFeedbackRemaining=Mathf.Max(0,missionFeedbackRemaining-Time.deltaTime);
             if (missionCard.activeSelf) UpdateMissionCard();
             missionElapsed = Mathf.Min(missionElapsed + Time.deltaTime, MissionGoalSeconds);
@@ -305,6 +319,8 @@ public sealed class CrewMenu : MonoBehaviour
             gameOverScreen.SetActive(false);
             missionCard.SetActive(false);missionCardShade.SetActive(false);
             selectedMission=null;missionFeedback=null;missionFeedbackRemaining=0;
+            radiationNoticeRemaining=0;lastStormAlertSecond=-1;lastStormAlertTitle=null;
+            stormSuggestion.SetActive(false);
             lastRadiationLevel=-1;UpdateRadiationStatus();
             home.SetActive(false); roles.SetActive(false);
             shade.gameObject.SetActive(false); backgroundCanvas.gameObject.SetActive(false);
@@ -335,6 +351,7 @@ public sealed class CrewMenu : MonoBehaviour
         if(mission==null || gameOver) return;
         if(missionCard.activeSelf){CloseMissionCard();return;}
         bool paused=!mission.IsPaused;
+        if(paused) stormSuggestion.SetActive(false);
         mission.SetPaused(paused);pauseScreen.SetActive(paused);
         UpdateControlsIntro(0);
         if(EventSystem.current!=null)
@@ -378,15 +395,29 @@ public sealed class CrewMenu : MonoBehaviour
     private void UpdateStormSuggestion()
     {
         if(stormSuggestion==null || solarStorm==null || mission==null) return;
-        bool visible=solarStorm.AllowsRole(SelectedRole) && mission.GetMissionStatus(solarStorm)==ShipMissionStatus.Available &&
-            mission.ActiveMission!=solarStorm && !missionCard.activeSelf && !gameOver;
+        var state=mission.GetMissionStatus(solarStorm);
+        bool active=mission.ActiveMission==solarStorm;
+        bool available=solarStorm.AllowsRole(SelectedRole) && state==ShipMissionStatus.Available;
+        bool visible=(active || available || radiationNoticeRemaining>0) && !missionCard.activeSelf && !mission.IsPaused && !gameOver;
         if(stormSuggestion.activeSelf!=visible) stormSuggestion.SetActive(visible);
+        if(!visible) return;
+        string title=active ? "RADIATION ALERT — TAKE SHELTER" : available ? "SOLAR STORM DETECTED" : "RADIATION LEVEL INCREASED";
+        int remaining=active ? Mathf.CeilToInt(mission.ActiveMissionSecondsRemaining) : -1;
+        if(title==lastStormAlertTitle && remaining==lastStormAlertSecond) return;
+        lastStormAlertTitle=title;lastStormAlertSecond=remaining;
+        stormAlertTitle.text=title;
+        stormAlertInstruction.text=active
+            ? "LIFE SUPPORT · LOWER DECK · PRESS E AT THE MARKED DOORS · " + remaining + "s"
+            : available ? "GO TO COMMUNICATIONS ON THE UPPER DECK · PRESS E TO RESPOND"
+            : "Radiation detected aboard the ship. Monitor the radiation indicator.";
     }
+
     private void UpdateRadiationStatus()
     {
         if(radiationStatus==null || mission==null) return;
         int level=Mathf.RoundToInt(mission.RadiationLevel);
         if(level==lastRadiationLevel) return;
+        if(lastRadiationLevel>=0 && level>lastRadiationLevel) radiationNoticeRemaining=10;
         lastRadiationLevel=level;
         float threshold=solarStorm!=null ? solarStorm.fatalRadiationThreshold : solarStormThreshold;
         string state=level>=threshold ? "CRITICAL" : level>=30 ? "ELEVATED" : "LOW";

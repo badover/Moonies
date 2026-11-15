@@ -14,7 +14,16 @@ void StartStorm(){Clock(135);At(storm.deck,storm.WorldPosition);Check(mission.Tr
 await NewFlight();
 var definitions=(ShipMissionDefinition[])typeof(ShipMission).GetField("missionDefinitions",flags).GetValue(mission);Check(definitions.Length==2&&!definitions.Any(x=>x.startsQuestionCampaign),"Unfinished question phases entered timed mission dispatcher");
 Clock(134);Check(mission.GetMissionStatus(storm)==ShipMissionStatus.Unavailable,"Storm too early");
-CompleteBridge();StartStorm();
+CompleteBridge();
+Clock(135);menu.SendMessage("UpdateStormSuggestion");
+var alert=(UnityEngine.GameObject)typeof(CrewMenu).GetField("stormSuggestion",flags).GetValue(menu);
+var alertTitle=(UnityEngine.UI.Text)typeof(CrewMenu).GetField("stormAlertTitle",flags).GetValue(menu);
+var alertInstruction=(UnityEngine.UI.Text)typeof(CrewMenu).GetField("stormAlertInstruction",flags).GetValue(menu);
+Check(alert.activeInHierarchy&&alertTitle.text=="SOLAR STORM DETECTED"&&alertInstruction.text.Contains("COMMUNICATIONS"),"Storm arrival is not visibly announced");
+Check(alert.GetComponent<UnityEngine.UI.Image>().color.a==1&&alert.transform.Find("Alert Opaque Backing").GetComponent<UnityEngine.UI.Image>().color.a==1,"Storm warning is not opaque");
+StartStorm();menu.SendMessage("UpdateStormSuggestion");Check(alert.activeInHierarchy&&alertTitle.text.Contains("TAKE SHELTER")&&alertInstruction.text.Contains("90s"),"Warning disappears after starting storm");
+mission.SendMessage("UpdateActiveMission",1f);menu.SendMessage("UpdateStormSuggestion");Check(alertInstruction.text.Contains("89s"),"Warning countdown does not update");
+menu.SendMessage("TogglePause");Check(!alert.activeSelf,"Alert overlaps pause menu");menu.SendMessage("TogglePause");menu.SendMessage("UpdateStormSuggestion");Check(alert.activeSelf,"Alert does not return after pause");
 Check(!mission.TryInteract()||mission.ActiveMission==storm,"Incorrect early completion");Close();
 // Exercise the actual ladder route, rather than teleporting directly to the destination.
 At(2,new UnityEngine.Vector2(ShipLayout.Ladders[1].x,ShipLayout.FloorY(2,ShipLayout.Ladders[1].x)));
@@ -27,7 +36,11 @@ Check(mission.TryInteract()&&mission.GetMissionStatus(storm)==ShipMissionStatus.
 await NewFlight();CompleteBridge();StartStorm();mission.SendMessage("UpdateActiveMission",91f);
 Check(mission.GetMissionStatus(storm)==ShipMissionStatus.Failed&&mission.Health.Current==75&&!mission.IsPaused,"Low-radiation timeout damage wrong");mission.SendMessage("UpdateActiveMission",91f);Check(mission.Health.Current==75,"Repeated timeout damage");
 await NewFlight();CompleteBridge();Clock(231);mission.SendMessage("UpdateExpiredMissions");mission.SendMessage("UpdateExpiredMissions");Check(mission.GetMissionStatus(storm)==ShipMissionStatus.Expired&&mission.Health.Current==75,"Expiry damage duplicated or missing");
-await NewFlight();At(bridge.deck,bridge.WorldPosition);Check(mission.SkipMission(bridge)&&mission.RadiationLevel==65&&mission.Health.Current==100,"Bridge radiation setup wrong");StartStorm();
+await NewFlight();At(bridge.deck,bridge.WorldPosition);Check(mission.SkipMission(bridge)&&mission.RadiationLevel==65&&mission.Health.Current==100,"Bridge radiation setup wrong");menu.SendMessage("UpdateRadiationStatus");menu.SendMessage("UpdateStormSuggestion");
+Check(alert.activeInHierarchy&&alertTitle.text=="RADIATION LEVEL INCREASED","Radiation increase has no notification");
+var radiation=(UnityEngine.UI.Text)typeof(CrewMenu).GetField("radiationStatus",flags).GetValue(menu);
+Check(radiation.text.Contains("65%")&&radiation.text.Contains("CRITICAL")&&radiation.transform.parent.Find("Radiation Opaque Backing").GetComponent<UnityEngine.UI.Image>().color.a==1,"Radiation indicator is unreadable");
+StartStorm();
 float clock=(float)typeof(ShipMission).GetField("missionClock",flags).GetValue(mission);float remaining=mission.ActiveMissionSecondsRemaining;mission.SetPaused(true);mission.SendMessage("Update");Check(mission.ActiveMissionSecondsRemaining==remaining&&(float)typeof(ShipMission).GetField("missionClock",flags).GetValue(mission)==clock,"Pause advanced mission timers");mission.SetPaused(false);
 mission.SendMessage("UpdateActiveMission",91f);Check(mission.Health.Current==0&&mission.IsPaused,"Critical exposure did not reduce HP to zero and pause");Check(((UnityEngine.GameObject)typeof(CrewMenu).GetField("gameOverScreen",flags).GetValue(menu)).activeInHierarchy,"Death screen missing");menu.SendMessage("TogglePause");Check(mission.IsPaused,"Escape bypassed game over");
 await NewFlight();CompleteBridge();Clock(135);At(storm.deck,storm.WorldPosition);Check(mission.SkipMission(storm)&&mission.Health.Current==75,"Ignore-alert damage incorrect");Check(!mission.SkipMission(storm)&&mission.Health.Current==75,"Repeated skip causes damage");
@@ -35,4 +48,4 @@ await NewFlight();Clock(231);mission.SendMessage("UpdateExpiredMissions");Check(
 await NewFlight();At(bridge.deck,bridge.WorldPosition);Check(mission.SkipMission(bridge),"Cannot skip initial check");Clock(135);At(storm.deck,storm.WorldPosition);Check(mission.TryInteract(),"Cannot open critical alert");menu.SendMessage("SkipSelectedMission");Check(mission.Health.Current==0&&mission.IsPaused&&!((UnityEngine.GameObject)typeof(CrewMenu).GetField("missionCard",flags).GetValue(menu)).activeSelf,"Ignore-alert UI bypassed game over");
 await NewFlight();CompleteBridge();StartStorm();Clock(231);mission.SendMessage("UpdateExpiredMissions");Check(mission.ActiveMission==storm&&mission.Health.Current==100,"Start-window expiration interrupted running storm");
 menu.SendMessage("ReturnToMenu");
-return "PASS: two timed missions only, storm activation, neutral card, real ladder route and shelter interaction, success no damage, timeout/expiry/skip exactly once, critical-radiation death, pause, replay resets HP/radiation/overlays";
+return "PASS: opaque radiation notification, persistent storm warning/countdown, pause visibility, two timed missions only, storm activation, neutral card, real ladder route and shelter interaction, success no damage, timeout/expiry/skip exactly once, critical-radiation death, pause, replay resets HP/radiation/overlays";

@@ -40,3 +40,9 @@ Unity 6000.6.9f1 Play Mode checks in an isolated project:
 The imported MOONIES question phases have no ship campaign dispatcher yet. Their assets and data are preserved but excluded from timed station checks, preventing fake timed phases from obscuring the working missions. Updated the retained question UI's font/input module for Unity 6.
 
 Preview: `solar-storm-health.png` (75% HP and the shelter marker).
+
+## Radiation warning visibility — 2026-11-15
+
+Added an opaque radiation indicator and a bordered, opaque alert banner. A radiation increase announces itself for ten visible gameplay seconds. At 2:15 the storm arrival banner directs the player to Communications; after starting the procedure it remains visible with the shelter destination, E interaction and countdown. Alerts hide under station dialogs, pause and game over, and reset on a new flight. Text is updated only when its state or displayed second changes.
+
+Unity Play Mode `ValidateSolarStorm.cs` passes, including new checks for radiation-increase notification, readable backing, storm-arrival directions, persistent active warning, countdown changes and pause/resume visibility, plus all previous mission and HP checks. Visual capture: `radiation-alert.png`.
