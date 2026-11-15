@@ -4,7 +4,8 @@ Check(catalog.Length==35,"Expected all 35 specification tasks");
 Check(catalog.Count(x=>x.globalEvent)==4&&catalog.Count(x=>!x.globalEvent)==31,"Incorrect global/shared pool sizes");
 foreach(var d in catalog){
  Check(d.steps.Length>=3&&d.objectiveType==ShipMissionObjectiveType.Procedure,"Missing procedure: "+d.missionId);
- Check(d.durationSeconds==(d.difficulty=="Easy"?30:d.difficulty=="Medium"?60:90),"Invalid active-time cap: "+d.missionId);
+ int cap=d.missionId=="G-01"?40:d.missionId=="CMD-02"||d.missionId=="ENG-02"||d.missionId=="PIL-01"?35:d.difficulty=="Easy"?30:d.difficulty=="Medium"?60:90;
+ Check(d.durationSeconds==cap,"Invalid active-time cap: "+d.missionId);
  Check(d.steps.Where(x=>x.automatic).Sum(x=>x.durationSeconds)<d.durationSeconds,"Procedure cannot finish within cap: "+d.missionId);
  Check(d.steps.All(x=>x.automatic || x.options.Length>0&&x.correctChoice>=0&&x.correctChoice<x.options.Length),"Invalid actions: "+d.missionId);
  for(int role=0;role<4;role++)Check(d.AllowsRole((CrewRole)role),"Task has a role restriction: "+d.missionId);

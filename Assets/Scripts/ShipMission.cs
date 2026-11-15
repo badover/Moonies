@@ -60,6 +60,7 @@ public sealed class ShipMission : MonoBehaviour
     public int ProcedureStepIndex => procedureStepIndex;
     public string ProcedureFeedback => procedureFeedback;
     public MissionProcedureStep CurrentStep => activeMission != null && activeMission.steps != null && procedureStepIndex < activeMission.steps.Length ? activeMission.steps[procedureStepIndex] : null;
+    public float ProcedureStepSecondsRemaining => CurrentStep == null || !CurrentStep.automatic ? 0 : Mathf.Max(0, CurrentStep.durationSeconds-procedureStepElapsed);
     public float ProcedureStepProgress => CurrentStep == null ? 0 : CurrentStep.durationSeconds <= 0 ? 1 : Mathf.Clamp01(procedureStepElapsed / CurrentStep.durationSeconds);
     private ShipMissionDefinition nearbyMission;
     private ShipMissionDefinition activeMission;

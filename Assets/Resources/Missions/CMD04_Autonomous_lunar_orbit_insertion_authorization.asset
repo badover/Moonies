@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: CMD04_Autonomous_lunar_orbit_insertion_authorization
   m_EditorClassIdentifier:
   missionId: "CMD-04"
-  title: "Autonomous lunar-orbit insertion authorization"
+  title: "Approve the lunar orbit plan"
   timeWindowLabel: "3:50–4:55"
   availableFromSeconds: 230
   availableUntilSeconds: 295
   durationSeconds: 60
   difficulty: "Medium"
-  briefing: "Review the planned loss-of-signal period, verify the preloaded LOI burn parameters and autonomous execution plan, and authorize the sequence before the spacecraft passes behind the Moon. This does not require the player to be the Pilot."
+  briefing: "Earth contact will pause behind the Moon. Check the preloaded burn plan and approve it before the blackout."
   stationId: bridge
   originalDiscipline: "CMD"
   globalEvent: 0
@@ -37,40 +37,40 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Lunar far-side pass will interrupt the Earth link; LOI plan is preloaded."
+  - prompt: "Earth contact will pause behind the Moon. Review the automatic burn plan."
     options:
-    - "Require live Earth commands throughout blackout"
-    - "Cancel because loss of signal is expected"
-    - "Review the planned blackout and autonomous burn plan"
+    - "Require live Earth commands"
+    - "Cancel because contact will pause"
+    - "Review the planned burn"
     correctChoice: 2
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Loaded parameters: retrograde LOI, verified timing and cutoff."
+    result: "Planned blackout and burn reviewed."
+  - prompt: "The burn settings are loaded. Check them."
     options:
-    - "Disable the cutoff"
-    - "Verify the loaded parameters"
-    - "Replace them with an unplanned escape burn"
+    - "Turn off the cutoff"
+    - "Verify the settings"
+    - "Load an unplanned escape burn"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Autonomous execution readiness verification."
+    result: "Burn settings verified."
+  - prompt: "Checking automatic guidance..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 24
-    result: "Verification complete."
-  - prompt: "Parameters and autonomous guidance ready before blackout."
+    result: "Guidance check complete."
+  - prompt: "The plan is ready. Approve the lunar orbit burn."
     options:
-    - "Authorize with an unverified plan"
-    - "Disable autonomous execution"
-    - "Authorize autonomous lunar-orbit insertion"
+    - "Approve an unchecked plan"
+    - "Turn off automatic guidance"
+    - "Approve the planned burn"
     correctChoice: 2
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Automatic burn approved."

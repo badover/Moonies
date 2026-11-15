@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: ENG08_Guidance_computer_data_load_isolation
   m_EditorClassIdentifier:
   missionId: "ENG-08"
-  title: "Guidance-computer data-load isolation"
+  title: "Reduce guidance-computer data load"
   timeWindowLabel: "4:55–5:45"
   availableFromSeconds: 295
   availableUntilSeconds: 345
   durationSeconds: 60
   difficulty: "Medium"
-  briefing: "Inspect the computer-load display during the 1202 alarm, identify the non-essential radar or science-data streams contributing to the overload, isolate those streams, and verify that processor load returns to the safe range while core guidance remains active. This is an engineering systems task, independent of the Commander's operational decision."
+  briefing: "The guidance computer is overloaded, but landing guidance is working. Turn off extra radar and science data, then check the load."
   stationId: engineering
   originalDiscipline: "ENG"
   globalEvent: 0
@@ -37,40 +37,40 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "1202 alarm: processor overloaded. Core landing guidance remains functional."
+  - prompt: "The 1202 alarm shows a data overload. Keep landing guidance on."
     options:
-    - "Increase every radar data rate"
-    - "Inspect data-stream load while preserving guidance"
-    - "Shut down core landing guidance"
+    - "Increase radar data"
+    - "Check extra data streams"
+    - "Turn off landing guidance"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Non-essential radar and science streams are saturating the input queue."
+    result: "Data streams checked."
+  - prompt: "Turn off the extra data streams causing the overload."
     options:
-    - "Isolate the non-essential data streams"
-    - "Disconnect the essential guidance channel"
-    - "Keep all redundant streams at maximum load"
+    - "Turn off extra radar and science data"
+    - "Disconnect guidance"
+    - "Keep all extra data on"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Processor-load verification."
+    result: "Extra data isolated."
+  - prompt: "Checking computer load..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 24
-    result: "Verification complete."
-  - prompt: "Processor load safe; core guidance ACTIVE."
+    result: "Load check complete."
+  - prompt: "The load is safe and guidance is working. Confirm."
     options:
-    - "Disable the recovered guidance computer"
-    - "Confirm data-load isolation"
-    - "Resume all overload-producing streams"
+    - "Turn off guidance"
+    - "Confirm the safe load"
+    - "Restore the extra data"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Safe computer load confirmed."

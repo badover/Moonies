@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: ENG02_Ascent_engine_arming_breaker_recovery
   m_EditorClassIdentifier:
   missionId: "ENG-02"
-  title: "Ascent-engine arming breaker recovery"
+  title: "Repair the ascent-engine breaker"
   timeWindowLabel: "6:50–7:50"
   availableFromSeconds: 410
   availableUntilSeconds: 470
-  durationSeconds: 30
+  durationSeconds: 35
   difficulty: "Easy"
-  briefing: "Inspect the damaged engine-arming breaker, choose the safe non-conductive recovery tool, restore the circuit, and verify the engine-arming indicator. Unsafe conductive or liquid fixes must be rejected."
+  briefing: "The engine breaker is damaged. Use the insulated tool, then check the circuit before arming the engine."
   stationId: engineering
   originalDiscipline: "ENG"
   globalEvent: 0
@@ -37,40 +37,40 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Engine-arming breaker is damaged. Tools: non-conductive probe, metal wire, liquid adhesive."
+  - prompt: "The engine breaker is damaged. Choose the safe tool."
     options:
     - "Pour liquid into the breaker"
-    - "Use the non-conductive recovery tool"
-    - "Bridge it with bare metal wire"
+    - "Use the insulated tool"
+    - "Bridge it with bare wire"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Restore the arming circuit with the selected insulated tool."
+    result: "Insulated tool selected."
+  - prompt: "Use the tool to restore the breaker."
     options:
-    - "Seat the damaged breaker using the safe tool"
+    - "Repair it with the insulated tool"
     - "Short the live circuit"
-    - "Force an unrelated breaker"
+    - "Force another breaker"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Engine-arming indicator verification."
+    result: "Breaker repaired safely."
+  - prompt: "Checking the arming circuit..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 16
-    result: "Verification complete."
-  - prompt: "Arming circuit: CONTINUITY RESTORED. Engine arm: READY."
+    result: "Circuit check complete."
+  - prompt: "The circuit is ready. Confirm the repair."
     options:
-    - "Disable the restored circuit"
-    - "Confirm restored arming circuit"
-    - "Bypass the ready indicator"
+    - "Turn off the circuit"
+    - "Confirm the repair"
+    - "Bypass the indicator"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Engine-arming circuit confirmed."

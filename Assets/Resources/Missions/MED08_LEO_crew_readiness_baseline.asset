@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: MED08_LEO_crew_readiness_baseline
   m_EditorClassIdentifier:
   missionId: "MED-08"
-  title: "LEO crew readiness baseline"
+  title: "Check crew readiness"
   timeWindowLabel: "0:05–1:20"
   availableFromSeconds: 5
   availableUntilSeconds: 80
   durationSeconds: 60
   difficulty: "Medium"
-  briefing: "Review the crew's baseline hydration, fatigue, and general condition indicators before the TLI departure sequence. Identify any crew member needing observation and record the readiness status. This is a game-level screening task, not a clinical diagnosis."
+  briefing: "Check hydration and fatigue before departure. Flag the tired, dehydrated crew member for observation."
   stationId: medbay
   originalDiscipline: "MED"
   globalEvent: 0
@@ -37,30 +37,30 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Baseline: crew A rested/hydrated; crew B fatigued with reduced hydration."
+  - prompt: "Crew B is tired and dehydrated. Flag them before departure."
     options:
-    - "Record every crew member as equally ready"
-    - "Begin a clinical treatment from this screen"
-    - "Flag crew B for observation before departure"
+    - "Mark everyone equally ready"
+    - "Start treatment from this check"
+    - "Flag crew B for observation"
     correctChoice: 2
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Baseline hydration, fatigue and condition comparison."
+    result: "Crew member flagged."
+  - prompt: "Checking hydration, fatigue, and condition..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 24
-    result: "Verification complete."
-  - prompt: "Crew B flagged; other baseline indicators within reference."
+    result: "Baseline check complete."
+  - prompt: "Crew B is flagged. Record readiness and keep monitoring."
     options:
-    - "Record readiness with the observation priority"
-    - "Clear the flagged indicators without review"
-    - "Wait for another role to complete this assessment"
+    - "Record readiness and monitoring"
+    - "Clear the warning without review"
+    - "Wait for another role"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Readiness recorded."

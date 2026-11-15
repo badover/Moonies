@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: PIL09_Reentry_corridor_and_recovery_sequence
   m_EditorClassIdentifier:
   missionId: "PIL-09"
-  title: "Reentry corridor and recovery sequence"
+  title: "Re-entry and recovery"
   timeWindowLabel: "9:00–10:00"
   availableFromSeconds: 540
   availableUntilSeconds: 600
   durationSeconds: 90
   difficulty: "Hard"
-  briefing: "Maintain the specified reentry corridor, monitor the entry profile, deploy the main parachutes at the indicated condition, and confirm that the capsule reaches the correct post-splashdown orientation for recovery."
+  briefing: "Stay within the marked re-entry path. Deploy the main parachutes at the cue, then right the capsule before opening the hatch."
   stationId: bridge
   originalDiscipline: "PIL"
   globalEvent: 0
@@ -37,50 +37,50 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Entry profile inside the specified corridor; deviation cue available."
+  - prompt: "Use the marked correction to stay on the re-entry path."
     options:
-    - "Skip above the corridor"
-    - "Maintain the corridor using the indicated correction"
-    - "Dive below the corridor"
+    - "Leave the path high"
+    - "Stay on the marked path"
+    - "Leave the path low"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Entry loads trending safely; parachute deployment condition not yet met."
+    result: "Re-entry path maintained."
+  - prompt: "The parachute cue has not appeared. Keep monitoring."
     options:
-    - "Monitor the profile until the deployment cue"
-    - "Deploy main parachutes at peak entry heating"
-    - "Disable entry monitoring"
+    - "Wait for the deployment cue"
+    - "Deploy during peak heating"
+    - "Turn off entry checks"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Main-parachute deployment condition REACHED."
+    result: "Entry monitored."
+  - prompt: "The deployment cue is on. Deploy the main parachutes."
     options:
-    - "Jettison the parachutes"
-    - "Delay beyond the deployment condition"
-    - "Deploy the main parachutes"
+    - "Cut the parachutes"
+    - "Wait past the cue"
+    - "Deploy the parachutes"
     correctChoice: 2
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Splashdown and orientation verification."
+    result: "Main parachutes deployed."
+  - prompt: "Checking splashdown and capsule position..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 30
-    result: "Verification complete."
-  - prompt: "Capsule initially inverted; recovery orientation cue available."
+    result: "Recovery check complete."
+  - prompt: "The capsule is upside down. Use the righting system before exit."
     options:
-    - "Use the righting system and confirm upright recovery orientation"
-    - "Open the hatch while inverted"
-    - "Disable the righting system"
+    - "Use righting system and confirm upright"
+    - "Open the hatch now"
+    - "Turn off righting system"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Capsule righted for recovery."

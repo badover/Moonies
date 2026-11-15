@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: PIL06_Lunar_mascon_orbit_correction
   m_EditorClassIdentifier:
   missionId: "PIL-06"
-  title: "Lunar mascon orbit correction"
+  title: "Stabilize lunar orbit"
   timeWindowLabel: "3:50–4:55"
   availableFromSeconds: 230
   availableUntilSeconds: 295
   durationSeconds: 60
   difficulty: "Medium"
-  briefing: "Read the changing perilune/apolune indicators, identify the orbit-decay trend, select the appropriate stabilizing correction, and confirm that the orbit is within the safe band."
+  briefing: "The closest point of the orbit is dropping. Apply the marked correction to bring the orbit back into the safe range."
   stationId: bridge
   originalDiscipline: "PIL"
   globalEvent: 0
@@ -37,40 +37,40 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Perilune falling; apolune trend indicates mascon-driven orbit decay."
+  - prompt: "The orbit is becoming unsafe. Choose the stabilizing correction."
     options:
-    - "Target impact with the surface"
-    - "Identify the decay and select the stabilizing correction"
-    - "Accept the falling perilune without action"
+    - "Aim for a surface impact"
+    - "Choose the stabilizing correction"
+    - "Ignore the falling orbit"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Correction cue: raise perilune into the displayed safe band."
+    result: "Orbit correction selected."
+  - prompt: "Raise the closest orbit point to the safe range."
     options:
-    - "Execute the indicated stabilizing pulse"
-    - "Lower perilune further"
-    - "Disable orbit tracking"
+    - "Apply the marked correction"
+    - "Lower it further"
+    - "Turn off orbit tracking"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Perilune / apolune verification."
+    result: "Correction applied."
+  - prompt: "Checking the orbit..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 24
-    result: "Verification complete."
-  - prompt: "Both orbit limits are in the safe band."
+    result: "Orbit check complete."
+  - prompt: "Both orbit limits are safe. Confirm the correction."
     options:
-    - "Repeat the correction beyond the safe band"
-    - "Confirm stabilized lunar orbit"
-    - "Accept unsafe orbit limits"
+    - "Over-correct past the safe range"
+    - "Confirm safe orbit"
+    - "Accept unsafe limits"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Lunar orbit stabilized."

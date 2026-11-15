@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: MED06_EVA_overheating_and_dust_exposure_response
   m_EditorClassIdentifier:
   missionId: "MED-06"
-  title: "EVA overheating and dust-exposure response"
+  title: "Respond to EVA heat and dust"
   timeWindowLabel: "5:45–6:50"
   availableFromSeconds: 345
   availableUntilSeconds: 410
   durationSeconds: 90
   difficulty: "Hard"
-  briefing: "Review the astronaut's suit-temperature and cooling indicators, assess the crew member's condition, decide whether to continue or terminate the EVA, and enforce the walkback limit. Detailed PLSS hardware repair is not part of this Medic task."
+  briefing: "The suit is overheating and dust exposure is rising. End the spacewalk before the cooling or walk-back limit is reached."
   stationId: medbay
   originalDiscipline: "MED"
   globalEvent: 0
@@ -37,40 +37,40 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "EVA suit temperature rising; cooling insufficient; dust exposure increasing."
+  - prompt: "Check the crew member and suit cooling trend."
     options:
-    - "Start a hardware repair as a prerequisite"
-    - "Assess the crew member and review the cooling trend"
-    - "Continue EVA at maximum workload"
+    - "Start an unrelated repair"
+    - "Check crew and cooling"
+    - "Continue at full workload"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Walkback limit approaching; safe cooling margin shrinking."
+    result: "Crew and cooling checked."
+  - prompt: "The walk-back limit is near. End the spacewalk now."
     options:
-    - "Terminate EVA and preserve the walkback margin"
-    - "Extend EVA beyond the walkback limit"
-    - "Ignore remaining cooling"
+    - "End EVA and return safely"
+    - "Extend EVA past the limit"
+    - "Ignore cooling"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Cooling and return-to-shelter assessment."
+    result: "EVA ended within the safe margin."
+  - prompt: "Checking cooling and return-to-shelter status..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 40
-    result: "Verification complete."
-  - prompt: "Crew at the return limit; exposure record updated."
+    result: "Return check complete."
+  - prompt: "The crew member has reached the return limit. Enforce return and keep monitoring."
     options:
-    - "Declare a clinical diagnosis from the indicators"
-    - "Enforce return now and continue crew observation"
-    - "Authorize another long traverse"
+    - "Diagnose from indicators alone"
+    - "Return now and monitor"
+    - "Start another long walk"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Return and monitoring confirmed."

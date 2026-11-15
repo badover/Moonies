@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: PIL01_LEO_docking_target_alignment
   m_EditorClassIdentifier:
   missionId: "PIL-01"
-  title: "LEO docking-target alignment"
+  title: "Align the docking targets"
   timeWindowLabel: "0:05–1:20"
   availableFromSeconds: 5
   availableUntilSeconds: 80
-  durationSeconds: 30
+  durationSeconds: 35
   difficulty: "Easy"
-  briefing: "Align the spacecraft and lunar-module docking references, reduce the displayed relative closing rate to the safe capture range, and confirm target alignment. This is a short in-orbit alignment task, not a launch task."
+  briefing: "Align the spacecraft and lunar-module markers. Reduce closing speed to the safe range before confirming alignment."
   stationId: bridge
   originalDiscipline: "PIL"
   globalEvent: 0
@@ -37,40 +37,40 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Docking references are offset; relative closing rate above capture band."
+  - prompt: "The docking markers are offset. Align them."
     options:
-    - "Align the spacecraft and lunar-module references"
-    - "Accelerate toward the offset target"
-    - "Start launch ascent"
+    - "Align the spacecraft and module"
+    - "Speed up toward the target"
+    - "Begin launch ascent"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Relative closing rate control."
+    result: "Docking markers aligned."
+  - prompt: "Reduce closing speed to the safe range."
     options:
-    - "Increase closing rate beyond the band"
-    - "Ignore relative velocity"
-    - "Reduce closing rate into the displayed capture band"
+    - "Increase speed"
+    - "Ignore closing speed"
+    - "Reduce speed to the safe range"
     correctChoice: 2
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Docking alignment and closure verification."
+    result: "Safe closing speed set."
+  - prompt: "Checking alignment and closing speed..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 16
-    result: "Verification complete."
-  - prompt: "References aligned; closing rate SAFE."
+    result: "Alignment check complete."
+  - prompt: "The markers and speed are safe. Confirm alignment."
     options:
-    - "Confirm docking-target alignment"
-    - "Accept an offset reference"
-    - "Confirm capture at unsafe velocity"
+    - "Accept offset markers"
+    - "Confirm alignment"
+    - "Confirm unsafe capture speed"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Docking alignment confirmed."

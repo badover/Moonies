@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: ENG05_CO_scrubber_canister_adapter_repair
   m_EditorClassIdentifier:
   missionId: "ENG-05"
-  title: "CO₂ scrubber canister adapter repair"
+  title: "Repair the CO₂ scrubber"
   timeWindowLabel: "2:15–3:50"
   availableFromSeconds: 135
   availableUntilSeconds: 230
   durationSeconds: 90
   difficulty: "Hard"
-  briefing: "Inspect the incompatible backup canister and available materials, identify the correct adapter arrangement, assemble the improvised connection, and verify that airflow is restored and the CO₂ reading begins returning toward safe limits. The player completes the entire repair."
+  briefing: "The backup filter does not fit. Make a sealed bag-and-hose adapter, restore airflow, and check that cabin CO₂ begins to fall."
   stationId: engineering
   originalDiscipline: "ENG"
   globalEvent: 0
@@ -37,50 +37,50 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Cabin CO2 rising. Backup canister does not fit the installed socket."
+  - prompt: "Cabin CO₂ is rising. The backup filter does not fit."
     options:
-    - "Block the cabin air inlet"
-    - "Inspect the canister interfaces and adapter materials"
-    - "Force the incompatible canister into the socket"
+    - "Block the air inlet"
+    - "Check the filter and adapter parts"
+    - "Force the filter into place"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Available materials: sealed bag, hose, tape and support sheet. Select an adapter."
+    result: "Adapter parts inspected."
+  - prompt: "Choose how to connect the filter."
     options:
-    - "Build a sealed bag-and-hose adapter around the canister outlet"
-    - "Leave an open gap around the outlet"
+    - "Make a sealed bag-and-hose adapter"
+    - "Leave a gap around the outlet"
     - "Seal both ends of the hose"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Adapter assembled. Restore the air circuit."
+    result: "Sealed adapter selected."
+  - prompt: "Connect the adapter to restore airflow."
     options:
-    - "Connect only the outside of the bag"
-    - "Route cabin air around the canister"
-    - "Connect the outlet to the return hose and secure the seals"
+    - "Connect only the bag exterior"
+    - "Route air around the filter"
+    - "Connect the outlet and seal the hose"
     correctChoice: 2
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Airflow and CO2 trend verification."
+    result: "Air path restored."
+  - prompt: "Checking airflow and cabin CO₂..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 40
-    result: "Verification complete."
-  - prompt: "Airflow restored; CO2 reading trending downward."
+    result: "Airflow check complete."
+  - prompt: "Airflow is back and CO₂ is falling. Confirm the repair."
     options:
-    - "Confirm the repair and continue monitoring"
-    - "Declare success with no airflow"
+    - "Confirm and keep monitoring"
+    - "Claim success without airflow"
     - "Disconnect the working adapter"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Repair confirmed."

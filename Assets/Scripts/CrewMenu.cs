@@ -53,13 +53,14 @@ public sealed class CrewMenu : MonoBehaviour
     private GameObject missionHintBackdrop;
     private ShipMissionDefinition lastCardDefinition, lastBoardActive;
     private ShipMissionStatus lastCardState;
-    private int lastCardStep=-1,lastCardSecond=-1,lastBoardSecond=-1;
+    private int lastCardStep=-1,lastCardSecond=-1,lastCardCheckSecond=-1,lastBoardSecond=-1;
     private bool lastCardCanStart;
     private string lastCardFeedback;
     private ShipMissionDefinition selectedMission;
     private ShipMissionDefinition bridgeCheck;
     private ShipMissionDefinition solarStorm;
-    private GameObject bridgeSuggestion;
+    private GameObject bridgeSuggestion,solarStormHint;
+    private Text missionSuggestionText;
     private string missionFeedback;
     private float missionFeedbackRemaining;
     private bool gameOver;
@@ -165,15 +166,22 @@ public sealed class CrewMenu : MonoBehaviour
         activeTaskProgress.fillMethod=Image.FillMethod.Horizontal;activeTaskProgress.fillOrigin=0;
         missionHint.gameObject.SetActive(false);missionHintBackdrop.SetActive(false);
         var hintGold=new Color(1,.82f,.24f,1);
-        bridgeSuggestion=Panel(missionHud.transform,"Bridge Suggestion",new Vector2(.27f,.18f),new Vector2(.73f,.233f),hintGold).gameObject;
+        bridgeSuggestion=Panel(missionHud.transform,"Bridge Suggestion",new Vector2(.16f,.18f),new Vector2(.84f,.25f),hintGold).gameObject;
         bridgeSuggestion.GetComponent<Image>().raycastTarget=false;
         var hintBacking=Panel(bridgeSuggestion.transform,"Opaque Hint Backing",Vector2.zero,Vector2.one,new Color(.045f,.035f,.015f,1));
         hintBacking.raycastTarget=false;
         hintBacking.rectTransform.offsetMin=new Vector2(2,2);hintBacking.rectTransform.offsetMax=new Vector2(-2,-2);
-        Label(bridgeSuggestion.transform,"Maybe it's a good idea to check the Bridge.",.025f,.05f,.975f,.95f,16,hintGold);
-        bridgeSuggestion.SetActive(false);
+        missionSuggestionText=Label(bridgeSuggestion.transform,"Maybe it's a good idea to check the Bridge.",.025f,.05f,.975f,.95f,16,hintGold);
+        bridgeSuggestion.SetActive(false);if(solarStormHint!=null)solarStormHint.SetActive(false);
         bridgeCheck=Resources.Load<ShipMissionDefinition>("Missions/G01_LEO_Check");
         solarStorm=Resources.Load<ShipMissionDefinition>("Missions/G02_Solar_Storm");
+        solarStormHint=Panel(missionHud.transform,"Solar Storm Mission Hint",new Vector2(.16f,.18f),new Vector2(.84f,.25f),hintGold).gameObject;
+        solarStormHint.GetComponent<Image>().raycastTarget=false;
+        var solarHintBacking=Panel(solarStormHint.transform,"Opaque Hint Backing",Vector2.zero,Vector2.one,new Color(.045f,.035f,.015f,1));
+        solarHintBacking.raycastTarget=false;
+        solarHintBacking.rectTransform.offsetMin=new Vector2(2,2);solarHintBacking.rectTransform.offsetMax=new Vector2(-2,-2);
+        Label(solarStormHint.transform,"Solar storm: go to the Central Shelter on the lower deck and press E.",.025f,.05f,.975f,.95f,16,hintGold);
+        solarStormHint.SetActive(false);
         stormSuggestion=Panel(missionHud.transform,"Solar Storm Alert",new Vector2(.18f,.72f),new Vector2(.82f,.84f),new Color(1f,.65f,.13f,1)).gameObject;
         stormSuggestion.GetComponent<Image>().raycastTarget=false;
         var stormBacking=Panel(stormSuggestion.transform,"Alert Opaque Backing",Vector2.zero,Vector2.one,new Color(.13f,.025f,.012f,1));
@@ -429,7 +437,7 @@ public sealed class CrewMenu : MonoBehaviour
         if(missionCard.activeSelf){CloseMissionCard();return;}
         if(taskBoard.activeSelf){ToggleTaskBoard();return;}
         bool paused=!mission.IsPaused;
-        if(paused) stormSuggestion.SetActive(false);
+        if(paused){stormSuggestion.SetActive(false);solarStormHint.SetActive(false);bridgeSuggestion.SetActive(false);}
         mission.SetPaused(paused);pauseScreen.SetActive(paused);
         UpdateControlsIntro(0);
         if(EventSystem.current!=null)
@@ -460,7 +468,7 @@ public sealed class CrewMenu : MonoBehaviour
         else if (mission.NearbyMission != null)
             hint="PRESS E · " + mission.NearbyMission.locationName.ToUpperInvariant() + " CONTROL";
         else if(mission.RunPlan.Any(x=>mission.GetMissionStatus(x.definition)==ShipMissionStatus.Available))
-            hint="NEW MISSION TASK AVAILABLE · PRESS M OR OPEN MISSION TASKS";
+            hint="TASK AVAILABLE · PRESS M TO VIEW MISSION TASKS";
         bool visible = !string.IsNullOrEmpty(hint) && !missionCard.activeSelf && !taskBoard.activeSelf && !equipmentPanel.activeSelf;
         if(missionHintBackdrop.activeSelf!=visible) missionHintBackdrop.SetActive(visible);
         activeTaskProgress.gameObject.SetActive(mission.ActiveMission!=null);
@@ -470,9 +478,30 @@ public sealed class CrewMenu : MonoBehaviour
     }
     private void UpdateBridgeSuggestion()
     {
-        bool visible=mission!=null && bridgeCheck!=null && bridgeCheck.AllowsRole(SelectedRole)
-            && mission.GetMissionStatus(bridgeCheck)==ShipMissionStatus.Available && !missionCard.activeSelf && !taskBoard.activeSelf && !equipmentPanel.activeSelf;
-        if(bridgeSuggestion.activeSelf!=visible) bridgeSuggestion.SetActive(visible);
+        ShipMissionDefinition suggestion=null;
+        if(mission!=null && mission.ActiveMission==null && solarStorm!=null && mission.GetMissionStatus(solarStorm)!=ShipMissionStatus.Available)
+            suggestion=mission.RunPlan.Select(x=>x.definition).FirstOrDefault(x=>x!=solarStorm && x.AllowsRole(SelectedRole) && mission.GetMissionStatus(x)==ShipMissionStatus.Available);
+        bool visible=suggestion!=null && !missionCard.activeSelf && !taskBoard.activeSelf && !equipmentPanel.activeSelf && !mission.IsPaused && !gameOver;
+        if(bridgeSuggestion.activeSelf!=visible)bridgeSuggestion.SetActive(visible);
+        if(visible)
+        {
+            string hint=suggestion==bridgeCheck ? "Maybe it's a good idea to check the Bridge." : suggestion.title+"\nGo to "+MissionHintLocation(suggestion)+" and press E.";
+            if(missionSuggestionText.text!=hint)missionSuggestionText.text=hint;
+        }
+    }
+    private static string MissionHintLocation(ShipMissionDefinition definition)
+    {
+        string station;
+        switch(definition.stationId??"")
+        {
+            case "bridge":station="Bridge console";break;
+            case "medbay":station="Medical Bay";break;
+            case "engineering":station="Engineering console";break;
+            case "docking":station="Docking control";break;
+            case "shelter":station="Central Shelter";break;
+            default:station=string.IsNullOrWhiteSpace(definition.locationName)?"mission marker":definition.locationName;break;
+        }
+        return station+" on the "+(definition.deck==2?"upper deck":definition.deck==1?"middle deck":"lower deck");
     }
     private void UpdateStormSuggestion()
     {
@@ -480,6 +509,8 @@ public sealed class CrewMenu : MonoBehaviour
         var state=mission.GetMissionStatus(solarStorm);
         bool active=mission.ActiveMission==solarStorm;
         bool available=solarStorm.AllowsRole(SelectedRole) && state==ShipMissionStatus.Available;
+        bool showHint=available && !missionCard.activeSelf && !taskBoard.activeSelf && !equipmentPanel.activeSelf && !mission.IsPaused && !gameOver;
+        if(solarStormHint.activeSelf!=showHint)solarStormHint.SetActive(showHint);
         bool exposed=mission.RadiationLevel>0;
         bool visible=(active || available || exposed || radiationNoticeRemaining>0) && !missionCard.activeSelf && !taskBoard.activeSelf && !equipmentPanel.activeSelf && !mission.IsPaused && !gameOver;
         if(stormSuggestion.activeSelf!=visible) stormSuggestion.SetActive(visible);
@@ -492,7 +523,7 @@ public sealed class CrewMenu : MonoBehaviour
         stormAlertInstruction.text=active
             ? "CENTRAL SHELTER · LOWER DECK · M TO VIEW PROCEDURE · " + remaining + "s"
             : exposed ? "CENTRAL SHELTER · LOWER DECK · INSTALL SHIELDING AND CLOSE THE SEAL · " + remaining + "s"
-            : available ? "OPEN MISSION TASKS · BEGIN THE SHELTER PROCEDURE"
+            : available ? "LOWER DECK · CENTRAL SHELTER · PRESS E TO BEGIN"
             : "Radiation detected aboard the ship. Monitor the radiation indicator.";
     }
 
@@ -543,7 +574,7 @@ public sealed class CrewMenu : MonoBehaviour
         taskBoard.SetActive(false);equipmentPanel.SetActive(false);shipNotice.SetActive(false);mission.IsInterfaceOpen=true;
         missionCard.SetActive(false);missionCardShade.SetActive(false);
         controlsIntro.SetActive(false);pauseScreen.SetActive(false);
-        bridgeSuggestion.SetActive(false);stormSuggestion.SetActive(false);
+        bridgeSuggestion.SetActive(false);if(solarStormHint!=null)solarStormHint.SetActive(false);stormSuggestion.SetActive(false);
         missionHint.gameObject.SetActive(false);missionHintBackdrop.SetActive(false);
         gameOverScreen.SetActive(true);mission.SetPaused(true);
         if(EventSystem.current!=null) EventSystem.current.SetSelectedGameObject(null);
@@ -554,7 +585,7 @@ public sealed class CrewMenu : MonoBehaviour
         selectedMission = definition;
         lastCardDefinition=null;missionHintBackdrop.SetActive(false);
         taskBoard.SetActive(false);equipmentPanel.SetActive(false);shipNotice.SetActive(false);mission.IsInterfaceOpen=true;
-        bridgeSuggestion.SetActive(false);
+        bridgeSuggestion.SetActive(false);if(solarStormHint!=null)solarStormHint.SetActive(false);
         if(stormSuggestion!=null) stormSuggestion.SetActive(false);
         controlsIntro.SetActive(false);
         mission.SetPaused(false);
@@ -572,10 +603,11 @@ public sealed class CrewMenu : MonoBehaviour
         float progress=state==ShipMissionStatus.Completed ? 1 : active ? mission.ActiveMissionProgress : 0;
         var rect=missionTaskProgress.rectTransform;rect.anchorMax=new Vector2(progress,1);rect.offsetMin=rect.offsetMax=Vector2.zero;
         int remaining=Mathf.CeilToInt(mission.ActiveMissionSecondsRemaining);
+        int checkRemaining=Mathf.CeilToInt(mission.ProcedureStepSecondsRemaining);
         if(lastCardDefinition==selectedMission && lastCardState==state && lastCardStep==mission.ProcedureStepIndex &&
-            lastCardSecond==remaining && lastCardFeedback==mission.ProcedureFeedback && lastCardCanStart==canStart) return;
+            lastCardSecond==remaining && lastCardCheckSecond==checkRemaining && lastCardFeedback==mission.ProcedureFeedback && lastCardCanStart==canStart) return;
         lastCardDefinition=selectedMission;lastCardState=state;lastCardStep=mission.ProcedureStepIndex;
-        lastCardSecond=remaining;lastCardFeedback=mission.ProcedureFeedback;lastCardCanStart=canStart;
+        lastCardSecond=remaining;lastCardCheckSecond=checkRemaining;lastCardFeedback=mission.ProcedureFeedback;lastCardCanStart=canStart;
         missionCardTitle.text=selectedMission.locationName.ToUpperInvariant()+" CONTROL";
         missionStartButton.transform.parent.gameObject.SetActive(canStart);
         missionSkipButton.transform.parent.gameObject.SetActive(canStart && selectedMission.missionId!=MissionRunPlan.CheckoutId);
@@ -600,8 +632,9 @@ public sealed class CrewMenu : MonoBehaviour
         }
         missionTaskProgressTrack.SetActive(active || state==ShipMissionStatus.Completed);
         missionCardStatus.text=active
-            ? "STEP " + (mission.ProcedureStepIndex+1) + " / " + selectedMission.steps.Length + " · " + Mathf.CeilToInt(mission.ActiveMissionSecondsRemaining) + "s REMAINING" +
-                (mission.CurrentStep!=null && mission.CurrentStep.automatic ? " · SCANNING" : mission.CurrentStep!=null && mission.CurrentStep.requiresShelter ? " · CLOSE TO WALK" : "")
+            ? "STEP " + (mission.ProcedureStepIndex+1) + " / " + selectedMission.steps.Length +
+                (mission.CurrentStep!=null && mission.CurrentStep.automatic ? " · CHECK " + checkRemaining + "s · TASK " + remaining + "s LEFT" : " · TASK " + remaining + "s LEFT") +
+                (mission.CurrentStep!=null && mission.CurrentStep.requiresShelter ? " · CLOSE PANEL TO REACH THE MARKER" : "")
             : state==ShipMissionStatus.Completed ? "PROCEDURE COMPLETE"
             : state==ShipMissionStatus.Skipped ? "TASK SKIPPED"
             : state==ShipMissionStatus.Failed ? "PROCEDURE TIMED OUT"
@@ -624,7 +657,7 @@ public sealed class CrewMenu : MonoBehaviour
         // The board is above the shade; station cards are reopened above both.
         if(show){taskBoard.transform.SetAsLastSibling();lastBoardSecond=-1;missionHintBackdrop.SetActive(false);}
         mission.IsInterfaceOpen=show;
-        if(show){controlsIntro.SetActive(false);bridgeSuggestion.SetActive(false);stormSuggestion.SetActive(false);UpdateTaskBoard();}
+        if(show){controlsIntro.SetActive(false);bridgeSuggestion.SetActive(false);if(solarStormHint!=null)solarStormHint.SetActive(false);stormSuggestion.SetActive(false);UpdateTaskBoard();}
         else UpdateControlsIntro(0);
     }
     private void UpdateTaskBoard()
@@ -661,7 +694,7 @@ public sealed class CrewMenu : MonoBehaviour
     {
         if(mission==null)return;
         ShowFlightNotice(definition.missionId==MissionRunPlan.CheckoutId ? "FIRST OBJECTIVE: BRIDGE SYSTEMS CHECK\nPress M or use the Bridge console to start scanning." :
-            "NEW EVENT: "+definition.title+"\nGo to "+definition.locationName+" · Press M to track the task.");
+            "NEW TASK: "+definition.title+"\nGo to "+MissionHintLocation(definition)+" and press E.");
         lastBoardSecond=-1;
     }
     private void UpdateFlightNotice()
@@ -684,7 +717,7 @@ public sealed class CrewMenu : MonoBehaviour
     {
         if(gameOver || mission==null)return;
         selectedEquipment=element;selectedMission=null;
-        missionCard.SetActive(false);taskBoard.SetActive(false);controlsIntro.SetActive(false);stormSuggestion.SetActive(false);bridgeSuggestion.SetActive(false);shipNotice.SetActive(false);missionHintBackdrop.SetActive(false);
+        missionCard.SetActive(false);taskBoard.SetActive(false);controlsIntro.SetActive(false);stormSuggestion.SetActive(false);bridgeSuggestion.SetActive(false);if(solarStormHint!=null)solarStormHint.SetActive(false);shipNotice.SetActive(false);missionHintBackdrop.SetActive(false);
         equipmentPanel.SetActive(true);equipmentPanel.transform.SetAsLastSibling();missionCardShade.SetActive(true);mission.IsInterfaceOpen=true;
         RefreshEquipment();
     }

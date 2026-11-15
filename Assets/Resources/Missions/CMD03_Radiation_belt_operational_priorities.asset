@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: CMD03_Radiation_belt_operational_priorities
   m_EditorClassIdentifier:
   missionId: "CMD-03"
-  title: "Radiation-belt operational priorities"
+  title: "Respond to the radiation warning"
   timeWindowLabel: "2:15–3:50"
   availableFromSeconds: 135
   availableUntilSeconds: 230
   durationSeconds: 60
   difficulty: "Medium"
-  briefing: "Review the radiation warning, choose which non-essential instruments to power down, and select the available water/food shielding arrangement for the crew and critical equipment. This is a complete operational/resource decision."
+  briefing: "Protect the crew, keep guidance and life support powered, and shut down extra equipment. Use water and food stores as shielding."
   stationId: bridge
   originalDiscipline: "CMD"
   globalEvent: 0
@@ -37,40 +37,40 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Radiation warning. Guidance and life support are essential loads."
+  - prompt: "Radiation is rising. Protect the crew and keep essential systems on."
     options:
-    - "Prioritize crew shelter and critical systems"
-    - "Prioritize non-essential imaging over life support"
+    - "Protect crew and essential systems"
+    - "Prioritize extra cameras"
     - "Ignore the warning"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Select loads for shutdown."
+    result: "Crew protection selected."
+  - prompt: "Choose what to power down."
     options:
-    - "Shut down life support"
-    - "Shut down core guidance"
-    - "Power down non-essential instruments only"
+    - "Turn off life support"
+    - "Turn off guidance"
+    - "Turn off extra instruments"
     correctChoice: 2
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Water and food shielding inventory verification."
+    result: "Only non-essential instruments shut down."
+  - prompt: "Checking the shielding supplies..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 24
-    result: "Verification complete."
-  - prompt: "Water containers and food packs are available."
+    result: "Supply check complete."
+  - prompt: "Water and food are available. Place them around the crew and key equipment."
     options:
-    - "Arrange them around occupied crew and critical equipment"
-    - "Move shielding away from the crew"
-    - "Use only decorative foil"
+    - "Place supplies around crew and key equipment"
+    - "Move supplies away"
+    - "Use foil only"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Shielding placed around the crew."

@@ -16,7 +16,7 @@ for(int role=0;role<4;role++){
  Check(mission.GetMissionStatus(checkout)==ShipMissionStatus.Available&&mission.RunPlan.Skip(1).All(x=>mission.GetMissionStatus(x.definition)==ShipMissionStatus.Unavailable),"Chain runs before first checkout");
  Check(!mission.SkipMission(checkout),"First mission can be skipped");
  Check(mission.MissionSeconds==0,"Flight phase clock advances before checkout");
- Check(mission.StartMission(checkout),"Cannot start first checkout");mission.SendMessage("UpdateActiveMission",31f);
+ Check(mission.StartMission(checkout),"Cannot start first checkout");mission.SendMessage("UpdateActiveMission",checkout.durationSeconds+1);
  Check(!mission.CheckoutComplete&&mission.GetMissionStatus(checkout)==ShipMissionStatus.Available&&mission.Health.Current==95,"Failed checkout cannot be retried or unlocks the chain");mission.Health.Heal(5);
  FinishCheckout();
  var releases=new System.Collections.Generic.List<string>();mission.MissionAvailable+=d=>releases.Add(d.missionId);

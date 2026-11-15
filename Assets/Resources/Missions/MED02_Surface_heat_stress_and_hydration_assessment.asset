@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: MED02_Surface_heat_stress_and_hydration_assessment
   m_EditorClassIdentifier:
   missionId: "MED-02"
-  title: "Surface heat-stress and hydration assessment"
+  title: "Check heat and hydration"
   timeWindowLabel: "5:45–6:50"
   availableFromSeconds: 345
   availableUntilSeconds: 410
   durationSeconds: 30
   difficulty: "Easy"
-  briefing: "Review cabin/suit temperature and cooling-water reserve indicators alongside crew heat and hydration status. Select a safe work/rest or hydration response while preserving the required cooling reserve."
+  briefing: "The crew member is hot and dehydrated. Reduce work, choose a safe rest or hydration plan, and save enough cooling water."
   stationId: medbay
   originalDiscipline: "MED"
   globalEvent: 0
@@ -37,30 +37,30 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Suit temperature high; hydration falling; cooling-water reserve limited."
+  - prompt: "Heat is high and hydration is falling. Choose a safe response."
     options:
-    - "Increase workload to finish faster"
-    - "Spend the entire cooling reserve"
-    - "Reduce work rate and choose a safe hydration/rest response"
+    - "Increase workload"
+    - "Use all cooling water"
+    - "Reduce work and rest or hydrate"
     correctChoice: 2
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Work/rest and survival-reserve assessment."
+    result: "Safe response selected."
+  - prompt: "Checking work, rest, and water needs..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 16
-    result: "Verification complete."
-  - prompt: "Crew cooling demand stabilizing; required reserve retained."
+    result: "Assessment complete."
+  - prompt: "The crew is stabilizing. Record the plan and keep monitoring."
     options:
-    - "Record the safe work/rest plan and continue monitoring"
+    - "Record the plan and keep monitoring"
     - "Resume unrestricted work"
-    - "Ignore the reserve requirement"
+    - "Ignore the water reserve"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Monitoring plan recorded."

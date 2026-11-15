@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: G03_Transfer_tunnel_pressure_and_docking_safety_check
   m_EditorClassIdentifier:
   missionId: "G-03"
-  title: "Transfer-tunnel pressure and docking safety check"
+  title: "Secure the docking tunnel"
   timeWindowLabel: "3:50–4:55"
   availableFromSeconds: 230
   availableUntilSeconds: 295
   durationSeconds: 60
   difficulty: "Medium"
-  briefing: "Inspect the docking latch-lock and transfer-tunnel pressure indicators. If either is outside its safe state, hold separation, perform the available latch/pressure verification, and release only when the indicators are safe. The player performs the complete check."
+  briefing: "Lock the docking latches and equalize tunnel pressure before release. Check both, then release the hold."
   stationId: docking
   originalDiscipline: "G"
   globalEvent: 1
@@ -37,50 +37,50 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Docking latch: UNVERIFIED. Transfer-tunnel pressure: NOT EQUALIZED. Separation requested."
+  - prompt: "The latch and tunnel pressure are not yet safe. Hold separation."
     options:
     - "Hold separation"
-    - "Release the docking mechanism now"
-    - "Ignore both indicators"
+    - "Release the latch now"
+    - "Ignore the warnings"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Run the latch-lock verification before releasing the mechanism."
+    result: "Separation held."
+  - prompt: "Check and lock every docking latch."
     options:
-    - "Release the unverified latch"
-    - "Bypass the latch interlock"
-    - "Verify and engage every latch lock"
+    - "Release the latch"
+    - "Bypass the lock"
+    - "Lock and verify all latches"
     correctChoice: 2
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Transfer tunnel pressure differs from the safe reference."
+    result: "Latches locked."
+  - prompt: "Tunnel pressure is unequal. Equalize it before opening."
     options:
-    - "Disable the pressure indicator"
-    - "Equalize and verify tunnel pressure"
-    - "Open the tunnel at unequal pressure"
+    - "Turn off the indicator"
+    - "Equalize and check pressure"
+    - "Open the tunnel now"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Latch LOCKED; pressure STABLE. Safety scan in progress."
+    result: "Tunnel pressure equalized."
+  - prompt: "Checking latch and pressure..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 25
-    result: "Verification complete."
-  - prompt: "Both indicators are safe. Choose the separation state."
+    result: "Safety check complete."
+  - prompt: "The latches are locked and pressure is stable. Release the hold."
     options:
-    - "Keep an unsafe latch configuration"
-    - "Release without checking pressure"
+    - "Keep an unsafe latch"
+    - "Release without checking"
     - "Release the separation hold"
     correctChoice: 2
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Separation hold released."

@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: CMD05_Lunar_surface_science_and_thermal_resource_priorities
   m_EditorClassIdentifier:
   missionId: "CMD-05"
-  title: "Lunar surface science and thermal-resource priorities"
+  title: "Balance science and cooling water"
   timeWindowLabel: "5:45–6:50"
   availableFromSeconds: 345
   availableUntilSeconds: 410
   durationSeconds: 60
   difficulty: "Medium"
-  briefing: "Review the cooling-water reserve and remaining surface timeline, prioritize the available science activities, and set safe duty-cycle limits so science work does not consume the reserve needed for crew survival."
+  briefing: "Save enough cooling water for the crew. Choose the short survey and limit the longer experiment."
   stationId: bridge
   originalDiscipline: "CMD"
   globalEvent: 0
@@ -37,40 +37,40 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Cooling-water reserve must support crew survival after surface science."
+  - prompt: "Save enough cooling water for the crew."
     options:
-    - "Ignore the remaining surface timeline"
-    - "Reserve survival cooling water before assigning science"
-    - "Allocate the entire reserve to science"
+    - "Ignore the mission timeline"
+    - "Reserve water for the crew"
+    - "Use all water for science"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Available activities include a short sample survey and a high-load extended experiment."
+    result: "Crew cooling reserve protected."
+  - prompt: "Choose science work that fits the remaining reserve."
     options:
-    - "Prioritize the short survey within the reserve budget"
-    - "Run every activity at full duty cycle"
-    - "Use survival water for the extended experiment"
+    - "Choose the short survey"
+    - "Run every experiment at full power"
+    - "Spend crew reserve on experiments"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Cooling reserve and duty-cycle calculation."
+    result: "Short survey selected."
+  - prompt: "Checking the cooling budget..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 24
-    result: "Verification complete."
-  - prompt: "The extended experiment exceeds the safe cooling budget."
+    result: "Cooling check complete."
+  - prompt: "The long experiment uses too much water. Limit its run time and keep the crew reserve."
     options:
-    - "Disable cooling during science"
-    - "Set a limited duty cycle and preserve the survival reserve"
-    - "Extend work beyond the reserve"
+    - "Turn off cooling"
+    - "Limit the experiment and save crew reserve"
+    - "Work past the safe limit"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Safe duty cycle selected."

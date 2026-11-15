@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: MED03_Radiation_exposure_screening
   m_EditorClassIdentifier:
   missionId: "MED-03"
-  title: "Radiation exposure screening"
+  title: "Check radiation exposure"
   timeWindowLabel: "2:15–3:50"
   availableFromSeconds: 135
   availableUntilSeconds: 230
   durationSeconds: 60
   difficulty: "Medium"
-  briefing: "Compare radiation-counter readings with crew exposure indicators, identify the highest-risk exposure status, and record the appropriate observation priority. The Medic does not need to operate the spacecraft's power or attitude systems."
+  briefing: "Compare the crew exposure readings. Flag the highest reading for closer observation; do not diagnose from this check."
   stationId: medbay
   originalDiscipline: "MED"
   globalEvent: 0
@@ -37,40 +37,40 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Exposure counters: crew A low, crew B elevated, crew C highest and rising."
+  - prompt: "Crew C has the highest and fastest-rising reading."
     options:
-    - "Ignore exposure counters"
-    - "Prioritize crew C for close observation"
-    - "Prioritize only the lowest counter"
+    - "Ignore the readings"
+    - "Watch crew C closely"
+    - "Prioritize the lowest reading"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Compare counter trends with the recorded crew exposure indicators."
+    result: "Highest-risk crew member flagged."
+  - prompt: "Compare the readings with the crew exposure log."
     options:
-    - "Record the highest-risk exposure status"
-    - "Reset the counters to hide the event"
-    - "Wait for another role before recording"
+    - "Record the highest exposure"
+    - "Reset the readings"
+    - "Wait for another role"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Exposure-screening record verification."
+    result: "Exposure status recorded."
+  - prompt: "Checking the observation record..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 24
-    result: "Verification complete."
-  - prompt: "Highest-risk crew member flagged; no clinical diagnosis is implied."
+    result: "Record check complete."
+  - prompt: "Crew C is flagged. Confirm the observation priority."
     options:
-    - "Clear all crew without follow-up"
-    - "Confirm observation priority"
-    - "Prescribe a procedure from this screen"
+    - "Clear everyone without follow-up"
+    - "Confirm closer observation"
+    - "Diagnose from this check"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Observation priority confirmed."

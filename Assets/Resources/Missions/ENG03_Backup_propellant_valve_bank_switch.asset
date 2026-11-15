@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: ENG03_Backup_propellant_valve_bank_switch
   m_EditorClassIdentifier:
   missionId: "ENG-03"
-  title: "Backup propellant valve-bank switch"
+  title: "Switch to the backup propellant valves"
   timeWindowLabel: "7:50–8:35"
   availableFromSeconds: 470
   availableUntilSeconds: 515
   durationSeconds: 60
   difficulty: "Medium"
-  briefing: "Inspect the primary propellant-valve warning, verify the redundant valve bank, switch to the backup bank, and confirm that the feed path is ready for the Trans-Earth Injection burn."
+  briefing: "The primary valve bank has failed. Check the backup, switch the feed to it, and verify pressure before the return burn."
   stationId: engineering
   originalDiscipline: "ENG"
   globalEvent: 0
@@ -37,40 +37,40 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Primary propellant valve bank: FAULT. Backup bank: AVAILABLE."
+  - prompt: "The primary valves failed. Check the backup before the return burn."
     options:
-    - "Hold TEI and inspect the redundant bank"
-    - "Burn through the faulty primary bank"
-    - "Open both banks indiscriminately"
+    - "Hold the burn; inspect the backup"
+    - "Use the failed valves"
+    - "Open both valve banks"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Redundant bank continuity and isolation verification."
+    result: "Backup bank inspection selected."
+  - prompt: "Checking backup valve isolation..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 24
-    result: "Verification complete."
-  - prompt: "Backup valve bank verified. Select the feed path."
+    result: "Valve check complete."
+  - prompt: "The backup is ready. Switch the feed and isolate the failed bank."
     options:
     - "Close every feed valve"
-    - "Switch to the backup bank and isolate the primary"
-    - "Keep the failed primary bank selected"
+    - "Switch to backup; isolate primary"
+    - "Keep using the failed bank"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Feed pressure stable; backup path READY."
+    result: "Feed switched to backup."
+  - prompt: "The feed pressure is stable. Confirm return-burn readiness."
     options:
-    - "Confirm TEI feed readiness"
-    - "Authorize a burn with no feed path"
-    - "Reopen the faulty primary bank"
+    - "Confirm backup feed is ready"
+    - "Burn without a feed path"
+    - "Reopen the failed bank"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Backup feed confirmed."

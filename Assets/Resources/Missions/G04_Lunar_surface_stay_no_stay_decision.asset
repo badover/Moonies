@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: G04_Lunar_surface_stay_no_stay_decision
   m_EditorClassIdentifier:
   missionId: "G-04"
-  title: "Lunar surface stay / no-stay decision"
+  title: "Decide whether to stay on the Moon"
   timeWindowLabel: "5:45–6:50"
   availableFromSeconds: 345
   availableUntilSeconds: 410
   durationSeconds: 60
   difficulty: "Medium"
-  briefing: "Review the descent-stage propellant pressure warning, run the available venting and avionics safety checks, and decide whether conditions permit the crew to remain on the surface or require an early departure. The decision and checks are available to every role."
+  briefing: "Propellant pressure is unsafe. Check venting and avionics before deciding. If pressure stays unsafe, prepare to leave early."
   stationId: bridge
   originalDiscipline: "G"
   globalEvent: 1
@@ -37,40 +37,40 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Descent-stage propellant pressure WARNING. Review the surface-stay request."
+  - prompt: "Hold the stay decision until safety checks are done."
     options:
-    - "Continue surface operations without checking"
-    - "Ignore the pressure warning"
-    - "Hold the stay decision and run safety checks"
+    - "Continue without checks"
+    - "Ignore the warning"
+    - "Hold and run safety checks"
     correctChoice: 2
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Propellant venting verification is available."
+    result: "Stay decision held."
+  - prompt: "Run the controlled vent and check the pressure."
     options:
-    - "Vent toward crew and equipment"
-    - "Run controlled venting and check pressure response"
-    - "Block the vent path"
+    - "Vent toward the crew"
+    - "Vent safely and check pressure"
+    - "Block the vent"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Avionics safety verification in progress."
+    result: "Controlled vent check complete."
+  - prompt: "Checking avionics safety..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 25
-    result: "Verification complete."
-  - prompt: "Venting complete, but pressure remains OUTSIDE SAFE BAND. Avionics isolation is ready."
+    result: "Avionics check complete."
+  - prompt: "Pressure is still unsafe. Isolate the hazard and prepare to leave."
     options:
-    - "STAY: ignore the persistent unsafe pressure"
-    - "Begin an unrelated launchpad check"
-    - "NO-STAY: isolate the hazard and prepare early departure"
+    - "Stay and ignore the warning"
+    - "Start an unrelated check"
+    - "Prepare to leave early"
     correctChoice: 2
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Early departure prepared."

@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: ENG01_Propellant_settling_ullage_verification
   m_EditorClassIdentifier:
   missionId: "ENG-01"
-  title: "Propellant settling / ullage verification"
+  title: "Settle propellant before the engine burn"
   timeWindowLabel: "0:05–1:20"
   availableFromSeconds: 5
   availableUntilSeconds: 80
   durationSeconds: 30
   difficulty: "Easy"
-  briefing: "Inspect the propellant-settling indicators, verify that the ullage sequence is required, activate the settling sequence, and confirm that liquid propellant is positioned correctly before the main engine burn. Do not authorize ignition while the propellant is unsettled."
+  briefing: "Check the propellant indicators, start ullage settling, then confirm liquid propellant is at the engine feed. Keep ignition locked until then."
   stationId: engineering
   originalDiscipline: "ENG"
   globalEvent: 0
@@ -37,30 +37,30 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Propellant state: UNSETTLED. Main engine burn is pending."
+  - prompt: "Propellant is unsettled. Hold ignition and start settling."
     options:
-    - "Ignite the main engine immediately"
-    - "Disable settling thrusters"
-    - "Hold ignition and enable the ullage sequence"
+    - "Ignite now"
+    - "Turn off settling thrusters"
+    - "Hold ignition; start settling"
     correctChoice: 2
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Settling thrusters responding. Liquid propellant is moving toward the feed inlet."
+    result: "Ignition held; settling started."
+  - prompt: "Settling is running. Waiting for liquid propellant to reach the feed..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 16
-    result: "Verification complete."
-  - prompt: "Feed inlet: LIQUID. Settling: VERIFIED."
+    result: "Settling check complete."
+  - prompt: "Liquid propellant is at the engine feed. Confirm the system is ready."
     options:
-    - "Confirm propellant positioned for the burn"
-    - "Authorize ignition with gas at the inlet"
-    - "Cancel the successful settling sequence"
+    - "Confirm propellant is settled"
+    - "Ignite with gas at the feed"
+    - "Cancel the settling check"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Propellant confirmed settled; ignition may be authorized."

@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: MED01_CO_exposure_and_symptom_assessment
   m_EditorClassIdentifier:
   missionId: "MED-01"
-  title: "CO₂ exposure and symptom assessment"
+  title: "Check CO₂ exposure"
   timeWindowLabel: "2:15–3:50"
   availableFromSeconds: 135
   availableUntilSeconds: 230
   durationSeconds: 30
   difficulty: "Easy"
-  briefing: "Check the cabin CO₂ reading and the listed symptoms associated with elevated CO₂, assess the crew's exposure status, and select the appropriate monitoring priority. The scrubber repair is not part of this task."
+  briefing: "CO₂ is high and a crew member has a headache and labored breathing. Record the exposure and watch the crew member."
   stationId: medbay
   originalDiscipline: "MED"
   globalEvent: 0
@@ -37,30 +37,30 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Cabin CO2 above reference. Crew reports headache and increased breathing effort."
+  - prompt: "CO₂ is high. A crew member has a headache and labored breathing."
     options:
-    - "Record elevated exposure and prioritize crew observation"
-    - "Record no exposure because oxygen is present"
-    - "Attempt an unrelated invasive treatment"
+    - "Record exposure and watch the crew member"
+    - "Record no exposure"
+    - "Give an unrelated treatment"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Cabin reading and crew-condition trend review."
+    result: "Exposure recorded."
+  - prompt: "Reviewing cabin readings and crew condition..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 16
-    result: "Verification complete."
-  - prompt: "Exposure remains elevated; this task is crew screening."
+    result: "Review complete."
+  - prompt: "Exposure remains high. Keep watching and record changes."
     options:
-    - "Ignore symptoms until mechanical repairs finish"
-    - "Maintain close observation and record the trend"
-    - "Declare a clinical diagnosis from this screen"
+    - "Wait for repairs before checking"
+    - "Watch the crew member and record changes"
+    - "Diagnose from this check alone"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Crew follow-up recorded."

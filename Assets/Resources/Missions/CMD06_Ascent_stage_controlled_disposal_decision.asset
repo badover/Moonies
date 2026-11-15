@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: CMD06_Ascent_stage_controlled_disposal_decision
   m_EditorClassIdentifier:
   missionId: "CMD-06"
-  title: "Ascent-stage controlled disposal decision"
+  title: "Choose a safe stage-disposal path"
   timeWindowLabel: "7:30–8:20"
   availableFromSeconds: 450
   availableUntilSeconds: 500
   durationSeconds: 90
   difficulty: "Hard"
-  briefing: "Review the active spacecraft and seismometer positions, choose a controlled disposal trajectory that avoids the crewed vehicle and deployed science equipment, and confirm the intended impact plan."
+  briefing: "Choose a disposal route clear of the crew vehicle and deployed science equipment."
   stationId: bridge
   originalDiscipline: "CMD"
   globalEvent: 0
@@ -37,40 +37,40 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Crewed spacecraft and deployed seismometer positions are plotted."
+  - prompt: "Check where the crew vehicle and science equipment are."
     options:
-    - "Review both protected positions before disposal"
-    - "Aim the stage toward the crewed vehicle"
-    - "Ignore deployed equipment"
+    - "Check both protected areas"
+    - "Aim at the crew vehicle"
+    - "Ignore the equipment"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Choose a controlled ascent-stage disposal path."
+    result: "Protected areas reviewed."
+  - prompt: "Choose the route clear of both protected areas."
     options:
-    - "Select the crewed spacecraft intercept"
-    - "Impact beside the seismometer"
-    - "Select the plotted impact corridor clear of crew and equipment"
+    - "Aim at the crew vehicle"
+    - "Aim at the seismometer"
+    - "Choose the clear impact path"
     correctChoice: 2
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Disposal trajectory and safety-envelope verification."
+    result: "Safe impact path selected."
+  - prompt: "Checking the disposal path..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 40
-    result: "Verification complete."
-  - prompt: "Trajectory clears both exclusion zones; intended impact point confirmed."
+    result: "Path check complete."
+  - prompt: "The path is clear. Approve the controlled impact."
     options:
-    - "Authorize the controlled impact plan"
-    - "Authorize an unchecked impact"
-    - "Redirect the stage into an exclusion zone"
+    - "Approve the clear path"
+    - "Approve without checking"
+    - "Aim at a protected area"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Controlled impact approved."
