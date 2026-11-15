@@ -21,3 +21,5 @@ Current ladder regression: continuous W/S passes the middle deck without detachi
 Menu/Bridge guidance: START and all four role hit areas remain clickable with no hover, focus, pressed or selected fill. The Bridge suggestion is yellow on an opaque backing/border, appears only while the check is available, and hides for the mission card, skip and completion. Briefing and skip status no longer describe negative consequences. Validated with Tools/ValidateMenuHint.cs.
 
 Controls/Bridge reopening: verified 10-second intro dismissal, frozen intro countdown during pause, full controls always available in pause, no reappearance after expiry, repeated CLOSE/E cycles, and review of available/in-progress/completed/expired Bridge cards. Esc closes the station modal and restores input. See Tools/ValidateControlsAndBridge.cs and controls-intro.png.
+
+Health HUD: all four roles passed 100 HP initialization, damage/healing, 0–100 clamping, rejected invalid amounts, event-driven UI updates, 75% fill geometry, amber/red thresholds and compact panel dimensions (210 x 44 reference pixels). Render: health-hud.png; check: Tools/ValidateHealthHud.cs.

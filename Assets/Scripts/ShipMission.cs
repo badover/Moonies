@@ -26,6 +26,7 @@ public sealed class ShipMission : MonoBehaviour
     private ShipMissionDefinition activeMission;
     private readonly Dictionary<ShipMissionDefinition, ShipMissionStatus> missionStatuses = new Dictionary<ShipMissionDefinition, ShipMissionStatus>();
     public bool IsPaused {get;private set;}
+    public CrewHealth Health {get;private set;}
     public event Action<ShipMissionDefinition> MissionInteractionRequested;
     public ShipMissionDefinition NearbyMission => nearbyMission;
     public ShipMissionDefinition ActiveMission => activeMission;
@@ -58,6 +59,8 @@ public sealed class ShipMission : MonoBehaviour
         renderer.sprite = shipSprite;
         renderer.sharedMaterial = material;
         player = Instantiate(prefab, new Vector3(-9, ShipLayout.FloorY(deck, -9), -1), Quaternion.identity, transform);
+        Health=player.GetComponent<CrewHealth>();
+        if(Health==null) Health=player.gameObject.AddComponent<CrewHealth>();
         player.transform.localScale = Vector3.one * ShipLayout.CrewScale;
         player.UseInteriorAnimations();
         var playerRenderer = player.GetComponent<SpriteRenderer>();

@@ -24,7 +24,9 @@ public sealed class CrewMenu : MonoBehaviour
     private VideoPlayer backgroundVideo;
     private RenderTexture backgroundVideoTexture;
     private Image[] cards = new Image[4];
-    private Image missionProgress;
+    private Image missionProgress,healthFill;
+    private Text healthValue;
+    private CrewHealth playerHealth;
     private Text status, confirmText, missionTime;
     private Text missionHint, missionCardTitle, missionCardBriefing, missionCardStatus;
     private Text missionStartButton, missionSkipButton, missionCloseButton;
@@ -118,6 +120,7 @@ public sealed class CrewMenu : MonoBehaviour
         missionProgress.fillMethod = Image.FillMethod.Horizontal;
         missionProgress.fillOrigin = (int)Image.OriginHorizontal.Left;
         missionProgress.fillAmount = 0;
+        CreateHealthHud(missionHud.transform);
         missionHint = Label(missionHud.transform, "", .20f,.105f,.80f,.15f,18,cyan);
         missionHint.gameObject.SetActive(false);
         var hintGold=new Color(1,.82f,.24f,1);
@@ -183,6 +186,32 @@ public sealed class CrewMenu : MonoBehaviour
             return;
         }
     }
+    private void CreateHealthHud(Transform parent)
+    {
+        var frame=Panel(parent,"Health HUD",Vector2.zero,Vector2.zero,new Color(.16f,.42f,.48f,1));
+        frame.raycastTarget=false;
+        var rect=frame.rectTransform;rect.pivot=Vector2.zero;rect.anchoredPosition=new Vector2(28,26);rect.sizeDelta=new Vector2(210,44);
+        var backing=Panel(frame.transform,"Health Backing",Vector2.zero,Vector2.one,new Color(.012f,.035f,.05f,.98f));
+        backing.raycastTarget=false;backing.rectTransform.offsetMin=Vector2.one;backing.rectTransform.offsetMax=-Vector2.one;
+        var title=Label(frame.transform,"VITALS",.07f,.48f,.65f,.91f,12,new Color(.55f,.76f,.8f));title.alignment=TextAnchor.MiddleLeft;
+        healthValue=Label(frame.transform,"100%",.66f,.48f,.93f,.91f,13,Color.white);healthValue.alignment=TextAnchor.MiddleRight;
+        var track=Panel(frame.transform,"Health Track",new Vector2(.07f,.18f),new Vector2(.93f,.36f),new Color(.025f,.11f,.14f,1));track.raycastTarget=false;
+        healthFill=Panel(track.transform,"Health Fill",Vector2.zero,Vector2.one,new Color(.27f,.82f,.74f,1));
+        healthFill.raycastTarget=false;healthFill.sprite=progressSprite;healthFill.type=Image.Type.Filled;
+        healthFill.fillMethod=Image.FillMethod.Horizontal;healthFill.fillOrigin=(int)Image.OriginHorizontal.Left;
+    }
+    private void BindHealth(CrewHealth health)
+    {
+        if(playerHealth!=null) playerHealth.Changed-=UpdateHealthHud;
+        playerHealth=health;
+        if(playerHealth!=null){playerHealth.Changed+=UpdateHealthHud;UpdateHealthHud(playerHealth);}
+    }
+    private void UpdateHealthHud(CrewHealth health)
+    {
+        healthFill.fillAmount=health.Fraction;
+        healthFill.color=health.Fraction<=.25f?new Color(.92f,.32f,.24f):health.Fraction<=.55f?new Color(.95f,.68f,.28f):new Color(.27f,.82f,.74f);
+        healthValue.text=Mathf.CeilToInt(health.Fraction*100)+"%";
+    }
     private void SetupBackgroundVideo()
     {
         backgroundVideoTexture = new RenderTexture(2560,1440,0,RenderTextureFormat.ARGB32);
@@ -245,6 +274,7 @@ public sealed class CrewMenu : MonoBehaviour
             candidate.Begin(prefab, TogglePause, backgroundVideo);
             ShowVideoBehindShip(Camera.main);
             mission = candidate;
+            BindHealth(mission.Health);
             missionElapsed = 0;
             lastMissionSecond=-1;
             missionProgress.fillAmount = 0;
@@ -383,6 +413,7 @@ public sealed class CrewMenu : MonoBehaviour
     {
         mission.SetPaused(false);
         pauseScreen.SetActive(false);
+        BindHealth(null);
         Destroy(mission.gameObject); mission = null;
         missionHud.SetActive(false);
         controlsIntroRemaining=0;controlsIntro.SetActive(false);
@@ -392,6 +423,7 @@ public sealed class CrewMenu : MonoBehaviour
     }
     private void OnDestroy()
     {
+        BindHealth(null);
         if(backgroundVideo!=null) backgroundVideo.Stop();
         if(backgroundVideoTexture!=null){backgroundVideoTexture.Release();Destroy(backgroundVideoTexture);}
         if(progressSprite!=null) Destroy(progressSprite);
