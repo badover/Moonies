@@ -17,6 +17,8 @@ MonoBehaviour:
   timeWindowLabel: 0:00–1:20
   availableFromSeconds: 0
   availableUntilSeconds: 80
+  radiationIncreaseOnSkip: 65
+  radiationIncreaseOnExpiry: 65
   durationSeconds: 30
   difficulty: Easy
   briefing: Mission Control requests a systems check on the Bridge before leaving orbit.

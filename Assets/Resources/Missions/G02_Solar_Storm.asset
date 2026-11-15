@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
+  m_Name: G02_Solar_Storm
+  m_EditorClassIdentifier: 
+  missionId: G-02
+  title: Solar Storm
+  timeWindowLabel: 2:15–3:50
+  availableFromSeconds: 135
+  availableUntilSeconds: 230
+  durationSeconds: 90
+  difficulty: Hard
+  briefing: A solar storm is approaching. Reach the marked doors to the left of Life Support and press E to seal the shelter within 90 seconds.
+  objectiveType: 1
+  locationName: Communications
+  deck: 2
+  shipPixelX: 900
+  interactionRadius: 1.6
+  targetDeck: 0
+  targetShipPixelX: 1120
+  radiationIncreaseOnSkip: 0
+  radiationIncreaseOnExpiry: 0
+  damageOnFailure: 25
+  failureIsFatalAtHighRadiation: 1
+  fatalRadiationThreshold: 60
+  allowedRoles: []

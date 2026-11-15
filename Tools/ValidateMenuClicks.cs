@@ -1,4 +1,7 @@
 void Check(bool ok,string text){if(!ok)throw new System.Exception(text);}
+var menu=UnityEngine.Object.FindAnyObjectByType<CrewMenu>();
+if(UnityEngine.Object.FindAnyObjectByType<ShipMission>()!=null){menu.SendMessage("ReturnToMenu");await System.Threading.Tasks.Task.Delay(100);}
+menu.SendMessage("ShowRoles",false);
 UnityEngine.Application.runInBackground=true;
 var camera=UnityEngine.Camera.main;
 var target=new UnityEngine.RenderTexture(1600,900,24);camera.targetTexture=target;

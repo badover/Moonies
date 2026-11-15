@@ -23,3 +23,20 @@ Menu/Bridge guidance: START and all four role hit areas remain clickable with no
 Controls/Bridge reopening: verified 10-second intro dismissal, frozen intro countdown during pause, full controls always available in pause, no reappearance after expiry, repeated CLOSE/E cycles, and review of available/in-progress/completed/expired Bridge cards. Esc closes the station modal and restores input. See Tools/ValidateControlsAndBridge.cs and controls-intro.png.
 
 Health HUD: all four roles passed 100 HP initialization, damage/healing, 0–100 clamping, rejected invalid amounts, event-driven UI updates, 75% fill geometry, amber/red thresholds and compact panel dimensions (210 x 44 reference pixels). Render: health-hud.png; check: Tools/ValidateHealthHud.cs.
+
+## Solar Storm integration — 2026-11-15
+
+Merged `origin/adrian2` (`f80e3e2e`) with the current main and retained the modern ship, role menu, continuous ladders, neutral Bridge card and compact health HUD.
+
+Unity 6000.6.9f1 Play Mode checks in an isolated project:
+
+- `ValidateSolarStorm.cs`: activation window; actual upper-to-lower ladder route; E shelter completion; success without damage; timeout, ignore and expiration apply damage exactly once; skipped windows resolve chronologically; critical exposure reduces health to zero and opens a paused failure screen; Escape cannot bypass death; replay resets missions, radiation, health and overlays; closing the start window does not interrupt an already running procedure.
+- `ValidateHealthHud.cs`: all four roles, damage/healing/clamps/invalid inputs, fill geometry, colors and compact size.
+- `ValidateControlsAndBridge.cs`: introductory controls, pause countdown, controls in pause, repeated Bridge CLOSE/reopen, available/running/completed/expired card review.
+- `ValidatePauseAndLadders.cs`: all four roles, continuous W/S, explicit A/D exits, no teleport/air exits, frozen animation/camera/timers in pause.
+- `ValidateMenuHint.cs`: no blue overlay on START or roles; neutral Bridge text and opaque yellow suggestion.
+- `ValidateMenuClicks.cs`: rendered pointer raycasts for START/BACK/START, all four roles and boarding at 1600×900.
+
+The imported MOONIES question phases have no ship campaign dispatcher yet. Their assets and data are preserved but excluded from timed station checks, preventing fake timed phases from obscuring the working missions. Updated the retained question UI's font/input module for Unity 6.
+
+Preview: `solar-storm-health.png` (75% HP and the shelter marker).

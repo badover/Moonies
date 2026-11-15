@@ -1,0 +1,2914 @@
+{
+  "missions": [
+    {
+      "phase": 0,
+      "title": "Holographic Briefing Room",
+      "tag": "SIMULATION",
+      "scenario": "The Artemis Lunar Horizon mission is beginning. In the control room, the crew must coordinate with the ground team before activating the flight systems.",
+      "question": "What should you do before giving the mission the go-ahead?",
+      "hint": "On a complex mission, shared information and clear roles are part of the safety system.",
+      "learn": "Space exploration depends on telemetry, procedures, and coordination between the crew and ground control. In deep space, communications are delayed and can be interrupted, so the spacecraft must also be prepared to operate autonomously.",
+      "fact": "The MOONIES architecture is fictional. Cooperation between crews and control teams is a central lesson in real space programs.",
+      "choices": [
+        {
+          "text": "Synchronize telemetry, confirm communications, and complete the safety briefing.",
+          "why": "Correct! Everyone understands the plan, the limits, and who is responsible for each decision.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 4,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Skip the checks and request launch clearance immediately.",
+          "why": "Cross-checks are lost, and critical tasks may be left without an owner.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 14,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Disconnect ground support and fly using only the onboard terminal.",
+          "why": "This increases workload and removes an essential source of navigation and diagnostics.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 4,
+            "hull": 0,
+            "team": 12,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Change the destination to the far side without checking communications, power, or lighting.",
+          "why": "A destination change requires redesigning communications, power, thermal control, and navigation; it cannot be improvised.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 12,
+            "hull": 0,
+            "team": 12,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Prologue and Preparation"
+    },
+    {
+      "phase": 0,
+      "title": "Cryogenic Loading and Pad Inspection",
+      "tag": "TECHNICAL SIMULATION",
+      "scenario": "Two hours before launch, the team spots unusual ice on the outside of the vehicle and a thermal reading outside the expected range on a sensitive component.",
+      "question": "What is the prudent response?",
+      "hint": "The countdown is never more important than checking a condition outside certified limits.",
+      "learn": "Liquid oxygen and liquid hydrogen are stored at cryogenic temperatures. Ice, frost, and temperature changes must be assessed using vehicle-specific procedures. They should not be “fixed” by spraying hot water or simply ignored.",
+      "fact": "This scenario combines two different accidents: Challenger (1986) was related to O-ring seals and low temperatures; Columbia (2003) was lost after insulating foam struck its wing. They were not the same event.",
+      "choices": [
+        {
+          "text": "Hold the countdown, inspect the vehicle, and follow the certified procedure before resuming.",
+          "why": "Correct. An anomaly needs assessment and technical approval before operations continue.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 3,
+            "team": 3,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Ignore the ice; aerodynamic friction will remove it during ascent.",
+          "why": "Detached debris or unassessed damage could compromise critical systems.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 20,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Spray hot water under pressure directly onto the cryogenic tanks.",
+          "why": "Thermal shock and freezing water could make the situation worse.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 6,
+            "power": 0,
+            "hull": 12,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Drain some oxidizer and launch with a mixture outside specifications.",
+          "why": "The propellant ratio must remain within the certified design; changing it compromises performance.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 24,
+            "power": 0,
+            "hull": 8,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Prologue and Preparation"
+    },
+    {
+      "phase": 0,
+      "title": "Mission Planning and Crew Roles",
+      "tag": "SIMULATION",
+      "scenario": "The crew must define the science objective and assign four responsibilities: planning, engineering, science, and communications/resources.",
+      "question": "How should you organize the team?",
+      "hint": "Science matters, but someone must first monitor the trajectory, systems, and resources.",
+      "learn": "Systems engineering balances science objectives, mass, power, time, and safety margins. A clear division of responsibility prevents conflicting orders and speeds up decisions.",
+      "fact": "Real flight and mission-control teams use specialized roles, checklists, and defined decision chains.",
+      "choices": [
+        {
+          "text": "Assign complementary roles and agree: “safe return first; science second.”",
+          "why": "The mission has clear priorities, and each team member knows what to monitor.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 6,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Make everyone a scientist and leave navigation and resources unassigned.",
+          "why": "Without someone monitoring the trajectory and consumables, the crew is less able to anticipate risks.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 6,
+            "power": 0,
+            "hull": 0,
+            "team": 16,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Load every possible instrument without checking mass, power, or budget.",
+          "why": "Payload is limited by the launch vehicle and spacecraft capacity.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 12,
+            "power": 12,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Completely separate the ground and spacecraft displays.",
+          "why": "Isolated teams can work from different data and issue incompatible commands.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 18,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Prologue and Preparation"
+    },
+    {
+      "phase": 0,
+      "title": "The Mass Tradeoff: Science or Safety",
+      "tag": "SIMULATION",
+      "scenario": "The mass budget is limited. You must choose instruments, propellant, thermal protection, and cooling-water reserves.",
+      "question": "Which configuration do you choose?",
+      "hint": "Extra mass is not free: it affects delta-v. But removing protection or reserves also has a cost.",
+      "learn": "The Tsiolkovsky rocket equation relates initial mass, final mass, and achievable velocity. Every kilogram matters, so the design must balance science payload against safety margins.",
+      "fact": "The rocket equation is a real principle; the percentages in this challenge are fictional game parameters.",
+      "choices": [
+        {
+          "text": "Match the instruments to the objective and preserve propellant, the heat shield, and cooling reserves.",
+          "why": "A carefully chosen payload maximizes science without sacrificing the return.",
+          "gain": {
+            "oxygen": 2,
+            "fuel": 4,
+            "power": 0,
+            "hull": 4,
+            "team": 0,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Take every instrument and cut propellant reserves by 20%.",
+          "why": "You could run out of delta-v for critical maneuvers.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 20,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Keep all the payload and drastically reduce the return heat shield.",
+          "why": "Lunar re-entry requires a thermal-protection system designed for that environment.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 25,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Remove batteries and cooling reserves to install a larger antenna.",
+          "why": "Communications are not worth losing power and thermal control.",
+          "damage": {
+            "oxygen": 10,
+            "fuel": 0,
+            "power": 15,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Prologue and Preparation"
+    },
+    {
+      "phase": 1,
+      "title": "Liftoff and Gravity Turn",
+      "tag": "REAL PRINCIPLE",
+      "scenario": "The launch vehicle lifts off. After clearing the tower, it must gradually pitch over to build horizontal speed and enter orbit.",
+      "question": "Which ascent profile is appropriate?",
+      "hint": "Reaching orbit takes more than altitude: the vehicle needs a great deal of horizontal speed.",
+      "learn": "A well-designed gravity turn gradually converts some of the vehicle’s thrust into horizontal speed. Launching eastward from suitable latitudes can take advantage of part of Earth’s rotation.",
+      "fact": "A real trajectory depends on the launch vehicle, mission, latitude, azimuth, and safety constraints.",
+      "choices": [
+        {
+          "text": "Follow a smooth, guided gravity turn based on the flight profile and wind conditions.",
+          "why": "A gradual pitch builds orbital speed without abrupt maneuvers.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 5,
+            "power": 0,
+            "hull": 2,
+            "team": 0,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Climb vertically to the edge of the atmosphere, then turn 90 degrees at once.",
+          "why": "A prolonged vertical climb wastes energy fighting gravity.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 16,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Launch westward and force an extreme turn at low altitude.",
+          "why": "This gives up the boost from Earth’s rotation and increases aerodynamic loads.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 8,
+            "power": 0,
+            "hull": 22,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Disable the gyroscopes and steer using visual cues from the wind.",
+          "why": "Without reliable navigation and attitude control, the vehicle could leave its safe corridor.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 25,
+            "team": 8,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Ascent and Earth Orbit"
+    },
+    {
+      "phase": 1,
+      "title": "Max-Q: Maximum Dynamic Pressure",
+      "tag": "REAL PRINCIPLE",
+      "scenario": "The vehicle is crossing the region where atmospheric density and speed combine to produce the greatest dynamic pressure. The structure is under a heavy load.",
+      "question": "Which command reduces structural risk?",
+      "hint": "Dynamic pressure increases with air density and with the square of velocity.",
+      "learn": "Dynamic pressure is expressed as q = ½ρv². Near Max-Q, launch vehicles may temporarily reduce thrust to limit aerodynamic loads, then increase it again afterward.",
+      "fact": "Max-Q is a real launch-vehicle engineering concept; each vehicle’s specific flight profile is calculated individually.",
+      "choices": [
+        {
+          "text": "Apply the planned Max-Q throttle reduction and restore thrust after passing the critical region.",
+          "why": "This limits structural loads while keeping the ascent profile on track.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 2,
+            "power": 0,
+            "hull": 5,
+            "team": 0,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Keep maximum thrust to get through the dense air as quickly as possible.",
+          "why": "Higher speed in dense air can raise aerodynamic loads beyond their limits.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 22,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Shut down every engine and let the vehicle drift through the region.",
+          "why": "Losing thrust during ascent can cause trajectory and control problems.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 12,
+            "power": 0,
+            "hull": 0,
+            "team": 8,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Jettison the fairing and exhaust systems before leaving the appropriate part of the atmosphere.",
+          "why": "Early separation can expose sensitive equipment to aerodynamic loads and heating.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 10,
+            "hull": 14,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Ascent and Earth Orbit"
+    },
+    {
+      "phase": 1,
+      "title": "Longitudinal Vibration: Pogo",
+      "tag": "HISTORICAL EVENT",
+      "scenario": "During ascent, longitudinal oscillations appear in sync with the propellant feed lines. The readings show that the vibration is growing.",
+      "question": "What is the right approach?",
+      "hint": "Pogo is not fixed by “adding more throttle”; it is a resonance involving the structure, engines, and propellant feed.",
+      "learn": "Pogo is a longitudinal oscillation that can result from coupling between engine vibration, propellant lines, and the structure. Solutions are developed through analysis, testing, and system damping.",
+      "fact": "Apollo 6 experienced pogo in 1968. NASA and its contractors developed mitigations for later flights, including helium-pressurized cavities in LOX lines.",
+      "choices": [
+        {
+          "text": "Activate the validated mitigation strategy and follow engineering and flight-control guidance.",
+          "why": "The response is based on testing and reducing resonant coupling, not improvisation.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 4,
+            "team": 3,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Increase thrust to “power through” the vibration.",
+          "why": "Adding energy to a resonant system can worsen oscillations and damage lines or structure.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 8,
+            "power": 0,
+            "hull": 24,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Separate the stages while thrust could still cause them to make contact.",
+          "why": "An out-of-sequence separation could cause the stages to collide.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 28,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Disable the computer filters so it stops showing alarms.",
+          "why": "Hiding or filtering data without a diagnosis prevents real deviations from being detected.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 12,
+            "team": 12,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Ascent and Earth Orbit"
+    },
+    {
+      "phase": 1,
+      "title": "Low Earth Orbit and Propellant Settling",
+      "tag": "REAL PRINCIPLE",
+      "scenario": "In microgravity, liquid propellant floats and can move away from the engine feed inlet. An engine burn must be prepared.",
+      "question": "What must happen before the main engine burn?",
+      "hint": "Engines need liquid, not an unpredictable mixture of liquid and bubbles.",
+      "learn": "Ullage maneuvers apply a small acceleration to move propellant toward the tank outlet. This reduces the risk of gas entering the feed system.",
+      "fact": "Propellant settling is a real spacecraft technique; the exact mechanism depends on the vehicle design.",
+      "choices": [
+        {
+          "text": "Perform the planned settling maneuver and confirm the feed system is ready.",
+          "why": "The propellant is in the expected position before the main engine starts.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 5,
+            "power": 0,
+            "hull": 2,
+            "team": 0,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Ignite immediately and trust the pump to draw liquid from any position.",
+          "why": "Gas entering the feed can cause cavitation or interrupt propellant flow.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 14,
+            "power": 0,
+            "hull": 24,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Spin the whole spacecraft rapidly to push the liquid against the tank walls.",
+          "why": "Spinning can complicate attitude control and does not guarantee that propellant reaches the tank outlet.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 12,
+            "power": 5,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Inject pressurized oxidizer into the fuel tank.",
+          "why": "Mixing propellants outside the combustion chamber creates an extreme hazard.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 30,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Ascent and Earth Orbit"
+    },
+    {
+      "phase": 1,
+      "title": "Transposition, Docking, and Extraction",
+      "tag": "REAL PRINCIPLE",
+      "scenario": "The spacecraft must turn around, approach the lunar module, and dock. Closing speed is high, and the capture system is not yet aligned.",
+      "question": "How do you dock?",
+      "hint": "In space, even a small difference in speed can result in a major impact.",
+      "learn": "Docking requires control of relative speed, alignment, contact, and latching. After confirming the structural connection, the crew checks the seal and equalizes pressure before opening the tunnel.",
+      "fact": "Apollo used a transposition, docking, and extraction maneuver to retrieve the lunar module from the Saturn V adapter.",
+      "choices": [
+        {
+          "text": "Reduce relative speed, align the markings, confirm capture, and check the seal.",
+          "why": "A controlled approach avoids damage to the docking ring and seals.",
+          "gain": {
+            "oxygen": 2,
+            "fuel": 0,
+            "power": 0,
+            "hull": 4,
+            "team": 2,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Strike the module at high speed to force the latches closed.",
+          "why": "A hard impact can deform the interface and damage the seals.",
+          "damage": {
+            "oxygen": 10,
+            "fuel": 0,
+            "power": 0,
+            "hull": 22,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Fire the main engine before confirming that every latch is closed.",
+          "why": "The module could pivot and strike the connecting structure.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 8,
+            "power": 0,
+            "hull": 16,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Approach blindly using radar beyond its reliable range.",
+          "why": "Sensors have limits, and an incorrect reading can turn an approach into a collision.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 8,
+            "power": 0,
+            "hull": 12,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Ascent and Earth Orbit"
+    },
+    {
+      "phase": 2,
+      "title": "Translunar Injection: Bound for the Moon",
+      "tag": "REAL PRINCIPLE",
+      "scenario": "The spacecraft is in Earth orbit and must perform a translunar injection burn. The propellant margin is tight.",
+      "question": "How do you plan the maneuver?",
+      "hint": "The goal is to reach the required orbital energy, not simply to accelerate as much as possible.",
+      "learn": "Translunar injection changes the orbit so the spacecraft can reach the lunar region. The maneuver’s direction, magnitude, and duration are carefully calculated; small errors can grow during the trip.",
+      "fact": "The transfer depends on geometry and initial conditions; the speeds in this scenario are simulated values, not a universal recipe.",
+      "choices": [
+        {
+          "text": "Verify navigation and margins, perform the calculated burn, and shut down according to the validated plan.",
+          "why": "The maneuver reaches the planned trajectory and preserves propellant for later phases.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 5,
+            "power": 0,
+            "hull": 0,
+            "team": 2,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Shut down several seconds early because you are worried about running short, without recalculating.",
+          "why": "A velocity shortfall could leave the spacecraft’s apogee far short of lunar distance.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 14,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Overburn to “make sure” you reach the Moon.",
+          "why": "Excess energy could require much more propellant to slow down and enter lunar orbit.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 18,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Split the burn into arbitrary pulses in different orbits.",
+          "why": "Without an orbital plan, losses and geometry can degrade the transfer.",
+          "damage": {
+            "oxygen": 5,
+            "fuel": 12,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Lunar Transit and Deep Space"
+    },
+    {
+      "phase": 2,
+      "title": "Van Allen Radiation Belts",
+      "tag": "REAL PRINCIPLE",
+      "scenario": "Sensors detect an increase in energetic particles as the spacecraft crosses regions of the Van Allen belts. Some nonessential instruments are still active.",
+      "question": "Which precautions do you prioritize?",
+      "hint": "Protection combines trajectory planning, exposure time, shielding, and care of electronic systems.",
+      "learn": "The Van Allen belts contain charged particles trapped by Earth’s magnetic field. Exposure depends on particle energy, trajectory, and duration. Shielding and instrument management help limit risk.",
+      "fact": "The belts are real radiation regions; the level of risk depends on the mission and trajectory.",
+      "choices": [
+        {
+          "text": "Reduce nonessential operations, protect electronics, and use available shielding as planned.",
+          "why": "This limits unnecessary exposure and protects sensitive systems.",
+          "gain": {
+            "oxygen": 2,
+            "fuel": 0,
+            "power": 3,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Keep every experiment at full power to map the radiation.",
+          "why": "Unnecessary operation adds workload and exposes delicate instruments.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 16,
+            "hull": 6,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Spin the spacecraft rapidly to throw off the charged particles.",
+          "why": "Vehicle rotation does not usefully deflect particles trapped by the magnetic field.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 10,
+            "power": 0,
+            "hull": 0,
+            "team": 6,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Fire the descent engine to cross the region as quickly as possible.",
+          "why": "An unplanned maneuver uses delta-v and could ruin the arrival geometry.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 20,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Lunar Transit and Deep Space"
+    },
+    {
+      "phase": 2,
+      "title": "Solar Energetic Particle Storm",
+      "tag": "HISTORICAL RISK",
+      "scenario": "The Sun has produced a major flare, and energetic particles are expected to arrive. The crew has time to shelter and rearrange the cabin.",
+      "question": "Where and how do you protect the crew?",
+      "hint": "Choose the area with the most mass around it: water, food, and equipment can help form a shelter.",
+      "learn": "Energetic solar particles can pass through tissue and deliver dangerous radiation doses. A shelter lined with hydrogen-rich materials such as water and food can reduce exposure.",
+      "fact": "A major solar storm occurred in August 1972 between Apollo 16 and Apollo 17. It was a near miss for lunar explorers; no Apollo crew was in transit at the time.",
+      "choices": [
+        {
+          "text": "Gather the crew in a protected part of the spacecraft and surround them with water and food supplies.",
+          "why": "The improvised shelter adds shielding around the crew and reduces exposure.",
+          "gain": {
+            "oxygen": 4,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 3,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Trust EVA suits to completely block energetic protons.",
+          "why": "Spacesuits are not a substitute for shelter during a major solar-particle storm.",
+          "damage": {
+            "oxygen": 18,
+            "fuel": 0,
+            "power": 0,
+            "hull": 6,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Point thin solar panels toward the storm as a proton shield.",
+          "why": "The panels do not provide enough shielding and could be degraded by radiation.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 16,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Ignore the warning and continue an EVA to make use of the time.",
+          "why": "Exposure could increase to a dangerously high level when it could have been avoided.",
+          "damage": {
+            "oxygen": 22,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 8,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Lunar Transit and Deep Space"
+    },
+    {
+      "phase": 2,
+      "title": "CO₂ Filter Emergency",
+      "tag": "HISTORICAL EVENT",
+      "scenario": "Cabin sensors show that carbon dioxide is rising. The spare filter cartridge is a different shape and does not fit the available housing.",
+      "question": "What solution do you propose?",
+      "hint": "The Apollo 13 problem was not solved by opening a valve: an incompatible cartridge was physically adapted.",
+      "learn": "Lithium hydroxide (LiOH) removes CO₂ from air. During Apollo 13, the ground team helped improvise an adapter from bags, cardboard, and tape to connect square cartridges to a round-opening system.",
+      "fact": "This is a real Apollo 13 (1970) episode, described by NASA as fitting “a square peg in a round hole.”",
+      "choices": [
+        {
+          "text": "Work with the ground team to design an adapter that safely connects the cartridge to the airflow.",
+          "why": "The Apollo 13 solution! Cooperation between the crew and engineers brought CO₂ under control.",
+          "gain": {
+            "oxygen": 8,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 6,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Open the oxygen valves to try to dilute the carbon dioxide.",
+          "why": "Adding oxygen does not remove CO₂ and can create other risks, including fire.",
+          "damage": {
+            "oxygen": 20,
+            "fuel": 0,
+            "power": 4,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Periodically vent the cabin into space to expel the gas.",
+          "why": "You would lose breathable air while the crew continued producing CO₂.",
+          "damage": {
+            "oxygen": 24,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Ask the crew to breathe shallowly and wait until reaching the Moon.",
+          "why": "People continue to produce CO₂; waiting makes the problem worse.",
+          "damage": {
+            "oxygen": 20,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 10,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Lunar Transit and Deep Space"
+    },
+    {
+      "phase": 2,
+      "title": "Deep-Space Trajectory Correction",
+      "tag": "REAL PRINCIPLE",
+      "scenario": "Tracking data show that the spacecraft will miss its arrival target. A signal takes time to travel between Earth and the spacecraft.",
+      "question": "How do you correct the course?",
+      "hint": "Combine independent measurements, and remember that control from Earth is not instantaneous.",
+      "learn": "Deep-space navigation combines Doppler tracking, optical measurements, and orbital models. Corrections are often small, but must be calculated carefully and performed at the right time.",
+      "fact": "Communication delay depends on distance. Crew autonomy is essential when Earth cannot steer the spacecraft in real time.",
+      "choices": [
+        {
+          "text": "Cross-check optical navigation with ground tracking, calculate a small correction, and verify it.",
+          "why": "Cross-checking reduces error and avoids using more propellant than necessary.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 4,
+            "power": 0,
+            "hull": 0,
+            "team": 4,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Ignore the deviation and wait until arrival to correct it all at once.",
+          "why": "A small error can become a large miss by the time the spacecraft reaches the lunar region.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 14,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Ask Earth to move the thrusters in real time like a joystick.",
+          "why": "Latency could make commands arrive late and contradict one another.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 12,
+            "power": 0,
+            "hull": 0,
+            "team": 12,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Fire the main engine sideways for a long time without recalculating.",
+          "why": "A large, imprecise maneuver could overcorrect and consume reserves.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 20,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Lunar Transit and Deep Space"
+    },
+    {
+      "phase": 3,
+      "title": "Lunar Orbit Insertion and Radio Silence",
+      "tag": "HISTORICAL EVENT",
+      "scenario": "The spacecraft will pass behind the Moon and temporarily lose signal. The burn to enter lunar orbit must take place during this communications blackout.",
+      "question": "How do you prepare for the maneuver?",
+      "hint": "The spacecraft cannot receive live commands while the Moon blocks the line of sight.",
+      "learn": "The far side of the Moon blocks direct communications with Earth. During Apollo, critical maneuvers were planned for the crew to execute during radio silence.",
+      "fact": "Apollo 8 became well known for its loss of signal as it passed behind the Moon and entered lunar orbit.",
+      "choices": [
+        {
+          "text": "Verify the parameters and attitude before signal loss; let the crew execute the approved autonomous sequence.",
+          "why": "The maneuver takes place in the correct window without depending on a signal that cannot get through.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 4,
+            "power": 0,
+            "hull": 0,
+            "team": 4,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Delay the burn until the spacecraft has contact with Earth again.",
+          "why": "The orbital window could be missed, and the Moon might not capture the spacecraft.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 22,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Cut the engine early because of a minor vibration without checking the data.",
+          "why": "An incomplete burn could leave the spacecraft in an excessively eccentric orbit.",
+          "damage": {
+            "oxygen": 6,
+            "fuel": 12,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Increase radio power to transmit through the Moon’s rock.",
+          "why": "The Moon blocks the direct signal; more power cannot create line of sight.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 14,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Lunar Orbit and Separation"
+    },
+    {
+      "phase": 3,
+      "title": "Mascons: Irregular Lunar Gravity",
+      "tag": "HISTORICAL EVENT",
+      "scenario": "Orbital tracking shows that the trajectory is slowly changing and periapsis is dropping. The Moon’s gravitational field is not perfectly uniform.",
+      "question": "Which explanation do you investigate first?",
+      "hint": "The Moon has no dense atmosphere to “glide” on. Consider variations in mass beneath the surface.",
+      "learn": "Mascons are concentrations of mass that create gravitational anomalies. They affect low orbits and must be included in lunar navigation.",
+      "fact": "Lunar Orbiter missions detected gravitational variations associated with mascons; this knowledge helped planners design Apollo trajectories.",
+      "choices": [
+        {
+          "text": "Model the gravitational disturbance and adjust the orbit with a calculated maneuver.",
+          "why": "This addresses the orbital cause instead of chasing a false aerodynamic explanation.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 4,
+            "power": 0,
+            "hull": 0,
+            "team": 3,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Tilt the spacecraft so lunar air makes it climb like an airplane.",
+          "why": "The Moon has almost no atmosphere, so there is no useful lift to correct the orbit.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 10,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Ignore the data and assume the altimeter is faulty.",
+          "why": "A real orbital anomaly can turn a safe orbit into an impact trajectory.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 22,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Drop instruments so the spacecraft weighs less and “floats higher.”",
+          "why": "In a given gravitational field, reducing mass does not raise an orbit by itself.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 14
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Lunar Orbit and Separation"
+    },
+    {
+      "phase": 3,
+      "title": "Tunnel Pressure and Undocking",
+      "tag": "SIMULATION",
+      "scenario": "The latch indicator shows an incomplete closure, and there is a small pressure leak in the tunnel between the modules.",
+      "question": "What command do you give?",
+      "hint": "Do not separate a pressurized system until the docking mechanism is confirmed locked and sealed.",
+      "learn": "Spacecraft docking systems combine mechanical capture, pressure seals, and sensor checks. A failure before separation can prevent a later rendezvous.",
+      "fact": "This training scenario simulates docking failures; it does not recreate a specific Apollo incident.",
+      "choices": [
+        {
+          "text": "Stop the separation, check the latches and pressure, and proceed only after confirming integrity.",
+          "why": "Verification prevents a fixable problem from becoming an irreversible failure.",
+          "gain": {
+            "oxygen": 5,
+            "fuel": 0,
+            "power": 0,
+            "hull": 3,
+            "team": 3,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Trigger the explosive bolts immediately and assume the connection is sound.",
+          "why": "Separation could deform the ring or leave the module unable to dock again.",
+          "damage": {
+            "oxygen": 10,
+            "fuel": 0,
+            "power": 0,
+            "hull": 22,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Send someone outside without a tether to hit the mechanism.",
+          "why": "An untethered EVA could result in the person being lost in space.",
+          "damage": {
+            "oxygen": 18,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 12,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Silence the alarm and continue the automatic sequence.",
+          "why": "Disabling an alert does not fix the mechanical fault or the leak.",
+          "damage": {
+            "oxygen": 12,
+            "fuel": 0,
+            "power": 0,
+            "hull": 16,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Lunar Orbit and Separation"
+    },
+    {
+      "phase": 4,
+      "title": "1202 Alarm During Descent",
+      "tag": "HISTORICAL EVENT",
+      "scenario": "Close to the surface, the guidance computer displays a 1202 alarm. The spacecraft is still descending, and there is little time to decide.",
+      "question": "How do you respond?",
+      "hint": "During Apollo 11, ground control identified that the computer was overloaded with low-priority tasks, while essential functions remained available.",
+      "learn": "Apollo computer alarms 1201/1202 indicated executive overflow conditions. The system prioritized tasks: some could be deferred while essential guidance continued to run.",
+      "fact": "Apollo 11 received 1201 and 1202 alarms during descent. Houston assessed the situation and gave the “GO” to continue.",
+      "choices": [
+        {
+          "text": "Check the prioritized diagnostics; release nonessential tasks only if primary guidance remains healthy.",
+          "why": "This preserves critical navigation and reduces secondary computer workload.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 2,
+            "hull": 0,
+            "team": 5,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Automatically abort for any alarm without checking what it means.",
+          "why": "An executive-overflow alarm does not necessarily mean essential functions have failed.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 5,
+            "science": 20
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Keep all nonessential cameras and sensors transmitting at maximum rate.",
+          "why": "The extra workload could prevent critical navigation data from updating.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 12,
+            "hull": 12,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Completely reboot the computer during descent.",
+          "why": "A reboot could erase references and consume guidance time when they are most needed.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 24,
+            "team": 8,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Powered Descent and Landing"
+    },
+    {
+      "phase": 4,
+      "title": "Avoiding Rocks and Craters During Final Descent",
+      "tag": "REAL PRINCIPLE",
+      "scenario": "A few meters above the surface, the automatic system is aiming at a rocky area. Engine-blown dust reduces visibility, and descent fuel is limited.",
+      "question": "What do you do?",
+      "hint": "Maintain control of speed and attitude; do not use all the fuel searching for a perfect landing site.",
+      "learn": "Landing-site selection must balance slope, rocks, lighting, and remaining fuel. Lunar dust can obscure the ground and make it harder to see.",
+      "fact": "Apollo 11’s landing included a manual divert to avoid an area of rocks and craters.",
+      "choices": [
+        {
+          "text": "Take translational control within limits, avoid the obstacle, and land in a safe area.",
+          "why": "This prioritizes stable ground while preserving a propellant margin.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 4,
+            "power": 0,
+            "hull": 4,
+            "team": 0,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Shut down the engine and let the module fall to avoid raising dust.",
+          "why": "A free fall gives no control over touchdown speed or landing-leg loads.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 24,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Hover until you find a site completely free of rocks.",
+          "why": "Descent fuel is limited; waiting too long could lead to loss of thrust.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 24,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Leave the autopilot aimed at the crater wall despite its excessive slope.",
+          "why": "A steep slope could prevent a safe liftoff from the surface.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 8,
+            "power": 0,
+            "hull": 20,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Powered Descent and Landing"
+    },
+    {
+      "phase": 4,
+      "title": "STAY / NO-STAY Decision After Touchdown",
+      "tag": "SIMULATION",
+      "scenario": "After touchdown, a sensor reports abnormal pressure in a residual propellant line. You must confirm that the module is stable before beginning surface operations.",
+      "question": "Which procedure do you follow?",
+      "hint": "Do not ignore a pressure warning or fire an engine to “burn off” propellant on the ground.",
+      "learn": "Propellant systems can show pressure changes due to temperature. The real response depends on vehicle design and its checklists; this game rewards isolating, verifying, and following the validated procedure.",
+      "fact": "This scenario draws on Apollo-era concerns about module temperature and pressure, but this specific sequence is a simulation.",
+      "choices": [
+        {
+          "text": "Isolate the condition according to procedure, monitor pressure, and declare STAY only after confirming stability.",
+          "why": "The crew does not assume an abnormal reading will disappear on its own.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 4,
+            "team": 4,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Immediately ignite the ascent module without checking the anomaly.",
+          "why": "A rushed liftoff sacrifices surface science and could increase risk.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 12,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 18
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Ignore the alarm and open the hatch as quickly as possible.",
+          "why": "Leaving before checking the systems could expose the crew to an avoidable failure.",
+          "damage": {
+            "oxygen": 20,
+            "fuel": 0,
+            "power": 0,
+            "hull": 10,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Restart the descent engine while the module is resting on the surface.",
+          "why": "Thrust could damage the vehicle, kick up debris, or destabilize the module.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 24,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Powered Descent and Landing"
+    },
+    {
+      "phase": 5,
+      "title": "Heat, Power, and Science Sampling",
+      "tag": "REAL PRINCIPLE",
+      "scenario": "In the sunlit area, equipment is heating up and the cooling system is using more water than expected. Important experiments still remain.",
+      "question": "How do you organize the science work?",
+      "hint": "There is no air convection in a vacuum: heat must be managed with thermal systems and power planning.",
+      "learn": "In a vacuum, convection does not work as it does on Earth. Spacecraft manage heat with radiators, fluid loops, and other systems. High-power experiments may need to be alternated.",
+      "fact": "Lunar surface temperatures vary greatly between sunlight and shadow; the exact value depends on location and conditions.",
+      "choices": [
+        {
+          "text": "Alternate instruments, use thermal covers, and preserve a cooling reserve.",
+          "why": "You collect useful data without overloading thermal capacity or the power budget.",
+          "gain": {
+            "oxygen": 3,
+            "fuel": 0,
+            "power": 4,
+            "hull": 0,
+            "team": 0,
+            "science": 5
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Run every instrument at full power at the same time.",
+          "why": "The heat load could exceed heat-rejection capacity and deplete the coolant.",
+          "damage": {
+            "oxygen": 14,
+            "fuel": 0,
+            "power": 18,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Open the hatch so the vacuum can cool the cabin.",
+          "why": "Opening the hatch depressurizes the cabin; a vacuum is not air conditioning.",
+          "damage": {
+            "oxygen": 25,
+            "fuel": 0,
+            "power": 0,
+            "hull": 8,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Turn off all science and return without taking measurements.",
+          "why": "The crew would survive, but the mission would fail to meet its science objectives.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 22
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Lunar Science and EVA"
+    },
+    {
+      "phase": 5,
+      "title": "EVA: Electrostatic Lunar Dust",
+      "tag": "HISTORICAL EVENT",
+      "scenario": "During the moonwalk, dust sticks to the suit, enters joints, and coats thermal-control surfaces. Equipment temperature is beginning to rise.",
+      "question": "What action do you take?",
+      "hint": "Lunar dust is abrasive and can jam mechanisms. Aggressive gas cleaning can push it farther into the joints.",
+      "learn": "Lunar regolith has sharp grains and an electrostatic charge. It can wear fabric, jam mechanisms, affect seals, and reduce heat rejection.",
+      "fact": "NASA studied dust problems on Apollo missions, including abrasion, clogs, false readings, seal problems, and thermal-control issues.",
+      "choices": [
+        {
+          "text": "Use the approved cleaning method, monitor cooling, and respect the return limit.",
+          "why": "The crew protects the suit and keeps enough margin to return to the module.",
+          "gain": {
+            "oxygen": 4,
+            "fuel": 0,
+            "power": 0,
+            "hull": 3,
+            "team": 0,
+            "science": 3
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Blast the joints with pressurized oxygen to force the dust out.",
+          "why": "The gas could push particles into sensitive areas and consumes oxygen.",
+          "damage": {
+            "oxygen": 14,
+            "fuel": 0,
+            "power": 0,
+            "hull": 8,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Ignore the thermal warnings and walk farther to collect extra samples.",
+          "why": "Exceeding the return limit could leave the astronaut without enough oxygen or cooling.",
+          "damage": {
+            "oxygen": 24,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 8,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Remove the outer gloves to handle the ground more precisely.",
+          "why": "The outer layers protect the suit from abrasive dust and thermal hazards.",
+          "damage": {
+            "oxygen": 8,
+            "fuel": 0,
+            "power": 0,
+            "hull": 16,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Lunar Science and EVA"
+    },
+    {
+      "phase": 5,
+      "title": "ALSEP Science Station Deployment",
+      "tag": "APOLLO-BASED SIMULATION",
+      "scenario": "You are installing long-duration instruments. The generator and its container require careful handling, and the station must be outside the ascent hazard zone.",
+      "question": "How do you proceed?",
+      "hint": "A station may keep transmitting after the crew leaves. Do not place it where the ascent plume could destroy it.",
+      "learn": "Apollo surface experiments transmitted data long after the astronauts returned. The ALSEP package included instruments powered by a radioisotope thermoelectric generator (RTG).",
+      "fact": "ALSEP deployment and RTG use are historical. The jam described here is a training scenario, not a confirmed anecdote about Alan Bean.",
+      "choices": [
+        {
+          "text": "Follow the validated handling sequence, use the planned tools, and place the station in a protected area.",
+          "why": "This protects the equipment and improves the chance that the instruments keep working.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 3,
+            "hull": 0,
+            "team": 0,
+            "science": 8
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Place the station a few meters from the module to save time.",
+          "why": "The ascent plume and flying debris could damage nearby instruments.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 18
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Hit the container to free the stuck component.",
+          "why": "An impact could damage a power source or its shielding.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 12,
+            "team": 0,
+            "science": 14
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Connect the station to the ascent batteries and use up their reserves.",
+          "why": "Ascent power is critical for leaving the surface and rendezvousing with the main spacecraft.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 10,
+            "power": 18,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Lunar Science and EVA"
+    },
+    {
+      "phase": 6,
+      "title": "Ascent Engine Switch",
+      "tag": "HISTORICAL EVENT",
+      "scenario": "Before liftoff, the crew discovers that the small knob is missing from a switch that must be closed to arm the ascent engine. The circuit and procedure have been checked.",
+      "question": "Which contingency solution was inspired by this episode?",
+      "hint": "The Apollo 11 story involves a felt-tip pen. It was not a Fisher Space Pen.",
+      "learn": "A switch on the Eagle lunar module panel lost its knob. Buzz Aldrin said he used a felt-tip pen to activate the switch; NASA added guards and checks on later flights.",
+      "fact": "The anecdote is documented in the Apollo 11 history. The marker was not the famous Fisher Space Pen.",
+      "choices": [
+        {
+          "text": "After checking the schematic and getting authorization, use the approved nonconductive tool to operate the switch.",
+          "why": "This resolves the contingency while maintaining circuit control and following ground verification.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 6,
+            "hull": 0,
+            "team": 4,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Insert a bare metal screwdriver into an energized circuit.",
+          "why": "This could cause a short circuit, electrical arc, or fire.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 24,
+            "hull": 12,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Apply saliva or water to electrically close the contact.",
+          "why": "Liquids can cause short circuits and damage electronics.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 20,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Attempt liftoff using only the small attitude-control thrusters.",
+          "why": "Control thrusters cannot replace the main ascent engine.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 24,
+            "power": 0,
+            "hull": 14,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Lunar Liftoff and Rendezvous"
+    },
+    {
+      "phase": 6,
+      "title": "Lighten the Module for Liftoff",
+      "tag": "REAL PRINCIPLE",
+      "scenario": "The ascent stage is carrying samples and equipment. To meet the liftoff mass limit, you must decide which items stay on the surface.",
+      "question": "What do you leave behind?",
+      "hint": "Scientific samples are part of the objective; prioritize equipment not needed for ascent and docking.",
+      "learn": "Performance depends on mass and delta-v. Apollo modules left equipment on the Moon that was no longer needed for the return, while keeping the crew and selected samples.",
+      "fact": "Mass management is real. The quantities in this challenge are fictional.",
+      "choices": [
+        {
+          "text": "Follow the jettison list, leave nonessential tools and equipment, and update the vehicle mass.",
+          "why": "This reduces mass without sacrificing the science objectives or ascent margin.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 5,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 3
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Liftoff with every item even if the module exceeds its mass limit.",
+          "why": "Extra mass reduces the velocity margin and could prevent reaching the planned orbit.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 20,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Throw away the lunar samples to save weight.",
+          "why": "This discards the mission’s main science result.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 25
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Skip the mass update and begin liftoff outside the calculated window.",
+          "why": "Navigation and rendezvous depend on accurate mass and timing data.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 14,
+            "power": 0,
+            "hull": 0,
+            "team": 8,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Lunar Liftoff and Rendezvous"
+    },
+    {
+      "phase": 6,
+      "title": "Orbital Rendezvous: The Inner Orbit",
+      "tag": "REAL PRINCIPLE",
+      "scenario": "The ascent spacecraft is in a lower lunar orbit; the main spacecraft is higher and ahead. You must plan a rendezvous.",
+      "question": "How do you close the distance?",
+      "hint": "A lower orbit has a shorter orbital period. Accelerating directly does not always mean you will reach the target sooner.",
+      "learn": "Kepler’s third law relates orbital period to orbit size: a lower orbit has a shorter period. Rendezvous maneuvers use planned orbital changes, not a straight-line chase.",
+      "fact": "Orbital rendezvous was essential to Gemini and Apollo; rendezvous calculations were developed before the lunar missions.",
+      "choices": [
+        {
+          "text": "Stay in the lower orbit, calculate the phase difference, and perform the transfer when geometry is right.",
+          "why": "The difference in orbital periods lets you close the distance while controlling propellant use.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 5,
+            "power": 0,
+            "hull": 0,
+            "team": 3,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Point directly at the main spacecraft and accelerate toward it at maximum thrust.",
+          "why": "Acceleration can raise the orbit and reduce angular speed, causing the target to pull away.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 22,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Keep braking to drop into a dangerously low orbit.",
+          "why": "Periapsis could eventually intersect the lunar surface.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 12,
+            "power": 0,
+            "hull": 18,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Turn off the radar and estimate distance by looking out the window.",
+          "why": "Visual perception cannot precisely measure orbital distance and velocity.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 14,
+            "power": 0,
+            "hull": 0,
+            "team": 6,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Lunar Liftoff and Rendezvous"
+    },
+    {
+      "phase": 6,
+      "title": "Ascent Stage Disposal",
+      "tag": "HISTORICAL EVENT",
+      "scenario": "The crew and samples are safe aboard the main spacecraft. The empty ascent stage is no longer needed and must be disposed of safely.",
+      "question": "What do you choose to do with it?",
+      "hint": "Some Apollo stages were deliberately crashed so seismometers could study the Moon’s interior.",
+      "learn": "Ascent stages from several Apollo lunar modules were directed to impact the Moon. Seismometers recorded the vibrations and helped scientists study the lunar interior.",
+      "fact": "Controlled impacts of Apollo stages were used as seismic experiments. Details and impact distances varied by mission.",
+      "choices": [
+        {
+          "text": "Confirm separation and safety, then follow the mission’s planned controlled-disposal procedure.",
+          "why": "This avoids leaving an object in a conflicting orbit and can provide seismic data when planned.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 2,
+            "science": 7
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Tow the empty stage to Earth even though it has no re-entry protection.",
+          "why": "This adds mass, and the stage is not designed to return through the atmosphere.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 18,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Leave it drifting in an orbit close to the main spacecraft.",
+          "why": "An uncontrolled object could become a collision hazard.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 14,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Blow it up to turn it into small fragments.",
+          "why": "An explosion creates debris that could damage other spacecraft and equipment.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 24,
+            "team": 0,
+            "science": 10
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Lunar Liftoff and Rendezvous"
+    },
+    {
+      "phase": 7,
+      "title": "Trans-Earth Injection: The Journey Home",
+      "tag": "REAL PRINCIPLE",
+      "scenario": "The spacecraft is behind the Moon and must perform the maneuver to leave lunar orbit. A primary valve shows an abnormal indication.",
+      "question": "What do you do before and during the burn?",
+      "hint": "A critical spacecraft has redundancy and checklists. Do not force a component that is showing a fault.",
+      "learn": "Trans-Earth injection (TEI) changes the trajectory to return to Earth. Redundancy and valve checks let the crew respond to faults without improvising a maneuver.",
+      "fact": "The lunar return maneuver is real; the specific valve problem in this challenge is simulated.",
+      "choices": [
+        {
+          "text": "Verify the anomaly, select the approved backup path, and perform the calculated maneuver.",
+          "why": "This preserves propulsion capability using the planned alternate system.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 5,
+            "power": 0,
+            "hull": 0,
+            "team": 3,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Wait several days in lunar orbit to see if the warning light goes away.",
+          "why": "Crew consumables have a limited supply.",
+          "damage": {
+            "oxygen": 20,
+            "fuel": 0,
+            "power": 12,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Electrically force the primary valve without checking the backup system.",
+          "why": "The valve could jam or deliver the wrong flow to the engine.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 20,
+            "power": 8,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Try to escape lunar orbit using only the attitude-control thrusters.",
+          "why": "Attitude-control thrusters do not provide enough impulse for this maneuver.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 22,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Return to Earth and Re-entry"
+    },
+    {
+      "phase": 7,
+      "title": "Passive Thermal Control: The Barbecue Roll",
+      "tag": "REAL PRINCIPLE",
+      "scenario": "On the return trip, one side of the spacecraft is exposed to sunlight while the other remains in shadow. The temperature difference threatens pipes and equipment.",
+      "question": "How do you distribute the heating?",
+      "hint": "You do not need a fast spin: a slow rotation can distribute solar exposure.",
+      "learn": "Passive thermal control can use a slow rotation, popularly known as the “barbecue roll,” to distribute solar radiation and reduce temperature gradients.",
+      "fact": "Apollo missions used passive thermal control. The exact rotation rate depends on the spacecraft and is not universal.",
+      "choices": [
+        {
+          "text": "Orient the spacecraft and apply a slow rotation using the planned thermal-control mode.",
+          "why": "This distributes solar energy and reduces temperature differences between sides.",
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 4,
+            "hull": 3,
+            "team": 0,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Hold a fixed orientation and compensate entirely with heaters and cooling.",
+          "why": "This could require too much power and leave large temperature gradients.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 18,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Spin very quickly to equalize temperatures as soon as possible.",
+          "why": "Excessive rotation can complicate navigation, sensors, and attitude control.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 8,
+            "power": 0,
+            "hull": 0,
+            "team": 12,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Dump all cooling water into space.",
+          "why": "Without coolant, the spacecraft loses its ability to control internal heat.",
+          "damage": {
+            "oxygen": 16,
+            "fuel": 0,
+            "power": 12,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Return to Earth and Re-entry"
+    },
+    {
+      "phase": 7,
+      "title": "Re-entry, Splashdown, and Recovery",
+      "tag": "REAL PRINCIPLE",
+      "scenario": "The capsule returns to the atmosphere and must pass through a narrow entry corridor. After splashdown it is upside down, with some antennas partly submerged.",
+      "question": "What is the safe sequence?",
+      "hint": "Too steep an entry can overheat the capsule; too shallow an entry can make it skip. After splashdown, stabilize it first.",
+      "learn": "Re-entry requires control of angle and energy. The heat shield protects the capsule; atmospheric braking and parachutes reduce speed. Flotation systems help right a capsule that lands upside down in the water.",
+      "fact": "Exact entry profiles, deployment altitudes, and flotation systems vary between vehicles. The values in this scenario are simplified for the game.",
+      "choices": [
+        {
+          "text": "Follow the certified corridor, deploy parachutes in sequence, and activate the righting system.",
+          "why": "The capsule manages entry energy, slows down, and returns to a stable position for recovery.",
+          "gain": {
+            "oxygen": 4,
+            "fuel": 0,
+            "power": 0,
+            "hull": 6,
+            "team": 4,
+            "science": 0
+          },
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": true
+        },
+        {
+          "text": "Enter very steeply and deploy the main parachutes too early.",
+          "why": "Thermal and aerodynamic loads could exceed limits and damage the parachutes.",
+          "damage": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 28,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Enter too shallowly so the capsule bounces out of the atmosphere.",
+          "why": "A very shallow trajectory may not lose enough energy and could carry the capsule away from Earth.",
+          "damage": {
+            "oxygen": 14,
+            "fuel": 18,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        },
+        {
+          "text": "Open the hatch immediately while the capsule is still upside down in the water.",
+          "why": "The hatch could be below the waterline and let water enter.",
+          "damage": {
+            "oxygen": 18,
+            "fuel": 0,
+            "power": 0,
+            "hull": 20,
+            "team": 0,
+            "science": 0
+          },
+          "gain": {
+            "oxygen": 0,
+            "fuel": 0,
+            "power": 0,
+            "hull": 0,
+            "team": 0,
+            "science": 0
+          },
+          "isCorrect": false
+        }
+      ],
+      "phaseName": "Return to Earth and Re-entry"
+    }
+  ]
+}

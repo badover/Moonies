@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Video;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>Side-view walking constrained to the hull, deck floors and connecting ladders.</summary>
 public sealed class ShipMission : MonoBehaviour
@@ -16,6 +17,8 @@ public sealed class ShipMission : MonoBehaviour
     private float zoom = 4.5f;
     private float zoomVelocity;
     private Sprite shipSprite;
+    private Sprite targetMarkerSprite;
+    private GameObject targetMarker;
     private bool ready;
     private bool ladderNeedsRelease;
     private float runningTimeScale=1;
@@ -25,17 +28,22 @@ public sealed class ShipMission : MonoBehaviour
     private ShipMissionDefinition nearbyMission;
     private ShipMissionDefinition activeMission;
     private readonly Dictionary<ShipMissionDefinition, ShipMissionStatus> missionStatuses = new Dictionary<ShipMissionDefinition, ShipMissionStatus>();
+    public float RadiationLevel { get; private set; }
     public bool IsPaused {get;private set;}
     public CrewHealth Health {get;private set;}
     public event Action<ShipMissionDefinition> MissionInteractionRequested;
+    public event Action<ShipMissionDefinition, bool, bool> MissionResolved;
     public ShipMissionDefinition NearbyMission => nearbyMission;
     public ShipMissionDefinition ActiveMission => activeMission;
     public float ActiveMissionProgress => activeMission == null ? 0 : Mathf.Clamp01(activeMissionElapsed / activeMission.durationSeconds);
+    public float ActiveMissionSecondsRemaining => activeMission == null ? 0 : Mathf.Max(0, activeMission.durationSeconds - activeMissionElapsed);
+    public bool IsNearActiveTarget => activeMission != null && activeMission.objectiveType == ShipMissionObjectiveType.ReachTarget && IsAtTarget(activeMission);
 
     public void Begin(CrewCharacter prefab, System.Action pauseRequested, VideoPlayer videoBackground)
     {
         onPauseRequested = pauseRequested;
-        missionDefinitions = Resources.LoadAll<ShipMissionDefinition>("Missions");
+        missionDefinitions = Resources.LoadAll<ShipMissionDefinition>("Missions")
+            .Where(definition => !definition.startsQuestionCampaign).OrderBy(definition => definition.availableUntilSeconds).ToArray();
         if (prefab == null) throw new System.InvalidOperationException("Selected crew prefab is missing.");
         var texture = Resources.Load<Texture2D>("Menu/ModernSpacecraft");
         var material = Resources.Load<Material>("ShipSprite");
@@ -82,10 +90,13 @@ public sealed class ShipMission : MonoBehaviour
         if (IsPaused) return;
         float delta = Time.deltaTime;
         missionClock += delta;
+        UpdateExpiredMissions();
+        if(IsPaused) return;
         float x = keys == null ? 0 : (keys.dKey.isPressed || keys.rightArrowKey.isPressed ? 1 : 0) - (keys.aKey.isPressed || keys.leftArrowKey.isPressed ? 1 : 0);
         float y = keys == null ? 0 : (keys.wKey.isPressed || keys.upArrowKey.isPressed ? 1 : 0) - (keys.sKey.isPressed || keys.downArrowKey.isPressed ? 1 : 0);
         MoveCrew(x, y, delta);
         UpdateActiveMission(delta);
+        if (IsPaused) return;
         UpdateNearbyMission();
         if (keys != null && keys.eKey.wasPressedThisFrame) TryInteract();
         if (Mouse.current != null) zoom = ShipLayout.ZoomAfterScroll(zoom, Mouse.current.scroll.ReadValue().y);
@@ -93,6 +104,11 @@ public sealed class ShipMission : MonoBehaviour
     public bool TryInteract()
     {
         if(!ready || IsPaused) return false;
+        if (IsNearActiveTarget)
+        {
+            ResolveActiveMission(true);
+            return true;
+        }
         UpdateNearbyMission();
         if(nearbyMission==null) return false;
         MissionInteractionRequested?.Invoke(nearbyMission);
@@ -107,24 +123,50 @@ public sealed class ShipMission : MonoBehaviour
     }
     public bool StartMission(ShipMissionDefinition definition)
     {
-        if (definition == null || activeMission != null || nearbyMission != definition || GetMissionStatus(definition) != ShipMissionStatus.Available)
+        if (!ready || definition == null || !definition.AllowsRole(player.Role) || activeMission != null || nearbyMission != definition || GetMissionStatus(definition) != ShipMissionStatus.Available)
             return false;
         activeMission = definition;
         activeMissionElapsed = 0;
         missionStatuses[definition] = ShipMissionStatus.InProgress;
+        if (definition.objectiveType == ShipMissionObjectiveType.ReachTarget)
+        {
+            targetMarker = new GameObject("Mission target — " + definition.missionId, typeof(SpriteRenderer));
+            targetMarker.transform.SetParent(transform, false);
+            targetMarker.transform.position = (Vector3)definition.TargetWorldPosition + Vector3.up * 1.9f;
+            targetMarker.transform.localScale = Vector3.one * .18f;
+            targetMarker.transform.rotation = Quaternion.Euler(0, 0, 45);
+            var markerRenderer = targetMarker.GetComponent<SpriteRenderer>();
+            if (targetMarkerSprite == null)
+                targetMarkerSprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), new Vector2(.5f, .5f), 1);
+            markerRenderer.sprite = targetMarkerSprite;
+            markerRenderer.sharedMaterial = Resources.Load<Material>("ShipSprite");
+            markerRenderer.color = new Color(1f, .78f, .2f, .9f);
+            markerRenderer.sortingOrder = 20;
+        }
         return true;
     }
     public bool SkipMission(ShipMissionDefinition definition)
     {
-        if (definition == null || nearbyMission != definition || GetMissionStatus(definition) != ShipMissionStatus.Available)
+        if (!ready || definition == null || activeMission != null || !definition.AllowsRole(player.Role) || nearbyMission != definition || GetMissionStatus(definition) != ShipMissionStatus.Available)
             return false;
         missionStatuses[definition] = ShipMissionStatus.Skipped;
+        IncreaseRadiation(definition.radiationIncreaseOnSkip);
+        if (definition.objectiveType == ShipMissionObjectiveType.ReachTarget)
+            ResolveFailure(definition);
         UpdateNearbyMission();
         return true;
     }
     private void UpdateActiveMission(float delta)
     {
-        if (activeMission == null || !IsNearMission(activeMission)) return;
+        if (activeMission == null) return;
+        if (activeMission.objectiveType == ShipMissionObjectiveType.ReachTarget)
+        {
+            activeMissionElapsed += delta;
+            if (activeMissionElapsed >= activeMission.durationSeconds)
+                ResolveActiveMission(false);
+            return;
+        }
+        if (!IsNearMission(activeMission)) return;
         activeMissionElapsed += delta;
         if (activeMissionElapsed >= activeMission.durationSeconds)
         {
@@ -132,6 +174,59 @@ public sealed class ShipMission : MonoBehaviour
             missionStatuses[activeMission] = ShipMissionStatus.Completed;
             activeMission = null;
         }
+    }
+    private void UpdateExpiredMissions()
+    {
+        if (missionDefinitions == null) return;
+        foreach (var definition in missionDefinitions)
+        {
+            if (definition == null || !definition.AllowsRole(player.Role) || missionStatuses.ContainsKey(definition) || missionClock <= definition.availableUntilSeconds) continue;
+            missionStatuses[definition] = ShipMissionStatus.Expired;
+            IncreaseRadiation(definition.radiationIncreaseOnExpiry);
+            if (definition.objectiveType == ShipMissionObjectiveType.ReachTarget)
+                ResolveFailure(definition);
+            if(IsPaused) break;
+        }
+    }
+    private void ResolveFailure(ShipMissionDefinition definition)
+    {
+        bool lethalExposure=IsFatalFailure(definition);
+        Health.TakeDamage(lethalExposure ? Health.Current : definition.damageOnFailure);
+        MissionResolved?.Invoke(definition, false, Health.Current<=0);
+    }
+    private void IncreaseRadiation(float amount)
+    {
+        RadiationLevel = Mathf.Clamp(RadiationLevel + amount, 0, 100);
+    }
+    private bool IsFatalFailure(ShipMissionDefinition definition)
+    {
+        return definition.failureIsFatalAtHighRadiation && RadiationLevel >= definition.fatalRadiationThreshold;
+    }
+    private bool IsAtTarget(ShipMissionDefinition definition)
+    {
+        return player != null && deck == definition.targetDeck &&
+            Vector2.Distance(player.transform.position, definition.TargetWorldPosition) <= definition.interactionRadius;
+    }
+    private void ResolveActiveMission(bool success)
+    {
+        ShipMissionDefinition resolved = activeMission;
+        if (resolved == null) return;
+        if (success)
+        {
+            activeMissionElapsed = resolved.durationSeconds;
+            missionStatuses[resolved] = ShipMissionStatus.Completed;
+        }
+        else
+        {
+            missionStatuses[resolved] = ShipMissionStatus.Failed;
+        }
+        activeMission = null;
+        if (targetMarker != null) Destroy(targetMarker);
+        targetMarker = null;
+        if (targetMarkerSprite != null) { Destroy(targetMarkerSprite); targetMarkerSprite = null; }
+        if(success) MissionResolved?.Invoke(resolved, true, false);
+        else ResolveFailure(resolved);
+        UpdateNearbyMission();
     }
     private void UpdateNearbyMission()
     {
@@ -239,6 +334,7 @@ public sealed class ShipMission : MonoBehaviour
     {
         if(IsPaused) Time.timeScale=runningTimeScale;
         if (shipSprite != null) Destroy(shipSprite);
+        if (targetMarkerSprite != null) Destroy(targetMarkerSprite);
 
     }
 }
