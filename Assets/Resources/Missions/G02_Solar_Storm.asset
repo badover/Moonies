@@ -19,7 +19,8 @@ MonoBehaviour:
   availableUntilSeconds: 230
   durationSeconds: 90
   difficulty: Hard
-  briefing: Red alert. You have 90 seconds to rush to the doors on the left of the life support room. This is the only interaction where a poor decision can end the game immediately if radiation levels are already high.
+  allowSkip: 0
+  briefing: Red alert. Accept this emergency and reach the doors on the left of the life support room within 90 seconds. If you fail to reach shelter in time, the astronaut will die.
   objectiveType: 1
   locationName: Communications
   deck: 2
@@ -29,6 +30,6 @@ MonoBehaviour:
   targetShipPixelX: 1120
   radiationIncreaseOnSkip: 0
   radiationIncreaseOnExpiry: 0
-  failureIsFatalAtHighRadiation: 1
+  failureIsFatal: 1
   fatalRadiationThreshold: 60
   allowedRoles: []

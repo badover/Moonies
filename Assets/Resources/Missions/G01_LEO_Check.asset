@@ -21,6 +21,7 @@ MonoBehaviour:
   radiationIncreaseOnExpiry: 65
   durationSeconds: 30
   difficulty: Easy
+  allowSkip: 1
   briefing: Mission Control requests a Bridge systems check before leaving orbit. Skipping it may leave the radiation monitor uncalibrated and increase later exposure.
   locationName: Bridge
   deck: 2

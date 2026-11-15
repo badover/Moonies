@@ -23,6 +23,7 @@ public sealed class ShipMission : MonoBehaviour
     private float runningTimeScale=1;
     private float missionClock;
     private float activeMissionElapsed;
+    private int activeMissionStep;
     private ShipMissionDefinition[] missionDefinitions;
     private ShipMissionDefinition nearbyMission;
     private ShipMissionDefinition activeMission;
@@ -35,6 +36,8 @@ public sealed class ShipMission : MonoBehaviour
     public ShipMissionDefinition ActiveMission => activeMission;
     public float ActiveMissionProgress => activeMission == null ? 0 : Mathf.Clamp01(activeMissionElapsed / activeMission.durationSeconds);
     public float ActiveMissionSecondsRemaining => activeMission == null ? 0 : Mathf.Max(0, activeMission.durationSeconds - activeMissionElapsed);
+    public float ActiveMissionElapsed => activeMissionElapsed;
+    public int ActiveMissionStep => activeMissionStep;
     public bool IsNearActiveTarget => activeMission != null && activeMission.objectiveType == ShipMissionObjectiveType.ReachTarget && IsAtTarget(activeMission);
 
     public void Begin(CrewCharacter prefab, System.Action pauseRequested, VideoPlayer videoBackground)
@@ -121,6 +124,7 @@ public sealed class ShipMission : MonoBehaviour
             return false;
         activeMission = definition;
         activeMissionElapsed = 0;
+        activeMissionStep = 0;
         missionStatuses[definition] = ShipMissionStatus.InProgress;
         if (definition.objectiveType == ShipMissionObjectiveType.ReachTarget)
         {
@@ -140,7 +144,7 @@ public sealed class ShipMission : MonoBehaviour
     }
     public bool SkipMission(ShipMissionDefinition definition)
     {
-        if (definition == null || nearbyMission != definition || GetMissionStatus(definition) != ShipMissionStatus.Available)
+        if (definition == null || !definition.allowSkip || nearbyMission != definition || GetMissionStatus(definition) != ShipMissionStatus.Available)
             return false;
         missionStatuses[definition] = ShipMissionStatus.Skipped;
         IncreaseRadiation(definition.radiationIncreaseOnSkip);
@@ -161,12 +165,33 @@ public sealed class ShipMission : MonoBehaviour
         }
         if (!IsNearMission(activeMission)) return;
         activeMissionElapsed += delta;
+        if (activeMission.taskSteps != null && activeMission.taskSteps.Length > 0)
+        {
+            if (activeMissionStep >= activeMission.taskSteps.Length && activeMissionElapsed >= activeMission.minimumInteractionSeconds)
+                CompleteActiveCheck();
+            return;
+        }
         if (activeMissionElapsed >= activeMission.durationSeconds)
         {
-            activeMissionElapsed = activeMission.durationSeconds;
-            missionStatuses[activeMission] = ShipMissionStatus.Completed;
-            activeMission = null;
+            CompleteActiveCheck();
         }
+    }
+    public bool AdvanceActiveMissionStep(ShipMissionDefinition definition)
+    {
+        if (definition == null || activeMission != definition || !IsNearMission(definition) ||
+            definition.taskSteps == null || activeMissionStep >= definition.taskSteps.Length) return false;
+        activeMissionStep++;
+        if (activeMissionStep >= definition.taskSteps.Length && activeMissionElapsed >= definition.minimumInteractionSeconds)
+            CompleteActiveCheck();
+        return true;
+    }
+    private void CompleteActiveCheck()
+    {
+        if (activeMission == null) return;
+        activeMissionElapsed = Mathf.Min(activeMissionElapsed, activeMission.durationSeconds);
+        missionStatuses[activeMission] = ShipMissionStatus.Completed;
+        activeMission = null;
+        UpdateNearbyMission();
     }
     private void UpdateExpiredMissions()
     {
@@ -176,8 +201,6 @@ public sealed class ShipMission : MonoBehaviour
             if (definition == null || missionStatuses.ContainsKey(definition) || missionClock <= definition.availableUntilSeconds) continue;
             missionStatuses[definition] = ShipMissionStatus.Expired;
             IncreaseRadiation(definition.radiationIncreaseOnExpiry);
-            if (definition.objectiveType == ShipMissionObjectiveType.ReachTarget)
-                MissionResolved?.Invoke(definition, false, IsFatalFailure(definition));
         }
     }
     private void IncreaseRadiation(float amount)
@@ -186,7 +209,7 @@ public sealed class ShipMission : MonoBehaviour
     }
     private bool IsFatalFailure(ShipMissionDefinition definition)
     {
-        return definition.failureIsFatalAtHighRadiation && RadiationLevel >= definition.fatalRadiationThreshold;
+        return definition.failureIsFatal;
     }
     private bool IsAtTarget(ShipMissionDefinition definition)
     {

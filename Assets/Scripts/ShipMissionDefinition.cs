@@ -28,8 +28,12 @@ public sealed class ShipMissionDefinition : ScriptableObject
     [Min(0)] public float availableFromSeconds;
     [Min(0)] public float availableUntilSeconds = 80;
     [Min(1)] public float durationSeconds = 30;
+    [Min(0)] public float minimumInteractionSeconds;
     public string difficulty = "Easy";
     [TextArea(3, 6)] public string briefing;
+    [Tooltip("Optional ordered actions required to complete this mission.")]
+    public string[] taskSteps = new string[0];
+    public bool allowSkip = true;
 
     [Header("Ship interaction")]
     public ShipMissionObjectiveType objectiveType = ShipMissionObjectiveType.TimedCheck;
@@ -43,7 +47,7 @@ public sealed class ShipMissionDefinition : ScriptableObject
     [Header("Radiation consequences")]
     [Range(0, 100)] public float radiationIncreaseOnSkip;
     [Range(0, 100)] public float radiationIncreaseOnExpiry;
-    public bool failureIsFatalAtHighRadiation;
+    public bool failureIsFatal;
     [Range(0, 100)] public float fatalRadiationThreshold = 60;
     [Tooltip("Leave empty to allow every crew role.")]
     public CrewRole[] allowedRoles = new CrewRole[0];

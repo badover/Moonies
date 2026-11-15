@@ -29,10 +29,12 @@ public sealed class CrewMenu : MonoBehaviour
     private Text missionHint, missionCardTitle, missionCardBriefing, missionCardStatus;
     private Text missionStartButton, missionSkipButton, missionCloseButton;
     private GameObject missionCardShade, missionCard, missionTaskProgressTrack;
+    private GameObject engineerSuggestion;
     private Image missionTaskProgress;
     private ShipMissionDefinition selectedMission;
     private ShipMissionDefinition bridgeCheck;
     private ShipMissionDefinition solarStorm;
+    private ShipMissionDefinition engineerUllageCheck;
     private GameObject bridgeSuggestion;
     private string missionFeedback;
     private float missionFeedbackRemaining;
@@ -135,10 +137,18 @@ public sealed class CrewMenu : MonoBehaviour
         bridgeSuggestion.SetActive(false);
         bridgeCheck=Resources.Load<ShipMissionDefinition>("Missions/G01_LEO_Check");
         solarStorm=Resources.Load<ShipMissionDefinition>("Missions/G02_Solar_Storm");
+        engineerUllageCheck=Resources.Load<ShipMissionDefinition>("Missions/ENG01_Ullage_Verification");
         stormSuggestion=Panel(missionHud.transform,"Solar Storm Alert",new Vector2(.20f,.72f),new Vector2(.80f,.80f),new Color(.32f,.035f,.025f,.97f)).gameObject;
         stormSuggestion.GetComponent<Image>().raycastTarget=false;
         Label(stormSuggestion.transform,"RED ALERT  ·  SOLAR STORM  ·  COMMUNICATIONS — PRESS E",.025f,.05f,.975f,.95f,20,Color.white);
         stormSuggestion.SetActive(false);
+        engineerSuggestion=Panel(missionHud.transform,"Engineer Suggestion",new Vector2(.27f,.215f),new Vector2(.73f,.268f),hintGold).gameObject;
+        engineerSuggestion.GetComponent<Image>().raycastTarget=false;
+        var engineerHintBacking=Panel(engineerSuggestion.transform,"Opaque Hint Backing",Vector2.zero,Vector2.one,new Color(.045f,.035f,.015f,1));
+        engineerHintBacking.raycastTarget=false;
+        engineerHintBacking.rectTransform.offsetMin=new Vector2(2,2);engineerHintBacking.rectTransform.offsetMax=new Vector2(-2,-2);
+        Label(engineerSuggestion.transform,"Maybe it's a good idea to check Engineering.",.025f,.05f,.975f,.95f,16,hintGold);
+        engineerSuggestion.SetActive(false);
         missionCardShade = Panel(missionHud.transform,"Mission Card Shade",Vector2.zero,Vector2.one,new Color(.005f,.015f,.03f,.82f)).gameObject;
         missionCard = Panel(missionHud.transform,"Mission Briefing",new Vector2(.18f,.18f),new Vector2(.82f,.82f),new Color(.015f,.055f,.08f,.99f)).gameObject;
         missionCardTitle = Label(missionCard.transform,"",.05f,.77f,.95f,.93f,34,cyan);
@@ -167,7 +177,7 @@ public sealed class CrewMenu : MonoBehaviour
         roles.SetActive(false);
         gameOverScreen=Panel(missionHud.transform,"Radiation Game Over",new Vector2(.15f,.22f),new Vector2(.85f,.78f),new Color(.035f,.008f,.012f,.99f)).gameObject;
         Label(gameOverScreen.transform,"MISSION FAILED",.05f,.66f,.95f,.91f,46,new Color(1f,.22f,.18f));
-        Label(gameOverScreen.transform,"Radiation exposure was already critical. The crew did not reach shelter in time.",.08f,.34f,.92f,.66f,24,Color.white);
+        Label(gameOverScreen.transform,"The astronaut did not reach the shelter doors within 90 seconds.",.08f,.34f,.92f,.66f,24,Color.white);
         Button(gameOverScreen.transform,"RETURN TO MENU",.30f,.10f,.70f,.27f,ReturnToMenu);
         gameOverScreen.SetActive(false);
         Select(selected);
@@ -183,6 +193,7 @@ public sealed class CrewMenu : MonoBehaviour
             UpdateMissionHint();
             UpdateBridgeSuggestion();
             UpdateStormSuggestion();
+            UpdateEngineerSuggestion();
             if(missionFeedbackRemaining>0) missionFeedbackRemaining=Mathf.Max(0,missionFeedbackRemaining-Time.deltaTime);
             if (missionCard.activeSelf) UpdateMissionCard();
             missionElapsed = Mathf.Min(missionElapsed + Time.deltaTime, MissionGoalSeconds);
@@ -270,6 +281,15 @@ public sealed class CrewMenu : MonoBehaviour
             missionProgress.color = cyan;
             missionTime.text = "MISSION TIME  00:00 / 10:00";
             gameOver=false;
+            missionFeedback=null;
+            missionFeedbackRemaining=0;
+            if(gameOverScreen!=null) gameOverScreen.SetActive(false);
+            if(stormSuggestion!=null) stormSuggestion.SetActive(false);
+            if(missionCard!=null) missionCard.SetActive(false);
+            if(missionCardShade!=null) missionCardShade.SetActive(false);
+            if(pauseScreen!=null) pauseScreen.SetActive(false);
+            if(missionHint!=null) missionHint.gameObject.SetActive(false);
+            if(radiationStatus!=null){radiationStatus.text="RADIATION  0%  ·  LOW";radiationStatus.color=cyan;}
             home.SetActive(false); roles.SetActive(false);
             shade.gameObject.SetActive(false); backgroundCanvas.gameObject.SetActive(false);
             missionHud.SetActive(true);
@@ -297,7 +317,13 @@ public sealed class CrewMenu : MonoBehaviour
     private void TogglePause()
     {
         if(mission==null || gameOver) return;
-        if(missionCard.activeSelf){CloseMissionCard();return;}
+        if(missionCard.activeSelf)
+        {
+            if(selectedMission!=null && !selectedMission.allowSkip &&
+                mission.GetMissionStatus(selectedMission)==ShipMissionStatus.Available) return;
+            CloseMissionCard();
+            return;
+        }
         bool paused=!mission.IsPaused;
         mission.SetPaused(paused);pauseScreen.SetActive(paused);
         UpdateControlsIntro(0);
@@ -345,6 +371,14 @@ public sealed class CrewMenu : MonoBehaviour
         bool visible=mission.GetMissionStatus(solarStorm)==ShipMissionStatus.Available &&
             mission.ActiveMission!=solarStorm && !missionCard.activeSelf && !gameOver;
         if(stormSuggestion.activeSelf!=visible) stormSuggestion.SetActive(visible);
+    }
+    private void UpdateEngineerSuggestion()
+    {
+        if(engineerSuggestion==null || mission==null) return;
+        bool visible=engineerUllageCheck!=null && SelectedRole==CrewRole.Engineer &&
+            mission.GetMissionStatus(engineerUllageCheck)==ShipMissionStatus.Available &&
+            mission.ActiveMission!=engineerUllageCheck && !missionCard.activeSelf && !gameOver;
+        if(engineerSuggestion.activeSelf!=visible) engineerSuggestion.SetActive(visible);
     }
     private void UpdateRadiationStatus()
     {
@@ -401,11 +435,18 @@ public sealed class CrewMenu : MonoBehaviour
         var state = mission.GetMissionStatus(selectedMission);
         bool available = state == ShipMissionStatus.Available;
         bool active = state == ShipMissionStatus.InProgress;
-        missionStartButton.transform.parent.gameObject.SetActive(available);
-        missionSkipButton.transform.parent.gameObject.SetActive(available);
-        missionStartButton.text = selectedMission.objectiveType == ShipMissionObjectiveType.ReachTarget ? "START SPRINT" : "START CHECK";
-        missionSkipButton.text = selectedMission.missionId == "G-02" ? "IGNORE ALERT" : "SKIP CHECK";
-        missionCloseButton.transform.parent.gameObject.SetActive(true);
+        bool hasSteps = selectedMission.taskSteps != null && selectedMission.taskSteps.Length > 0;
+        bool stepPending = hasSteps && mission.ActiveMissionStep < selectedMission.taskSteps.Length;
+        missionStartButton.transform.parent.gameObject.SetActive(available || (active && stepPending));
+        missionSkipButton.transform.parent.gameObject.SetActive(available && selectedMission.allowSkip);
+        string nextStep = active && stepPending ? selectedMission.taskSteps[mission.ActiveMissionStep] : "";
+        missionStartButton.text = active && hasSteps ? nextStep : selectedMission.objectiveType == ShipMissionObjectiveType.ReachTarget ? "ACCEPT ALERT & RUN" : "START CHECK";
+        RectTransform startButtonRect=missionStartButton.transform.parent.GetComponent<RectTransform>();
+        bool showSkip = available && selectedMission.allowSkip;
+        startButtonRect.anchorMin=new Vector2(showSkip ? .06f : active && hasSteps ? .08f : .345f,.08f);
+        startButtonRect.anchorMax=new Vector2(showSkip ? .37f : active && hasSteps ? .92f : .655f,.20f);
+        missionSkipButton.text = "SKIP CHECK";
+        missionCloseButton.transform.parent.gameObject.SetActive(selectedMission.allowSkip || !available);
         missionTaskProgressTrack.SetActive(active || state == ShipMissionStatus.Completed);
         float progress = state == ShipMissionStatus.Completed ? 1 : active ? mission.ActiveMissionProgress : 0;
         var fillRect = missionTaskProgress.rectTransform;
@@ -420,23 +461,39 @@ public sealed class CrewMenu : MonoBehaviour
             }
             bool atStation = mission.NearbyMission == selectedMission;
             int remaining = Mathf.CeilToInt(selectedMission.durationSeconds * (1-progress));
-            missionCardStatus.text = atStation
-                ? "SYSTEMS CHECK IN PROGRESS  ·  " + remaining + "s REMAINING"
-                : "CHECK PAUSED  ·  RETURN TO " + selectedMission.locationName.ToUpperInvariant();
+            if (!atStation)
+                missionCardStatus.text = "CHECK PAUSED  ·  RETURN TO " + selectedMission.locationName.ToUpperInvariant();
+            else if (hasSteps && mission.ActiveMissionStep >= selectedMission.taskSteps.Length)
+            {
+                int minimumRemaining=Mathf.CeilToInt(Mathf.Max(0,selectedMission.minimumInteractionSeconds-mission.ActiveMissionElapsed));
+                missionCardStatus.text = minimumRemaining > 0
+                    ? "ULLAGE VERIFIED  ·  " + minimumRemaining + "s MINIMUM CHECK TIME"
+                    : "ULLAGE VERIFIED  ·  COMPLETING CHECK";
+            }
+            else if (hasSteps)
+                missionCardStatus.text = "IGNITION LOCKED  ·  ACTION " + (mission.ActiveMissionStep + 1) + "/" + selectedMission.taskSteps.Length +
+                    (remaining > 0 ? "  ·  " + remaining + "s CHECK TARGET" : "  ·  COMPLETE CHECKLIST");
+            else
+                missionCardStatus.text = "SYSTEMS CHECK IN PROGRESS  ·  " + remaining + "s REMAINING";
         }
         else if (state == ShipMissionStatus.Completed) missionCardStatus.text = "SYSTEMS CHECK COMPLETE";
         else if (state == ShipMissionStatus.Skipped) missionCardStatus.text = "CHECK SKIPPED";
         else if (state == ShipMissionStatus.Expired) missionCardStatus.text = "MISSION WINDOW CLOSED";
         else if (state == ShipMissionStatus.Failed) missionCardStatus.text = "OBJECTIVE FAILED";
-        else if (available && selectedMission.objectiveType == ShipMissionObjectiveType.ReachTarget &&
-            selectedMission.failureIsFatalAtHighRadiation && mission.RadiationLevel >= selectedMission.fatalRadiationThreshold)
-            missionCardStatus.text = "RADIATION CRITICAL  ·  IGNORING OR FAILING THIS ALERT IS FATAL";
+        else if (available && selectedMission.objectiveType == ShipMissionObjectiveType.ReachTarget && selectedMission.failureIsFatal)
+            missionCardStatus.text = "ACCEPT THE ALERT  ·  FAILING TO REACH SHELTER IS FATAL";
         else if (available && selectedMission.objectiveType == ShipMissionObjectiveType.ReachTarget)
             missionCardStatus.text = "RED ALERT  ·  REACH THE MARKED DOORS BEFORE THE TIMER EXPIRES";
         else missionCardStatus.text = "START THE CHECK OR SKIP THIS MISSION";
     }
     private void StartSelectedMission()
     {
+        if (mission != null && selectedMission != null && mission.ActiveMission == selectedMission)
+        {
+            mission.AdvanceActiveMissionStep(selectedMission);
+            UpdateMissionCard();
+            return;
+        }
         if (mission != null && mission.StartMission(selectedMission))
         {
             if(selectedMission.objectiveType==ShipMissionObjectiveType.ReachTarget)
@@ -471,9 +528,21 @@ public sealed class CrewMenu : MonoBehaviour
     }
     private void ReturnToMenu()
     {
+        if(mission==null) return;
         mission.SetPaused(false);
         pauseScreen.SetActive(false);
         Destroy(mission.gameObject); mission = null;
+        gameOver=false;
+        missionFeedback=null;
+        missionFeedbackRemaining=0;
+        selectedMission=null;
+        gameOverScreen.SetActive(false);
+        stormSuggestion.SetActive(false);
+        bridgeSuggestion.SetActive(false);
+        missionCard.SetActive(false);
+        missionCardShade.SetActive(false);
+        pauseScreen.SetActive(false);
+        missionHint.gameObject.SetActive(false);
         missionHud.SetActive(false);
         controlsIntroRemaining=0;controlsIntro.SetActive(false);
         ShowVideoInMenu();
