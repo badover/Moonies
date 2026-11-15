@@ -27,4 +27,4 @@ Built with: Unity
 
 ———
 
-Made by Space Cadets Explorers.
+Made by Space Cadets Explorers for Nasa Space Apps Challenge 2026 (Barcelona).
