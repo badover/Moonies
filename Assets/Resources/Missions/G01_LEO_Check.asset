@@ -11,19 +11,72 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
   m_Name: G01_LEO_Check
-  m_EditorClassIdentifier: 
-  missionId: G-01
-  title: LEO Check
-  timeWindowLabel: 0:00–1:20
-  availableFromSeconds: 0
+  m_EditorClassIdentifier:
+  missionId: "G-01"
+  title: "LEO systems and telemetry checkout"
+  timeWindowLabel: "0:05–1:20"
+  availableFromSeconds: 5
   availableUntilSeconds: 80
-  radiationIncreaseOnSkip: 65
-  radiationIncreaseOnExpiry: 65
   durationSeconds: 30
-  difficulty: Easy
-  briefing: Mission Control requests a systems check on the Bridge before leaving orbit.
-  locationName: Bridge
+  difficulty: "Easy"
+  briefing: "From the general mission interface, verify that the spacecraft is stable in LEO, confirm the Earth/Mission Control telemetry link, and check that the departure systems report ready. This is an in-orbit checkout, not a launch or pre-launch briefing."
+  originalDiscipline: "G"
+  globalEvent: 1
+  objectiveType: 2
+  locationName: "Bridge"
   deck: 2
   shipPixelX: 420
   interactionRadius: 1.6
+  targetDeck: 0
+  targetShipPixelX: 1030
+  radiationIncreaseOnSkip: 0
+  radiationIncreaseOnExpiry: 0
+  damageOnFailure: 5
+  failureIsFatalAtHighRadiation: 0
+  fatalRadiationThreshold: 60
   allowedRoles: []
+  steps:
+  - prompt: "Orbit scan: Earth link acquisition and spacecraft stability check."
+    options: []
+    correctChoice: 0
+    automatic: 1
+    requiresShelter: 0
+    durationSeconds: 8
+    result: "Verification complete."
+  - prompt: "Orbit: 185 km LEO. Attitude stable. Initial insertion complete. Confirm the starting state."
+    options:
+    - "Command stage separation"
+    - "Confirm stable parking orbit"
+    - "Start atmospheric ascent"
+    correctChoice: 1
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Earth / Mission Control telemetry: link locked, packets valid. Select the communication route."
+    options:
+    - "Use the verified Earth telemetry link"
+    - "Disable the Earth link"
+    - "Transmit only to the lunar surface"
+    correctChoice: 0
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Departure-system readiness scan in progress."
+    options: []
+    correctChoice: 0
+    automatic: 1
+    requiresShelter: 0
+    durationSeconds: 10
+    result: "Verification complete."
+  - prompt: "Power, guidance and departure telemetry report READY. Record the checkout."
+    options:
+    - "Repeat launch countdown"
+    - "Confirm departure systems ready"
+    - "Authorize departure with unresolved alerts"
+    correctChoice: 1
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."

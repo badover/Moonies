@@ -1,28 +1,33 @@
 # Space Crew
 
-Open this repository folder in Unity Hub using Unity **6000.6.9f1**. Wait for package restoration and asset import, then open `Assets/Scenes/SampleScene.unity` and press Play.
+Open the repository folder in Unity Hub using Unity **6000.6.9f1**. Wait for package restoration and asset import, open `Assets/Scenes/SampleScene.unity`, then press Play. Click START, select a crew character and BOARD SHIP. All required artwork, sprites, animations, metadata and background video are included in the repository.
 
-Click START, select a role on the holographic role screen, and click BOARD SHIP.
+The flight begins in stable **185 km Low Earth Parking Orbit**, after launch and insertion. The ten-minute run follows LEO checkout, TLI, deep-space transit, lunar orbit, descent, surface operations, ascent/rendezvous and Earth return/recovery.
 
-- A/D or arrow keys: walk inside the hull.
-- W/S or up/down: climb the continuous central ladder through the middle deck; release to hold position, reverse to descend. A/D steps off beside a floor. W/S never automatically steps off.
+- A/D or arrows: walk inside the hull.
+- W/S or up/down: climb the continuous central ladder. Release to hold position; A/D steps off beside a floor. W/S never automatically steps off.
+- E: interact with a station or reach the marked central shelter.
+- M or MISSION TASKS: open the general mission interface and review current work.
 - Mouse wheel: smooth zoom.
-- Escape: pause/resume the current mission. Pause freezes movement, camera zoom, animation and the mission timer.
+- Escape: close an open task interface, otherwise pause/resume. Pause freezes movement, animation, camera and all mission timers. Controls appear at boarding and remain in the pause menu.
 
-The modern ship uses the source artwork with transparent surroundings and English room labels. All gameplay sprites, images, animations and frame metadata are included in the repository; no files outside the project are needed to run it.
+The [mission specification](Docs/Artemis2_Randomized_LEO_Mission_Task_Specification.md) supplies **35 playable procedures**: four global events, eight engineering, nine piloting, six command and eight crew-health screening tasks. **Current intentional override: all 31 discipline tasks are shared by every selected role.** The character remains fixed during the flight. No procedure requires another role or a previous task.
 
-The mission HUD includes a ten-minute progress timer.
+Each run draws five shared procedures (two Easy, two Medium, one Hard) spanning at least three mission phases, plus two or three distinct global events. Thus a run has seven or eight tasks, rather than all 35 at once. A seeded generator picks releases inside the allowed windows and reserves expected work/transition time within the 600-second flight. Active-time caps remain 30/60/90 seconds; total maximum task budget never exceeds 480 seconds.
 
-For automated verification with the Unity Pipeline CLI, start Play Mode, then run `unity command --project-path . "script eval" --file Tools/ValidateMenuClicks.cs` and `unity command --project-path . "script eval" --file Tools/ValidateModernShip.cs`. They run UI pointer/raycast checks and verify all roles, floor bounds, ladders, smooth zoom and progress fill geometry. Test render captures are written to the system temporary directory.
+Only one task is active. New tasks queue and remain available after their release window closes, until the flight ends. Upcoming objectives stay hidden until their release. The general mission interface provides every procedure to every role; stations can also open nearby tasks. Unsafe choices are rejected, while the active timer continues. Verification stages run automatically; action/decision stages require the player's choice. Timeout or skipping costs 5/10/25 HP for Easy/Medium/Hard tasks, shown in the briefing. At 600 seconds unfinished active work fails, pending work expires, and the recovery summary reports completed procedures and crew vitals.
 
-Pause/ladder regression check: `unity command --project-path . "script eval" --file Tools/ValidatePauseAndLadders.cs`.
+**LEO scanning continues after CLOSE and while walking away from the Bridge.** The small opaque task HUD shows scan progress or ACTION REQUIRED when a decision is ready. Reopening the task preserves its step and progress. Only Escape pause freezes scanning.
 
-Controls are shown for the first 10 seconds of gameplay and remain available in the pause menu. The introduction timer stops while paused or reading a mission card. E can reopen a station card to review its status even after its start window closes.
+The solar-particle procedure includes reaching the protected central equipment area on the lower deck, arranging water/food shielding, shutting down non-essential electronics while preserving life support/guidance, automatic verification and final shelter confirmation. Reaching the marker alone does not complete the event. Arrival and active warnings are opaque and include directions/countdown. Starting or ignoring the event raises the exposure indicator; shelter completion clears the local hazard, while failure raises it further and costs HP.
 
-Crew starts with 100 health. A compact VITALS HUD follows the current crew member; CrewHealth.TakeDamage and CrewHealth.Heal clamp health to its valid range and update the HUD when it changes.
+Crew starts with 100 HP. The compact VITALS bar follows `CrewHealth.TakeDamage`/`Heal`, clamps values and updates on change. Zero HP stops the flight. Boarding again resets the plan, health, radiation, progress and interfaces.
 
-Solar Storm (G-02) is available at Communications on the upper deck from 2:15 to 3:50. Start the procedure, descend the central ladder to the bottom deck, reach the marked doors left of Life Support, then press E within 90 seconds. The objective timer freezes during pause and station dialogs. Missing, ignoring or timing out the alert deals 25 HP damage; at critical radiation it depletes the remaining health. Skipping or missing the initial Bridge check raises radiation. Zero HP opens the failure screen; boarding again resets health, radiation and missions.
+The earlier imported MOONIES question data/UI remain available for future campaign integration; phase assets marked `startsQuestionCampaign` are excluded from the ship's timed-task catalog.
 
-The imported MOONIES question data, UI and phase assets are retained for later campaign integration. Phase assets marked `startsQuestionCampaign` are excluded from timed ship checks so unfinished question phases cannot appear as fake 30-second checks or obscure station interactions.
+With the Unity Pipeline CLI connected to the project, run checks as `unity command --project-path . "script eval" --file Tools/<name>.cs`:
 
-Solar storm/health integration regression: `unity command --project-path . "script eval" --file Tools/ValidateSolarStorm.cs`.
+- `ValidateMissionCatalog`: all 35 definitions and 2000 seeded run plans, coverage, counts, difficulty/phase mix, deadlines and budgets.
+- `ValidateMissionProcedures`: all 35 procedures for all four roles; real-frame CLOSE/walk-away scan regression; queue, failure and flight-end behavior.
+- `ValidateMissionInterface`: rendered pointer/raycast checks for task board, scan controls and safe/unsafe actions; captures in `Artifacts`.
+- `ValidateSolarStorm`, `ValidateControlsAndBridge`, `ValidateHealthHud`, `ValidatePauseAndLadders`, `ValidateMenuHint`, `ValidateMenuClicks`: warnings, health, pause, ladders, controls and menu regressions.

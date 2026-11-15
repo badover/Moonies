@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
+  m_Name: PIL05_Lunar_Orbit_Insertion_burn_execution
+  m_EditorClassIdentifier:
+  missionId: "PIL-05"
+  title: "Lunar Orbit Insertion burn execution"
+  timeWindowLabel: "3:50–4:55"
+  availableFromSeconds: 230
+  availableUntilSeconds: 295
+  durationSeconds: 60
+  difficulty: "Medium"
+  briefing: "Verify the preloaded retrograde burn parameters, align the inertial reference, execute the autonomous LOI burn during the planned loss-of-signal window, and confirm lunar-orbit capture."
+  originalDiscipline: "PIL"
+  globalEvent: 0
+  objectiveType: 2
+  locationName: "Bridge"
+  deck: 2
+  shipPixelX: 420
+  interactionRadius: 1.6
+  targetDeck: 0
+  targetShipPixelX: 1030
+  radiationIncreaseOnSkip: 0
+  radiationIncreaseOnExpiry: 0
+  damageOnFailure: 10
+  failureIsFatalAtHighRadiation: 0
+  fatalRadiationThreshold: 60
+  allowedRoles: []
+  steps:
+  - prompt: "LOI plan: preloaded retrograde burn; planned loss of Earth signal."
+    options:
+    - "Replace retrograde with a prograde escape burn"
+    - "Cancel solely because of the planned signal blackout"
+    - "Verify the retrograde parameters and inertial reference"
+    correctChoice: 2
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Parameters verified; inertial alignment locked."
+    options:
+    - "Disable autonomous guidance"
+    - "Execute autonomous LOI during the planned blackout"
+    - "Wait for a manual Earth command during blackout"
+    correctChoice: 1
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "LOI burn and capture telemetry verification."
+    options: []
+    correctChoice: 0
+    automatic: 1
+    requiresShelter: 0
+    durationSeconds: 24
+    result: "Verification complete."
+  - prompt: "Lunar orbit capture confirmed; burn complete."
+    options:
+    - "Restart the completed insertion burn"
+    - "Command immediate unplanned ascent"
+    - "Confirm captured lunar orbit"
+    correctChoice: 2
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."

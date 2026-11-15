@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
+  m_Name: MED04_RTG_handling_radiation_safety_check
+  m_EditorClassIdentifier:
+  missionId: "MED-04"
+  title: "RTG handling radiation-safety check"
+  timeWindowLabel: "5:45–6:50"
+  availableFromSeconds: 345
+  availableUntilSeconds: 410
+  durationSeconds: 60
+  difficulty: "Medium"
+  briefing: "Review the radioactive-source warning, establish the safe handling boundary and placement distance, check crew exposure indicators, and confirm that the crew is clear of the source area. Mechanical fuel-rod extraction is not required."
+  originalDiscipline: "MED"
+  globalEvent: 0
+  objectiveType: 2
+  locationName: "Medical Bay"
+  deck: 1
+  shipPixelX: 1840
+  interactionRadius: 1.6
+  targetDeck: 0
+  targetShipPixelX: 1030
+  radiationIncreaseOnSkip: 0
+  radiationIncreaseOnExpiry: 0
+  damageOnFailure: 10
+  failureIsFatalAtHighRadiation: 0
+  fatalRadiationThreshold: 60
+  allowedRoles: []
+  steps:
+  - prompt: "Radioactive source handling warning; safe placement boundary is marked."
+    options:
+    - "Establish the marked exclusion boundary"
+    - "Allow crew inside the source boundary"
+    - "Require mechanical extraction before screening"
+    correctChoice: 0
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Crew positions and exposure indicators are displayed."
+    options:
+    - "Move crew closer to inspect the source"
+    - "Ignore the exposure indicators"
+    - "Confirm crew clear of the source and check exposure"
+    correctChoice: 2
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "RTG placement-distance and boundary verification."
+    options: []
+    correctChoice: 0
+    automatic: 1
+    requiresShelter: 0
+    durationSeconds: 24
+    result: "Verification complete."
+  - prompt: "Source placement clear of crew; exposure record complete."
+    options:
+    - "Confirm the radiation-safety check"
+    - "Remove the boundary during handling"
+    - "Record safe placement inside the exclusion zone"
+    correctChoice: 0
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."

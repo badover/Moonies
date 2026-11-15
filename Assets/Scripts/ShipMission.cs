@@ -25,6 +25,21 @@ public sealed class ShipMission : MonoBehaviour
     private float missionClock;
     private float activeMissionElapsed;
     private ShipMissionDefinition[] missionDefinitions;
+    private MissionRunPlan.Entry[] runPlan;
+    private int procedureStepIndex;
+    private float procedureStepElapsed;
+    private string procedureFeedback;
+    public int RunSeed { get; private set; }
+    public bool RunFinished { get; private set; }
+    public bool IsInterfaceOpen { get; set; }
+    public float MissionSeconds => missionClock;
+    public System.Collections.Generic.IReadOnlyList<MissionRunPlan.Entry> RunPlan => runPlan;
+    public string PhaseLabel => MissionRunPlan.PhaseNames[MissionRunPlan.PhaseAt(missionClock)];
+    public event Action RunEnded;
+    public int ProcedureStepIndex => procedureStepIndex;
+    public string ProcedureFeedback => procedureFeedback;
+    public MissionProcedureStep CurrentStep => activeMission != null && activeMission.steps != null && procedureStepIndex < activeMission.steps.Length ? activeMission.steps[procedureStepIndex] : null;
+    public float ProcedureStepProgress => CurrentStep == null ? 0 : CurrentStep.durationSeconds <= 0 ? 1 : Mathf.Clamp01(procedureStepElapsed / CurrentStep.durationSeconds);
     private ShipMissionDefinition nearbyMission;
     private ShipMissionDefinition activeMission;
     private readonly Dictionary<ShipMissionDefinition, ShipMissionStatus> missionStatuses = new Dictionary<ShipMissionDefinition, ShipMissionStatus>();
@@ -35,15 +50,20 @@ public sealed class ShipMission : MonoBehaviour
     public event Action<ShipMissionDefinition, bool, bool> MissionResolved;
     public ShipMissionDefinition NearbyMission => nearbyMission;
     public ShipMissionDefinition ActiveMission => activeMission;
-    public float ActiveMissionProgress => activeMission == null ? 0 : Mathf.Clamp01(activeMissionElapsed / activeMission.durationSeconds);
+    public float ActiveMissionProgress => activeMission == null ? 0 : activeMission.objectiveType == ShipMissionObjectiveType.Procedure
+        ? (procedureStepIndex + (CurrentStep != null && CurrentStep.automatic ? ProcedureStepProgress : 0)) / Mathf.Max(1, activeMission.steps.Length)
+        : Mathf.Clamp01(activeMissionElapsed / activeMission.durationSeconds);
     public float ActiveMissionSecondsRemaining => activeMission == null ? 0 : Mathf.Max(0, activeMission.durationSeconds - activeMissionElapsed);
-    public bool IsNearActiveTarget => activeMission != null && activeMission.objectiveType == ShipMissionObjectiveType.ReachTarget && IsAtTarget(activeMission);
+    public bool IsNearActiveTarget => activeMission != null && (activeMission.objectiveType == ShipMissionObjectiveType.ReachTarget || CurrentStep != null && CurrentStep.requiresShelter) && IsAtTarget(activeMission);
 
     public void Begin(CrewCharacter prefab, System.Action pauseRequested, VideoPlayer videoBackground)
     {
         onPauseRequested = pauseRequested;
         missionDefinitions = Resources.LoadAll<ShipMissionDefinition>("Missions")
             .Where(definition => !definition.startsQuestionCampaign).OrderBy(definition => definition.availableUntilSeconds).ToArray();
+        RunSeed = UnityEngine.Random.Range(0, int.MaxValue);
+        runPlan = MissionRunPlan.Create(missionDefinitions, RunSeed);
+        missionDefinitions = runPlan.Select(x => x.definition).ToArray();
         if (prefab == null) throw new System.InvalidOperationException("Selected crew prefab is missing.");
         var texture = Resources.Load<Texture2D>("Menu/ModernSpacecraft");
         var material = Resources.Load<Material>("ShipSprite");
@@ -87,26 +107,27 @@ public sealed class ShipMission : MonoBehaviour
         if (!ready || player == null) return;
         var keys = Keyboard.current;
         if (keys != null && keys.escapeKey.wasPressedThisFrame) { onPauseRequested(); return; }
-        if (IsPaused) return;
-        float delta = Time.deltaTime;
+        if (IsPaused || RunFinished) return;
+        float delta = Mathf.Min(Time.deltaTime, MissionRunPlan.RunSeconds - missionClock);
         missionClock += delta;
-        UpdateExpiredMissions();
         if(IsPaused) return;
         float x = keys == null ? 0 : (keys.dKey.isPressed || keys.rightArrowKey.isPressed ? 1 : 0) - (keys.aKey.isPressed || keys.leftArrowKey.isPressed ? 1 : 0);
         float y = keys == null ? 0 : (keys.wKey.isPressed || keys.upArrowKey.isPressed ? 1 : 0) - (keys.sKey.isPressed || keys.downArrowKey.isPressed ? 1 : 0);
-        MoveCrew(x, y, delta);
+        if (!IsInterfaceOpen) MoveCrew(x, y, delta);
         UpdateActiveMission(delta);
         if (IsPaused) return;
         UpdateNearbyMission();
-        if (keys != null && keys.eKey.wasPressedThisFrame) TryInteract();
-        if (Mouse.current != null) zoom = ShipLayout.ZoomAfterScroll(zoom, Mouse.current.scroll.ReadValue().y);
+        if (missionClock >= MissionRunPlan.RunSeconds) { FinishRun(); return; }
+        if (!IsInterfaceOpen && keys != null && keys.eKey.wasPressedThisFrame) TryInteract();
+        if (!IsInterfaceOpen && Mouse.current != null) zoom = ShipLayout.ZoomAfterScroll(zoom, Mouse.current.scroll.ReadValue().y);
     }
     public bool TryInteract()
     {
         if(!ready || IsPaused) return false;
         if (IsNearActiveTarget)
         {
-            ResolveActiveMission(true);
+            if (activeMission.objectiveType == ShipMissionObjectiveType.Procedure) AdvanceProcedure();
+            else ResolveActiveMission(true);
             return true;
         }
         UpdateNearbyMission();
@@ -116,19 +137,24 @@ public sealed class ShipMission : MonoBehaviour
     }
     public ShipMissionStatus GetMissionStatus(ShipMissionDefinition definition)
     {
-        if (definition == null) return ShipMissionStatus.Unavailable;
+        if (definition == null || runPlan == null) return ShipMissionStatus.Unavailable;
+        MissionRunPlan.Entry entry=null;
+        for(int i=0;i<runPlan.Length;i++) if(runPlan[i].definition==definition){entry=runPlan[i];break;}
+        if (entry == null) return ShipMissionStatus.Unavailable;
         if (missionStatuses.TryGetValue(definition, out var status)) return status;
-        if (missionClock < definition.availableFromSeconds) return ShipMissionStatus.Unavailable;
-        return missionClock <= definition.availableUntilSeconds ? ShipMissionStatus.Available : ShipMissionStatus.Expired;
+        if (RunFinished) return ShipMissionStatus.Expired;
+        return missionClock < entry.trigger ? ShipMissionStatus.Unavailable : ShipMissionStatus.Available;
     }
     public bool StartMission(ShipMissionDefinition definition)
     {
-        if (!ready || definition == null || !definition.AllowsRole(player.Role) || activeMission != null || nearbyMission != definition || GetMissionStatus(definition) != ShipMissionStatus.Available)
+        if (!ready || definition == null || activeMission != null || RunFinished || GetMissionStatus(definition) != ShipMissionStatus.Available)
             return false;
+        if (definition.missionId=="G-02") IncreaseRadiation(35);
         activeMission = definition;
         activeMissionElapsed = 0;
+        procedureStepIndex = 0; procedureStepElapsed = 0; procedureFeedback = "";
         missionStatuses[definition] = ShipMissionStatus.InProgress;
-        if (definition.objectiveType == ShipMissionObjectiveType.ReachTarget)
+        if (definition.objectiveType == ShipMissionObjectiveType.ReachTarget || definition.steps.Any(x => x.requiresShelter))
         {
             targetMarker = new GameObject("Mission target — " + definition.missionId, typeof(SpriteRenderer));
             targetMarker.transform.SetParent(transform, false);
@@ -147,46 +173,65 @@ public sealed class ShipMission : MonoBehaviour
     }
     public bool SkipMission(ShipMissionDefinition definition)
     {
-        if (!ready || definition == null || activeMission != null || !definition.AllowsRole(player.Role) || nearbyMission != definition || GetMissionStatus(definition) != ShipMissionStatus.Available)
+        if (!ready || definition == null || activeMission != null || RunFinished || GetMissionStatus(definition) != ShipMissionStatus.Available)
             return false;
         missionStatuses[definition] = ShipMissionStatus.Skipped;
-        IncreaseRadiation(definition.radiationIncreaseOnSkip);
-        if (definition.objectiveType == ShipMissionObjectiveType.ReachTarget)
-            ResolveFailure(definition);
+        IncreaseRadiation(definition.radiationIncreaseOnSkip + (definition.missionId=="G-02" ? 35 : 0));
+        ResolveFailure(definition);
         UpdateNearbyMission();
         return true;
     }
     private void UpdateActiveMission(float delta)
     {
-        if (activeMission == null) return;
-        if (activeMission.objectiveType == ShipMissionObjectiveType.ReachTarget)
+        if (activeMission == null || IsPaused || delta <= 0) return;
+        activeMissionElapsed += delta;
+        if (activeMission.objectiveType == ShipMissionObjectiveType.Procedure)
         {
-            activeMissionElapsed += delta;
-            if (activeMissionElapsed >= activeMission.durationSeconds)
-                ResolveActiveMission(false);
+            // Consume only the portion of this frame before the active-time deadline.
+            var step=CurrentStep;
+            if (step != null && step.automatic)
+            {
+                procedureStepElapsed += Mathf.Min(delta, Mathf.Max(0, activeMission.durationSeconds - (activeMissionElapsed-delta)));
+                if (procedureStepElapsed >= step.durationSeconds) AdvanceProcedure();
+            }
+            if (activeMission != null && activeMissionElapsed >= activeMission.durationSeconds) ResolveActiveMission(false);
             return;
         }
-        if (!IsNearMission(activeMission)) return;
-        activeMissionElapsed += delta;
-        if (activeMissionElapsed >= activeMission.durationSeconds)
+        if (activeMission.objectiveType == ShipMissionObjectiveType.ReachTarget)
         {
-            activeMissionElapsed = activeMission.durationSeconds;
-            missionStatuses[activeMission] = ShipMissionStatus.Completed;
-            activeMission = null;
+            if (activeMissionElapsed >= activeMission.durationSeconds) ResolveActiveMission(false);
+            return;
         }
+        // A launched scan keeps running after CLOSE and while walking away from its station.
+        if (activeMissionElapsed >= activeMission.durationSeconds) ResolveActiveMission(true);
     }
-    private void UpdateExpiredMissions()
+    public bool ChooseProcedureOption(int index)
     {
-        if (missionDefinitions == null) return;
-        foreach (var definition in missionDefinitions)
+        if (IsPaused || RunFinished || activeMission == null || CurrentStep == null || CurrentStep.automatic || CurrentStep.requiresShelter) return false;
+        var step=CurrentStep;
+        if (index < 0 || index >= step.options.Length) return false;
+        if (index != step.correctChoice)
         {
-            if (definition == null || !definition.AllowsRole(player.Role) || missionStatuses.ContainsKey(definition) || missionClock <= definition.availableUntilSeconds) continue;
-            missionStatuses[definition] = ShipMissionStatus.Expired;
-            IncreaseRadiation(definition.radiationIncreaseOnExpiry);
-            if (definition.objectiveType == ShipMissionObjectiveType.ReachTarget)
-                ResolveFailure(definition);
-            if(IsPaused) break;
+            procedureFeedback="UNSAFE COMMAND REJECTED — review the indicators and try again.";
+            return false;
         }
+        AdvanceProcedure(); return true;
+    }
+    private void AdvanceProcedure()
+    {
+        procedureFeedback=CurrentStep == null ? "" : CurrentStep.result;
+        procedureStepIndex++; procedureStepElapsed=0;
+        if (targetMarker != null && (CurrentStep == null || !CurrentStep.requiresShelter)) targetMarker.SetActive(false);
+        if (activeMission != null && procedureStepIndex >= activeMission.steps.Length) ResolveActiveMission(true);
+    }
+    private void FinishRun()
+    {
+        if (RunFinished) return;
+        RunFinished=true;
+        if (activeMission != null) ResolveActiveMission(false);
+        foreach (var definition in missionDefinitions)
+            if (!missionStatuses.ContainsKey(definition)) missionStatuses[definition]=ShipMissionStatus.Expired;
+        SetPaused(true); RunEnded?.Invoke();
     }
     private void ResolveFailure(ShipMissionDefinition definition)
     {
@@ -224,6 +269,7 @@ public sealed class ShipMission : MonoBehaviour
         if (targetMarker != null) Destroy(targetMarker);
         targetMarker = null;
         if (targetMarkerSprite != null) { Destroy(targetMarkerSprite); targetMarkerSprite = null; }
+        if (resolved.missionId == "G-02") IncreaseRadiation(success ? -RadiationLevel : 25);
         if(success) MissionResolved?.Invoke(resolved, true, false);
         else ResolveFailure(resolved);
         UpdateNearbyMission();
@@ -238,6 +284,7 @@ public sealed class ShipMission : MonoBehaviour
             return;
         }
         float closest = float.PositiveInfinity;
+        int bestPriority = -1;
         foreach (var definition in missionDefinitions)
         {
             if (definition == null || !definition.AllowsRole(player.Role)) continue;
@@ -246,7 +293,9 @@ public sealed class ShipMission : MonoBehaviour
             if (status == ShipMissionStatus.Unavailable) continue;
             if (!IsNearMission(definition)) continue;
             float distance = Mathf.Abs(player.transform.position.x - definition.WorldPosition.x);
-            if (distance < closest) { closest = distance; nearbyMission = definition; }
+            int priority = status == ShipMissionStatus.Available ? 1 : 0;
+            if (priority > bestPriority || priority == bestPriority && distance < closest)
+            { bestPriority=priority; closest=distance; nearbyMission=definition; }
         }
     }
     private bool IsNearMission(ShipMissionDefinition definition)

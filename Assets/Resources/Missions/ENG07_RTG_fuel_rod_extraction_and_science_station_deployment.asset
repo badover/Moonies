@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
+  m_Name: ENG07_RTG_fuel_rod_extraction_and_science_station_deployment
+  m_EditorClassIdentifier:
+  missionId: "ENG-07"
+  title: "RTG fuel-rod extraction and science-station deployment"
+  timeWindowLabel: "5:45–6:50"
+  availableFromSeconds: 345
+  availableUntilSeconds: 410
+  durationSeconds: 90
+  difficulty: "Hard"
+  briefing: "Inspect the thermally bound fuel rod and deployment cask, select the insulated long-handled tool, gently rock and rotate the rod to release the binding, insert it into the RTG, and confirm that the science station is positioned at a safe distance from the lander. The task is the mechanical equipment procedure; any separate crew radiation screening is not a prerequisite."
+  originalDiscipline: "ENG"
+  globalEvent: 0
+  objectiveType: 2
+  locationName: "Engineering"
+  deck: 0
+  shipPixelX: 750
+  interactionRadius: 1.6
+  targetDeck: 0
+  targetShipPixelX: 1030
+  radiationIncreaseOnSkip: 0
+  radiationIncreaseOnExpiry: 0
+  damageOnFailure: 25
+  failureIsFatalAtHighRadiation: 0
+  fatalRadiationThreshold: 60
+  allowedRoles: []
+  steps:
+  - prompt: "RTG fuel rod is thermally bound in its deployment cask."
+    options:
+    - "Grab the rod with bare hands"
+    - "Use a short uninsulated tool"
+    - "Inspect the binding and select an insulated long-handled tool"
+    correctChoice: 2
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Release the thermally bound rod."
+    options:
+    - "Pull against the binding without inspection"
+    - "Gently rock and rotate using the insulated tool"
+    - "Strike the rod forcefully"
+    correctChoice: 1
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Rod released. Complete the generator connection."
+    options:
+    - "Insert and secure the fuel rod in the RTG"
+    - "Leave the hot rod loose beside the lander"
+    - "Store it in the crew compartment"
+    correctChoice: 0
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "RTG output and deployment verification."
+    options: []
+    correctChoice: 0
+    automatic: 1
+    requiresShelter: 0
+    durationSeconds: 40
+    result: "Verification complete."
+  - prompt: "Generator output nominal. Select science-station placement."
+    options:
+    - "Aim exhaust and equipment at the lander"
+    - "Position the station at the marked safe distance from the lander"
+    - "Place the RTG beside the crew hatch"
+    correctChoice: 1
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."

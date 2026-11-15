@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
+  m_Name: PIL02_Pre_TLI_attitude_alignment
+  m_EditorClassIdentifier:
+  missionId: "PIL-02"
+  title: "Pre-TLI attitude alignment"
+  timeWindowLabel: "1:20–2:15"
+  availableFromSeconds: 80
+  availableUntilSeconds: 135
+  durationSeconds: 30
+  difficulty: "Easy"
+  briefing: "Align the spacecraft to the displayed TLI attitude reference, stabilize the attitude indicators, and confirm that the vehicle is ready for the planned departure burn. This is a short setup task adapted from the LEO ullage/TLI sequence."
+  originalDiscipline: "PIL"
+  globalEvent: 0
+  objectiveType: 2
+  locationName: "Bridge"
+  deck: 2
+  shipPixelX: 420
+  interactionRadius: 1.6
+  targetDeck: 0
+  targetShipPixelX: 1030
+  radiationIncreaseOnSkip: 0
+  radiationIncreaseOnExpiry: 0
+  damageOnFailure: 5
+  failureIsFatalAtHighRadiation: 0
+  fatalRadiationThreshold: 60
+  allowedRoles: []
+  steps:
+  - prompt: "TLI attitude target is displayed; current attitude is offset."
+    options:
+    - "Point at an arbitrary star"
+    - "Start the burn while misaligned"
+    - "Align with the displayed departure reference"
+    correctChoice: 2
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Attitude stabilization verification."
+    options: []
+    correctChoice: 0
+    automatic: 1
+    requiresShelter: 0
+    durationSeconds: 16
+    result: "Verification complete."
+  - prompt: "Attitude error inside the target band; rates stable."
+    options:
+    - "Confirm readiness for the TLI burn"
+    - "Authorize departure with unstable rates"
+    - "Command an unplanned attitude change"
+    correctChoice: 0
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."

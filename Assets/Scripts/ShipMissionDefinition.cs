@@ -14,7 +14,8 @@ public enum ShipMissionStatus
 public enum ShipMissionObjectiveType
 {
     TimedCheck,
-    ReachTarget
+    ReachTarget,
+    Procedure
 }
 
 /// <summary>Authorable mission content and its ship location. Add assets under Resources/Missions to add missions.</summary>
@@ -34,6 +35,10 @@ public sealed class ShipMissionDefinition : ScriptableObject
     // Reserved campaign content is kept out of the ship's timed-check dispatcher.
     [HideInInspector] public bool startsQuestionCampaign;
     [HideInInspector] public int questionPhase;
+
+    public string originalDiscipline;
+    public bool globalEvent;
+    public MissionProcedureStep[] steps = new MissionProcedureStep[0];
 
     [Header("Ship interaction")]
     public ShipMissionObjectiveType objectiveType = ShipMissionObjectiveType.TimedCheck;
@@ -78,4 +83,16 @@ public sealed class ShipMissionDefinition : ScriptableObject
             return new Vector2(x, ShipLayout.FloorY(targetDeck, x));
         }
     }
+}
+
+[System.Serializable]
+public sealed class MissionProcedureStep
+{
+    [TextArea] public string prompt;
+    public string[] options = new string[0];
+    public int correctChoice;
+    public bool automatic;
+    public bool requiresShelter;
+    [Min(0)] public float durationSeconds;
+    public string result;
 }

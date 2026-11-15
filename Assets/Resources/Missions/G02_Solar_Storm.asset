@@ -11,25 +11,73 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
   m_Name: G02_Solar_Storm
-  m_EditorClassIdentifier: 
-  missionId: G-02
-  title: Solar Storm
-  timeWindowLabel: 2:15–3:50
+  m_EditorClassIdentifier:
+  missionId: "G-02"
+  title: "Solar particle event: crew shelter"
+  timeWindowLabel: "2:15–3:50"
   availableFromSeconds: 135
   availableUntilSeconds: 230
   durationSeconds: 90
-  difficulty: Hard
-  briefing: A solar storm is approaching. Reach the marked doors to the left of Life Support and press E to seal the shelter within 90 seconds.
-  objectiveType: 1
-  locationName: Communications
-  deck: 2
-  shipPixelX: 900
+  difficulty: "Hard"
+  briefing: "Move the crew to the protected central equipment area, arrange available water and food stores as shielding, power down non-essential electronics, and confirm the shelter configuration. All actions are available to every role."
+  originalDiscipline: "G"
+  globalEvent: 1
+  objectiveType: 2
+  locationName: "Central Shelter"
+  deck: 0
+  shipPixelX: 1030
   interactionRadius: 1.6
   targetDeck: 0
-  targetShipPixelX: 1120
+  targetShipPixelX: 1030
   radiationIncreaseOnSkip: 0
   radiationIncreaseOnExpiry: 0
   damageOnFailure: 25
-  failureIsFatalAtHighRadiation: 1
+  failureIsFatalAtHighRadiation: 0
   fatalRadiationThreshold: 60
   allowedRoles: []
+  steps:
+  - prompt: "Move to the protected central equipment area on the lower deck. Press E at the marker."
+    options:
+    - "Press E at the shelter marker"
+    correctChoice: 0
+    automatic: 0
+    requiresShelter: 1
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Available shielding: water containers, food stores, lightweight foil. Protect the occupied central shelter."
+    options:
+    - "Use foil alone on the outside hull"
+    - "Move crew into the exposed observation area"
+    - "Place water and food stores around the shelter"
+    correctChoice: 2
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Core guidance and life support are essential. Which loads should remain powered?"
+    options:
+    - "Keep every non-essential science load on"
+    - "Keep life support and guidance; shut down non-essential electronics"
+    - "Shut down life support"
+    correctChoice: 1
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Shielding and essential-power verification in progress."
+    options: []
+    correctChoice: 0
+    automatic: 1
+    requiresShelter: 0
+    durationSeconds: 30
+    result: "Verification complete."
+  - prompt: "Crew accounted for in the protected area. Shielding secure; essential systems online."
+    options:
+    - "Open the shelter during the event"
+    - "Resume unshielded work"
+    - "Confirm shelter configuration"
+    correctChoice: 2
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."

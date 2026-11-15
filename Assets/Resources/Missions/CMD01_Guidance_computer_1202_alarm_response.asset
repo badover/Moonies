@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
+  m_Name: CMD01_Guidance_computer_1202_alarm_response
+  m_EditorClassIdentifier:
+  missionId: "CMD-01"
+  title: "Guidance-computer 1202 alarm response"
+  timeWindowLabel: "4:55–5:45"
+  availableFromSeconds: 295
+  availableUntilSeconds: 345
+  durationSeconds: 30
+  difficulty: "Easy"
+  briefing: "Review the alarm status, distinguish core guidance functions from non-essential data streams, and authorize shedding non-essential sensor/radar data while preserving active landing guidance."
+  originalDiscipline: "CMD"
+  globalEvent: 0
+  objectiveType: 2
+  locationName: "Bridge"
+  deck: 2
+  shipPixelX: 420
+  interactionRadius: 1.6
+  targetDeck: 0
+  targetShipPixelX: 1030
+  radiationIncreaseOnSkip: 0
+  radiationIncreaseOnExpiry: 0
+  damageOnFailure: 5
+  failureIsFatalAtHighRadiation: 0
+  fatalRadiationThreshold: 60
+  allowedRoles: []
+  steps:
+  - prompt: "1202 alarm. Core guidance is healthy; non-essential streams overload the queue."
+    options:
+    - "Authorize shutdown of core guidance"
+    - "Ignore the overload and add more data"
+    - "Authorize shedding non-essential radar/sensor data"
+    correctChoice: 2
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Guidance continuity verification."
+    options: []
+    correctChoice: 0
+    automatic: 1
+    requiresShelter: 0
+    durationSeconds: 16
+    result: "Verification complete."
+  - prompt: "Core guidance remains active; load is safe."
+    options:
+    - "Authorize continued controlled landing"
+    - "Disable the recovered computer"
+    - "Authorize landing with core guidance unavailable"
+    correctChoice: 0
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."

@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
+  m_Name: ENG02_Ascent_engine_arming_breaker_recovery
+  m_EditorClassIdentifier:
+  missionId: "ENG-02"
+  title: "Ascent-engine arming breaker recovery"
+  timeWindowLabel: "6:50–7:50"
+  availableFromSeconds: 410
+  availableUntilSeconds: 470
+  durationSeconds: 30
+  difficulty: "Easy"
+  briefing: "Inspect the damaged engine-arming breaker, choose the safe non-conductive recovery tool, restore the circuit, and verify the engine-arming indicator. Unsafe conductive or liquid fixes must be rejected."
+  originalDiscipline: "ENG"
+  globalEvent: 0
+  objectiveType: 2
+  locationName: "Engineering"
+  deck: 0
+  shipPixelX: 750
+  interactionRadius: 1.6
+  targetDeck: 0
+  targetShipPixelX: 1030
+  radiationIncreaseOnSkip: 0
+  radiationIncreaseOnExpiry: 0
+  damageOnFailure: 5
+  failureIsFatalAtHighRadiation: 0
+  fatalRadiationThreshold: 60
+  allowedRoles: []
+  steps:
+  - prompt: "Engine-arming breaker is damaged. Tools: non-conductive probe, metal wire, liquid adhesive."
+    options:
+    - "Pour liquid into the breaker"
+    - "Use the non-conductive recovery tool"
+    - "Bridge it with bare metal wire"
+    correctChoice: 1
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Restore the arming circuit with the selected insulated tool."
+    options:
+    - "Seat the damaged breaker using the safe tool"
+    - "Short the live circuit"
+    - "Force an unrelated breaker"
+    correctChoice: 0
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Engine-arming indicator verification."
+    options: []
+    correctChoice: 0
+    automatic: 1
+    requiresShelter: 0
+    durationSeconds: 16
+    result: "Verification complete."
+  - prompt: "Arming circuit: CONTINUITY RESTORED. Engine arm: READY."
+    options:
+    - "Disable the restored circuit"
+    - "Confirm restored arming circuit"
+    - "Bypass the ready indicator"
+    correctChoice: 1
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."

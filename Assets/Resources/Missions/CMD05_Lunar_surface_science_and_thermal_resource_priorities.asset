@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
+  m_Name: CMD05_Lunar_surface_science_and_thermal_resource_priorities
+  m_EditorClassIdentifier:
+  missionId: "CMD-05"
+  title: "Lunar surface science and thermal-resource priorities"
+  timeWindowLabel: "5:45–6:50"
+  availableFromSeconds: 345
+  availableUntilSeconds: 410
+  durationSeconds: 60
+  difficulty: "Medium"
+  briefing: "Review the cooling-water reserve and remaining surface timeline, prioritize the available science activities, and set safe duty-cycle limits so science work does not consume the reserve needed for crew survival."
+  originalDiscipline: "CMD"
+  globalEvent: 0
+  objectiveType: 2
+  locationName: "Bridge"
+  deck: 2
+  shipPixelX: 420
+  interactionRadius: 1.6
+  targetDeck: 0
+  targetShipPixelX: 1030
+  radiationIncreaseOnSkip: 0
+  radiationIncreaseOnExpiry: 0
+  damageOnFailure: 10
+  failureIsFatalAtHighRadiation: 0
+  fatalRadiationThreshold: 60
+  allowedRoles: []
+  steps:
+  - prompt: "Cooling-water reserve must support crew survival after surface science."
+    options:
+    - "Ignore the remaining surface timeline"
+    - "Reserve survival cooling water before assigning science"
+    - "Allocate the entire reserve to science"
+    correctChoice: 1
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Available activities include a short sample survey and a high-load extended experiment."
+    options:
+    - "Prioritize the short survey within the reserve budget"
+    - "Run every activity at full duty cycle"
+    - "Use survival water for the extended experiment"
+    correctChoice: 0
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Cooling reserve and duty-cycle calculation."
+    options: []
+    correctChoice: 0
+    automatic: 1
+    requiresShelter: 0
+    durationSeconds: 24
+    result: "Verification complete."
+  - prompt: "The extended experiment exceeds the safe cooling budget."
+    options:
+    - "Disable cooling during science"
+    - "Set a limited duty cycle and preserve the survival reserve"
+    - "Extend work beyond the reserve"
+    correctChoice: 1
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."

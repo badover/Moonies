@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
+  m_Name: ENG04_Passive_thermal_control_configuration
+  m_EditorClassIdentifier:
+  missionId: "ENG-04"
+  title: "Passive thermal-control configuration"
+  timeWindowLabel: "8:00–9:10"
+  availableFromSeconds: 480
+  availableUntilSeconds: 550
+  durationSeconds: 60
+  difficulty: "Medium"
+  briefing: "Set the spacecraft to the specified Sun-relative orientation, initiate the slow passive thermal-control roll, and verify that the roll rate is within the target range. This is an independent engineering control task; it does not require a Pilot task."
+  originalDiscipline: "ENG"
+  globalEvent: 0
+  objectiveType: 2
+  locationName: "Engineering"
+  deck: 0
+  shipPixelX: 750
+  interactionRadius: 1.6
+  targetDeck: 0
+  targetShipPixelX: 1030
+  radiationIncreaseOnSkip: 0
+  radiationIncreaseOnExpiry: 0
+  damageOnFailure: 10
+  failureIsFatalAtHighRadiation: 0
+  fatalRadiationThreshold: 60
+  allowedRoles: []
+  steps:
+  - prompt: "Thermal reference: longitudinal axis perpendicular to the Sun line; slow roll target indicated."
+    options:
+    - "Point the same hull face at the Sun indefinitely"
+    - "Disable attitude monitoring"
+    - "Set the displayed Sun-relative orientation"
+    correctChoice: 2
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Orientation locked. Configure passive thermal control."
+    options:
+    - "Stop all thermal motion"
+    - "Initiate the indicated slow thermal roll"
+    - "Command maximum-rate spin"
+    correctChoice: 1
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Roll-rate and temperature distribution verification."
+    options: []
+    correctChoice: 0
+    automatic: 1
+    requiresShelter: 0
+    durationSeconds: 24
+    result: "Verification complete."
+  - prompt: "Roll rate within target band; hull heating balanced."
+    options:
+    - "Accept an out-of-band roll rate"
+    - "Cancel the stable thermal roll"
+    - "Confirm passive thermal control"
+    correctChoice: 2
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."

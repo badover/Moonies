@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
+  m_Name: PIL08_Orbital_rendezvous
+  m_EditorClassIdentifier:
+  missionId: "PIL-08"
+  title: "Orbital rendezvous"
+  timeWindowLabel: "6:50–7:50"
+  availableFromSeconds: 410
+  availableUntilSeconds: 470
+  durationSeconds: 90
+  difficulty: "Hard"
+  briefing: "Read the relative orbit and phase-angle indicators, select the lower-orbit catch-up approach, execute the transfer burn at the indicated point, and confirm rendezvous with the command/service module."
+  originalDiscipline: "PIL"
+  globalEvent: 0
+  objectiveType: 2
+  locationName: "Bridge"
+  deck: 2
+  shipPixelX: 420
+  interactionRadius: 1.6
+  targetDeck: 0
+  targetShipPixelX: 1030
+  radiationIncreaseOnSkip: 0
+  radiationIncreaseOnExpiry: 0
+  damageOnFailure: 25
+  failureIsFatalAtHighRadiation: 0
+  fatalRadiationThreshold: 60
+  allowedRoles: []
+  steps:
+  - prompt: "Target ahead in orbital phase. A lower orbit provides faster catch-up."
+    options:
+    - "Raise orbit to fall further behind"
+    - "Fly directly at the target without phasing"
+    - "Select the lower-orbit catch-up approach"
+    correctChoice: 2
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Transfer point and burn cue approaching."
+    options:
+    - "Cancel relative-navigation tracking"
+    - "Wait for the indicated transfer point"
+    - "Burn at an arbitrary point"
+    correctChoice: 1
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Transfer cue reached."
+    options:
+    - "Execute the planned transfer burn"
+    - "Continue phasing past the cue"
+    - "Reverse the intended transfer"
+    correctChoice: 0
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Relative position and closure verification."
+    options: []
+    correctChoice: 0
+    automatic: 1
+    requiresShelter: 0
+    durationSeconds: 40
+    result: "Verification complete."
+  - prompt: "Rendezvous solution stable; relative rate safe."
+    options:
+    - "Command an unplanned escape burn"
+    - "Confirm rendezvous with the command/service module"
+    - "Declare rendezvous with increasing separation"
+    correctChoice: 1
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."

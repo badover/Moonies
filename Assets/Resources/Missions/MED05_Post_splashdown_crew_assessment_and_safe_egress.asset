@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
+  m_Name: MED05_Post_splashdown_crew_assessment_and_safe_egress
+  m_EditorClassIdentifier:
+  missionId: "MED-05"
+  title: "Post-splashdown crew assessment and safe egress"
+  timeWindowLabel: "9:00–10:00"
+  availableFromSeconds: 540
+  availableUntilSeconds: 600
+  durationSeconds: 60
+  difficulty: "Medium"
+  briefing: "Verify that the capsule is upright before egress, confirm that the exit route is safe, and complete a rapid crew-condition assessment before recovery."
+  originalDiscipline: "MED"
+  globalEvent: 0
+  objectiveType: 2
+  locationName: "Medical Bay"
+  deck: 1
+  shipPixelX: 1840
+  interactionRadius: 1.6
+  targetDeck: 0
+  targetShipPixelX: 1030
+  radiationIncreaseOnSkip: 0
+  radiationIncreaseOnExpiry: 0
+  damageOnFailure: 10
+  failureIsFatalAtHighRadiation: 0
+  fatalRadiationThreshold: 60
+  allowedRoles: []
+  steps:
+  - prompt: "Splashdown complete. Capsule orientation: INVERTED."
+    options:
+    - "Open the hatch immediately"
+    - "Ignore capsule orientation"
+    - "Hold egress until upright orientation is verified"
+    correctChoice: 2
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Righting completed; hatch and exit route now clear."
+    options:
+    - "Skip route verification"
+    - "Verify the exit route before crew egress"
+    - "Exit through an obstructed hatch"
+    correctChoice: 1
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Rapid crew-condition and recovery record review."
+    options: []
+    correctChoice: 0
+    automatic: 1
+    requiresShelter: 0
+    durationSeconds: 24
+    result: "Verification complete."
+  - prompt: "Capsule upright; safe route; crew assessed."
+    options:
+    - "Declare recovery without assessing crew"
+    - "Reopen the hatch while inverted"
+    - "Confirm safe egress and handover to recovery"
+    correctChoice: 2
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."

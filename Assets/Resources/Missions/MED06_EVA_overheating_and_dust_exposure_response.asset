@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
+  m_Name: MED06_EVA_overheating_and_dust_exposure_response
+  m_EditorClassIdentifier:
+  missionId: "MED-06"
+  title: "EVA overheating and dust-exposure response"
+  timeWindowLabel: "5:45–6:50"
+  availableFromSeconds: 345
+  availableUntilSeconds: 410
+  durationSeconds: 90
+  difficulty: "Hard"
+  briefing: "Review the astronaut's suit-temperature and cooling indicators, assess the crew member's condition, decide whether to continue or terminate the EVA, and enforce the walkback limit. Detailed PLSS hardware repair is not part of this Medic task."
+  originalDiscipline: "MED"
+  globalEvent: 0
+  objectiveType: 2
+  locationName: "Medical Bay"
+  deck: 1
+  shipPixelX: 1840
+  interactionRadius: 1.6
+  targetDeck: 0
+  targetShipPixelX: 1030
+  radiationIncreaseOnSkip: 0
+  radiationIncreaseOnExpiry: 0
+  damageOnFailure: 25
+  failureIsFatalAtHighRadiation: 0
+  fatalRadiationThreshold: 60
+  allowedRoles: []
+  steps:
+  - prompt: "EVA suit temperature rising; cooling insufficient; dust exposure increasing."
+    options:
+    - "Start a hardware repair as a prerequisite"
+    - "Assess the crew member and review the cooling trend"
+    - "Continue EVA at maximum workload"
+    correctChoice: 1
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Walkback limit approaching; safe cooling margin shrinking."
+    options:
+    - "Terminate EVA and preserve the walkback margin"
+    - "Extend EVA beyond the walkback limit"
+    - "Ignore remaining cooling"
+    correctChoice: 0
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Cooling and return-to-shelter assessment."
+    options: []
+    correctChoice: 0
+    automatic: 1
+    requiresShelter: 0
+    durationSeconds: 40
+    result: "Verification complete."
+  - prompt: "Crew at the return limit; exposure record updated."
+    options:
+    - "Declare a clinical diagnosis from the indicators"
+    - "Enforce return now and continue crew observation"
+    - "Authorize another long traverse"
+    correctChoice: 1
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."

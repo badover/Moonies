@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
+  m_Name: G03_Transfer_tunnel_pressure_and_docking_safety_check
+  m_EditorClassIdentifier:
+  missionId: "G-03"
+  title: "Transfer-tunnel pressure and docking safety check"
+  timeWindowLabel: "3:50–4:55"
+  availableFromSeconds: 230
+  availableUntilSeconds: 295
+  durationSeconds: 60
+  difficulty: "Medium"
+  briefing: "Inspect the docking latch-lock and transfer-tunnel pressure indicators. If either is outside its safe state, hold separation, perform the available latch/pressure verification, and release only when the indicators are safe. The player performs the complete check."
+  originalDiscipline: "G"
+  globalEvent: 1
+  objectiveType: 2
+  locationName: "Docking Control"
+  deck: 2
+  shipPixelX: 1450
+  interactionRadius: 1.6
+  targetDeck: 0
+  targetShipPixelX: 1030
+  radiationIncreaseOnSkip: 0
+  radiationIncreaseOnExpiry: 0
+  damageOnFailure: 10
+  failureIsFatalAtHighRadiation: 0
+  fatalRadiationThreshold: 60
+  allowedRoles: []
+  steps:
+  - prompt: "Docking latch: UNVERIFIED. Transfer-tunnel pressure: NOT EQUALIZED. Separation requested."
+    options:
+    - "Hold separation"
+    - "Release the docking mechanism now"
+    - "Ignore both indicators"
+    correctChoice: 0
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Run the latch-lock verification before releasing the mechanism."
+    options:
+    - "Release the unverified latch"
+    - "Bypass the latch interlock"
+    - "Verify and engage every latch lock"
+    correctChoice: 2
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Transfer tunnel pressure differs from the safe reference."
+    options:
+    - "Disable the pressure indicator"
+    - "Equalize and verify tunnel pressure"
+    - "Open the tunnel at unequal pressure"
+    correctChoice: 1
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Latch LOCKED; pressure STABLE. Safety scan in progress."
+    options: []
+    correctChoice: 0
+    automatic: 1
+    requiresShelter: 0
+    durationSeconds: 25
+    result: "Verification complete."
+  - prompt: "Both indicators are safe. Choose the separation state."
+    options:
+    - "Keep an unsafe latch configuration"
+    - "Release without checking pressure"
+    - "Release the separation hold"
+    correctChoice: 2
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."

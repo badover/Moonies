@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
+  m_Name: ENG05_CO_scrubber_canister_adapter_repair
+  m_EditorClassIdentifier:
+  missionId: "ENG-05"
+  title: "CO₂ scrubber canister adapter repair"
+  timeWindowLabel: "2:15–3:50"
+  availableFromSeconds: 135
+  availableUntilSeconds: 230
+  durationSeconds: 90
+  difficulty: "Hard"
+  briefing: "Inspect the incompatible backup canister and available materials, identify the correct adapter arrangement, assemble the improvised connection, and verify that airflow is restored and the CO₂ reading begins returning toward safe limits. The player completes the entire repair."
+  originalDiscipline: "ENG"
+  globalEvent: 0
+  objectiveType: 2
+  locationName: "Engineering"
+  deck: 0
+  shipPixelX: 750
+  interactionRadius: 1.6
+  targetDeck: 0
+  targetShipPixelX: 1030
+  radiationIncreaseOnSkip: 0
+  radiationIncreaseOnExpiry: 0
+  damageOnFailure: 25
+  failureIsFatalAtHighRadiation: 0
+  fatalRadiationThreshold: 60
+  allowedRoles: []
+  steps:
+  - prompt: "Cabin CO2 rising. Backup canister does not fit the installed socket."
+    options:
+    - "Block the cabin air inlet"
+    - "Inspect the canister interfaces and adapter materials"
+    - "Force the incompatible canister into the socket"
+    correctChoice: 1
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Available materials: sealed bag, hose, tape and support sheet. Select an adapter."
+    options:
+    - "Build a sealed bag-and-hose adapter around the canister outlet"
+    - "Leave an open gap around the outlet"
+    - "Seal both ends of the hose"
+    correctChoice: 0
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Adapter assembled. Restore the air circuit."
+    options:
+    - "Connect only the outside of the bag"
+    - "Route cabin air around the canister"
+    - "Connect the outlet to the return hose and secure the seals"
+    correctChoice: 2
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Airflow and CO2 trend verification."
+    options: []
+    correctChoice: 0
+    automatic: 1
+    requiresShelter: 0
+    durationSeconds: 40
+    result: "Verification complete."
+  - prompt: "Airflow restored; CO2 reading trending downward."
+    options:
+    - "Confirm the repair and continue monitoring"
+    - "Declare success with no airflow"
+    - "Disconnect the working adapter"
+    correctChoice: 0
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."

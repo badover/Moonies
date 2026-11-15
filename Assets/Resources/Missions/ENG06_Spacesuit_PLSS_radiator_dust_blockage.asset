@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
+  m_Name: ENG06_Spacesuit_PLSS_radiator_dust_blockage
+  m_EditorClassIdentifier:
+  missionId: "ENG-06"
+  title: "Spacesuit PLSS radiator dust blockage"
+  timeWindowLabel: "5:45–6:50"
+  availableFromSeconds: 345
+  availableUntilSeconds: 410
+  durationSeconds: 90
+  difficulty: "Hard"
+  briefing: "Inspect the clogged radiator louvers and suit bearings, select the anti-static cleaning tool, clear the affected surfaces, restore the cooling-flow setting, and verify that suit temperature is stabilizing."
+  originalDiscipline: "ENG"
+  globalEvent: 0
+  objectiveType: 2
+  locationName: "Engineering"
+  deck: 0
+  shipPixelX: 750
+  interactionRadius: 1.6
+  targetDeck: 0
+  targetShipPixelX: 1030
+  radiationIncreaseOnSkip: 0
+  radiationIncreaseOnExpiry: 0
+  damageOnFailure: 25
+  failureIsFatalAtHighRadiation: 0
+  fatalRadiationThreshold: 60
+  allowedRoles: []
+  steps:
+  - prompt: "Suit radiator louvers and bearings are coated with lunar dust."
+    options:
+    - "Inspect the blocked cooling surfaces"
+    - "Increase work rate in the overheating suit"
+    - "Close the cooling loop"
+    correctChoice: 0
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Select a cleaning tool for charged lunar dust."
+    options:
+    - "Use a conductive scraping blade"
+    - "Pack dust deeper into the louvers"
+    - "Use the anti-static cleaning tool"
+    correctChoice: 2
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Restore radiator and bearing function."
+    options:
+    - "Disable cooling to conserve power"
+    - "Clear louvers and bearings; restore cooling flow"
+    - "Clean only the visor"
+    correctChoice: 1
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Suit cooling and temperature trend verification."
+    options: []
+    correctChoice: 0
+    automatic: 1
+    requiresShelter: 0
+    durationSeconds: 40
+    result: "Verification complete."
+  - prompt: "Cooling flow normal; suit temperature stabilizing."
+    options:
+    - "Continue with blocked louvers"
+    - "Report success with rising temperature"
+    - "Confirm stable cooling"
+    correctChoice: 2
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."

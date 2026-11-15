@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
+  m_Name: MED07_Post_solar_event_crew_exposure_follow_up
+  m_EditorClassIdentifier:
+  missionId: "MED-07"
+  title: "Post-solar-event crew exposure follow-up"
+  timeWindowLabel: "3:00–3:50"
+  availableFromSeconds: 180
+  availableUntilSeconds: 230
+  durationSeconds: 60
+  difficulty: "Medium"
+  briefing: "Review the event radiation log and crew exposure indicators, identify anyone requiring closer observation, and set the follow-up monitoring priority. This is a standalone crew assessment; the player does not need to complete the global shelter event first."
+  originalDiscipline: "MED"
+  globalEvent: 0
+  objectiveType: 2
+  locationName: "Medical Bay"
+  deck: 1
+  shipPixelX: 1840
+  interactionRadius: 1.6
+  targetDeck: 0
+  targetShipPixelX: 1030
+  radiationIncreaseOnSkip: 0
+  radiationIncreaseOnExpiry: 0
+  damageOnFailure: 10
+  failureIsFatalAtHighRadiation: 0
+  fatalRadiationThreshold: 60
+  allowedRoles: []
+  steps:
+  - prompt: "Radiation log available independently of shelter-event completion."
+    options:
+    - "Review the log and each crew exposure indicator"
+    - "Refuse screening until another task is complete"
+    - "Erase the exposure record"
+    correctChoice: 0
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "One crew exposure trend remains elevated after the event."
+    options:
+    - "Clear all crew without comparing trends"
+    - "Ignore post-event trends"
+    - "Flag that crew member for closer observation"
+    correctChoice: 2
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Follow-up exposure record verification."
+    options: []
+    correctChoice: 0
+    automatic: 1
+    requiresShelter: 0
+    durationSeconds: 24
+    result: "Verification complete."
+  - prompt: "Observation priorities recorded."
+    options:
+    - "Confirm follow-up monitoring"
+    - "Require mechanical repair before observation"
+    - "Treat the game screen as a clinical diagnosis"
+    correctChoice: 0
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."

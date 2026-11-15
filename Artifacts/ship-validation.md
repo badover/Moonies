@@ -46,3 +46,20 @@ Preview: `solar-storm-health.png` (75% HP and the shelter marker).
 Added an opaque radiation indicator and a bordered, opaque alert banner. A radiation increase announces itself for ten visible gameplay seconds. At 2:15 the storm arrival banner directs the player to Communications; after starting the procedure it remains visible with the shelter destination, E interaction and countdown. Alerts hide under station dialogs, pause and game over, and reset on a new flight. Text is updated only when its state or displayed second changes.
 
 Unity Play Mode `ValidateSolarStorm.cs` passes, including new checks for radiation-increase notification, readable backing, storm-arrival directions, persistent active warning, countdown changes and pause/resume visibility, plus all previous mission and HP checks. Visual capture: `radiation-alert.png`.
+
+## Shared randomized mission catalog — 2026-11-15
+
+Implemented all 35 entries from `Docs/Artemis2_Randomized_LEO_Mission_Task_Specification.md` as data-driven procedures: G-01–04, ENG-01–08, PIL-01–09, CMD-01–06, MED-01–08. Current user-requested override makes every discipline procedure available to every role. A run still draws five shared tasks (2 Easy, 2 Medium, 1 Hard) across at least three phases, and 2–3 distinct global events.
+
+Each procedure contains task-specific indicators/actions, rejected unsafe choices, automatic verification steps and a completion condition. Caps are 30/60/90 active seconds. Tasks queue after randomized releases and remain available past the release-window end. Only one procedure can be active. Failures/skips have explicit HP costs; flight end at 600 seconds resolves unfinished work and displays a recovery summary. Starting location is stable 185 km LEO. No other role or prior task is required.
+
+Fixed G-01 scanning stopping after CLOSE / leaving the Bridge: automatic verification runs independently of dialog visibility and player distance. A compact opaque HUD shows scan percentage/progress or ACTION REQUIRED. Reopening preserves the current step; Escape pause freezes both run and procedure clocks. Mission Tasks / M opens the live general interface. Future objectives are hidden until release.
+
+Unity 6000.6.9f1 validation:
+
+- `ValidateMissionCatalog`: all definitions, valid actions/time caps, all-role access, 2000 reproducible random plans with correct counts/difficulty/phase mix, valid releases, uniqueness, expected completion budget; all 35 tasks selected, including late reentry.
+- `ValidateMissionProcedures`: all 35 procedures completed for all four roles; actual shelter ladder route, shielding and essential-power sequence; unsafe commands rejected; successful completion preserves HP. G-01 regression verifies real-frame progress after CLOSE and walking away, live review, background departure scanning and Escape pause. Also checks queued tasks after windows, exclusive active work, one-shot timeout damage and actual Update-driven ten-minute flight completion.
+- `ValidateMissionInterface`: rendered pointer/raycasts for task board, rows, Start Scan, Close, unsafe/safe action buttons and final confirmation. Confirms hidden upcoming tasks and opaque closed-scan HUD. Captures at 1600×900: `mission-task-board.png`, `mission-procedure.png`, `scan-after-close.png`.
+- `ValidateSolarStorm`, `ValidateControlsAndBridge`, `ValidateMenuHint`, `ValidateMenuClicks`, `ValidateHealthHud`, `ValidatePauseAndLadders`: passed warning/countdown, station review, controls, menu, HP and all-role movement/pause regressions. Older fixed-mission tests updated to isolate their target task from the randomized production draw.
+
+This implementation presents flight/repair/crew-screening procedures through the ship's mission console. The existing ship scene remains the play space as phases advance.

@@ -26,23 +26,25 @@ try{
  foreach(string role in new[]{"Pilot","Engineer","Commander","Medic"})Click("Choose "+role,true);
  Capture("roles-no-tint.png");Click("BOARD SHIP");
  var mission=UnityEngine.Object.FindAnyObjectByType<ShipMission>();Check(mission!=null,"Boarding failed");
+ var definition=UnityEngine.Resources.Load<ShipMissionDefinition>("Missions/G01_LEO_Check");
+ void Release(){typeof(ShipMission).GetField("runPlan",flags).SetValue(mission,new[]{new MissionRunPlan.Entry{definition=definition,trigger=0}});typeof(ShipMission).GetField("missionDefinitions",flags).SetValue(mission,new[]{definition});menu.SendMessage("UpdateBridgeSuggestion");}
+ Release();
  var suggestion=(UnityEngine.GameObject)typeof(CrewMenu).GetField("bridgeSuggestion",flags).GetValue(menu);
  Check(suggestion.activeInHierarchy,"Bridge suggestion absent while check is available");
  Check(suggestion.GetComponent<UnityEngine.UI.Image>().color.a==1,"Suggestion border is not opaque");
  var backing=suggestion.transform.Find("Opaque Hint Backing").GetComponent<UnityEngine.UI.Image>();Check(backing.color.a==1,"Hint backing is not opaque");
  var text=suggestion.GetComponentInChildren<UnityEngine.UI.Text>();Check(text.text=="Maybe it's a good idea to check the Bridge."&&text.color.r>text.color.b&&text.fontSize<=16,"Hint wording/color/size incorrect");
  Capture("bridge-suggestion.png");
- var definition=UnityEngine.Resources.Load<ShipMissionDefinition>("Missions/G01_LEO_Check");
  Check(!definition.briefing.Contains("fault")&&!definition.briefing.Contains("trouble"),"Briefing still threatens consequences");
  var player=UnityEngine.Object.FindAnyObjectByType<CrewCharacter>();player.transform.position=new UnityEngine.Vector3(definition.WorldPosition.x,definition.WorldPosition.y,-1);typeof(ShipMission).GetField("deck",flags).SetValue(mission,definition.deck);mission.SendMessage("UpdateNearbyMission");
  menu.SendMessage("OpenMissionCard",definition);Check(!suggestion.activeSelf,"Suggestion overlaps mission card");
  menu.SendMessage("SkipSelectedMission");
- var status=(UnityEngine.UI.Text)typeof(CrewMenu).GetField("missionCardStatus",flags).GetValue(menu);Check(status.text=="CHECK SKIPPED","Skip status still warns about consequences");
+ var status=(UnityEngine.UI.Text)typeof(CrewMenu).GetField("missionCardStatus",flags).GetValue(menu);Check(status.text=="TASK SKIPPED","Skip status still warns about consequences");
  menu.SendMessage("CloseMissionCard");menu.SendMessage("Update");Check(!suggestion.activeSelf,"Suggestion remains after skipped check");
  menu.SendMessage("ReturnToMenu");await System.Threading.Tasks.Task.Delay(100);
- menu.SendMessage("Confirm");mission=UnityEngine.Object.FindAnyObjectByType<ShipMission>();player=UnityEngine.Object.FindAnyObjectByType<CrewCharacter>();
+ menu.SendMessage("Confirm");mission=UnityEngine.Object.FindAnyObjectByType<ShipMission>();player=UnityEngine.Object.FindAnyObjectByType<CrewCharacter>();Release();
  player.transform.position=new UnityEngine.Vector3(definition.WorldPosition.x,definition.WorldPosition.y,-1);typeof(ShipMission).GetField("deck",flags).SetValue(mission,definition.deck);mission.SendMessage("UpdateNearbyMission");
- menu.SendMessage("OpenMissionCard",definition);menu.SendMessage("StartSelectedMission");mission.SendMessage("UpdateActiveMission",definition.durationSeconds);menu.SendMessage("CloseMissionCard");menu.SendMessage("Update");
+ menu.SendMessage("OpenMissionCard",definition);menu.SendMessage("StartSelectedMission");while(mission.ActiveMission!=null){var step=mission.CurrentStep;if(step.automatic)mission.SendMessage("UpdateActiveMission",step.durationSeconds);else Check(mission.ChooseProcedureOption(step.correctChoice),"Check decision failed");}menu.SendMessage("CloseMissionCard");menu.SendMessage("Update");
  Check(mission.GetMissionStatus(definition)==ShipMissionStatus.Completed&&!suggestion.activeSelf,"Suggestion remains after completion");
  return "PASS: START and four roles remain clickable with no hover/focus/pressed/selected blue tint; opaque yellow Bridge hint; neutral briefing/skip; hint hides for card, skip and completion";
 }finally{

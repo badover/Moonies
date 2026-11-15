@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
+  m_Name: PIL09_Reentry_corridor_and_recovery_sequence
+  m_EditorClassIdentifier:
+  missionId: "PIL-09"
+  title: "Reentry corridor and recovery sequence"
+  timeWindowLabel: "9:00–10:00"
+  availableFromSeconds: 540
+  availableUntilSeconds: 600
+  durationSeconds: 90
+  difficulty: "Hard"
+  briefing: "Maintain the specified reentry corridor, monitor the entry profile, deploy the main parachutes at the indicated condition, and confirm that the capsule reaches the correct post-splashdown orientation for recovery."
+  originalDiscipline: "PIL"
+  globalEvent: 0
+  objectiveType: 2
+  locationName: "Bridge"
+  deck: 2
+  shipPixelX: 420
+  interactionRadius: 1.6
+  targetDeck: 0
+  targetShipPixelX: 1030
+  radiationIncreaseOnSkip: 0
+  radiationIncreaseOnExpiry: 0
+  damageOnFailure: 25
+  failureIsFatalAtHighRadiation: 0
+  fatalRadiationThreshold: 60
+  allowedRoles: []
+  steps:
+  - prompt: "Entry profile inside the specified corridor; deviation cue available."
+    options:
+    - "Skip above the corridor"
+    - "Maintain the corridor using the indicated correction"
+    - "Dive below the corridor"
+    correctChoice: 1
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Entry loads trending safely; parachute deployment condition not yet met."
+    options:
+    - "Monitor the profile until the deployment cue"
+    - "Deploy main parachutes at peak entry heating"
+    - "Disable entry monitoring"
+    correctChoice: 0
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Main-parachute deployment condition REACHED."
+    options:
+    - "Jettison the parachutes"
+    - "Delay beyond the deployment condition"
+    - "Deploy the main parachutes"
+    correctChoice: 2
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
+  - prompt: "Splashdown and orientation verification."
+    options: []
+    correctChoice: 0
+    automatic: 1
+    requiresShelter: 0
+    durationSeconds: 30
+    result: "Verification complete."
+  - prompt: "Capsule initially inverted; recovery orientation cue available."
+    options:
+    - "Use the righting system and confirm upright recovery orientation"
+    - "Open the hatch while inverted"
+    - "Disable the righting system"
+    correctChoice: 0
+    automatic: 0
+    requiresShelter: 0
+    durationSeconds: 0
+    result: "Command accepted. Safe configuration verified."
