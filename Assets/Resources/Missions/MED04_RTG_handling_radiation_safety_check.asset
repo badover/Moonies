@@ -20,12 +20,13 @@ MonoBehaviour:
   durationSeconds: 60
   difficulty: "Medium"
   briefing: "Review the radioactive-source warning, establish the safe handling boundary and placement distance, check crew exposure indicators, and confirm that the crew is clear of the source area. Mechanical fuel-rod extraction is not required."
+  stationId: medbay
   originalDiscipline: "MED"
   globalEvent: 0
   objectiveType: 2
   locationName: "Medical Bay"
   deck: 1
-  shipPixelX: 1840
+  shipPixelX: 1570
   interactionRadius: 1.6
   targetDeck: 0
   targetShipPixelX: 1030

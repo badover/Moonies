@@ -20,12 +20,13 @@ MonoBehaviour:
   durationSeconds: 60
   difficulty: "Medium"
   briefing: "Compare radiation-counter readings with crew exposure indicators, identify the highest-risk exposure status, and record the appropriate observation priority. The Medic does not need to operate the spacecraft's power or attitude systems."
+  stationId: medbay
   originalDiscipline: "MED"
   globalEvent: 0
   objectiveType: 2
   locationName: "Medical Bay"
   deck: 1
-  shipPixelX: 1840
+  shipPixelX: 1570
   interactionRadius: 1.6
   targetDeck: 0
   targetShipPixelX: 1030

@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 30
   difficulty: "Easy"
   briefing: "Review the alarm status, distinguish core guidance functions from non-essential data streams, and authorize shedding non-essential sensor/radar data while preserving active landing guidance."
+  stationId: bridge
   originalDiscipline: "CMD"
   globalEvent: 0
   objectiveType: 2

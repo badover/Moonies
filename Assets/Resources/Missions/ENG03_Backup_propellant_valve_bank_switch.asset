@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 60
   difficulty: "Medium"
   briefing: "Inspect the primary propellant-valve warning, verify the redundant valve bank, switch to the backup bank, and confirm that the feed path is ready for the Trans-Earth Injection burn."
+  stationId: engineering
   originalDiscipline: "ENG"
   globalEvent: 0
   objectiveType: 2

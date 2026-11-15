@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 60
   difficulty: "Medium"
   briefing: "Compare the onboard star-angle reference with the course-error indicator, select the correction direction and magnitude, and complete the short correction burn."
+  stationId: bridge
   originalDiscipline: "PIL"
   globalEvent: 0
   objectiveType: 2

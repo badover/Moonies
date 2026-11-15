@@ -20,12 +20,13 @@ MonoBehaviour:
   durationSeconds: 30
   difficulty: "Easy"
   briefing: "Check the cabin CO₂ reading and the listed symptoms associated with elevated CO₂, assess the crew's exposure status, and select the appropriate monitoring priority. The scrubber repair is not part of this task."
+  stationId: medbay
   originalDiscipline: "MED"
   globalEvent: 0
   objectiveType: 2
   locationName: "Medical Bay"
   deck: 1
-  shipPixelX: 1840
+  shipPixelX: 1570
   interactionRadius: 1.6
   targetDeck: 0
   targetShipPixelX: 1030

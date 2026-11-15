@@ -25,13 +25,33 @@ public sealed class ShipMission : MonoBehaviour
     private float missionClock;
     private float activeMissionElapsed;
     private ShipMissionDefinition[] missionDefinitions;
+    private readonly HashSet<ShipMissionDefinition> announcedMissions=new HashSet<ShipMissionDefinition>();
+    private readonly Dictionary<string,SpriteRenderer> equipmentMarkers=new Dictionary<string,SpriteRenderer>();
+    private Sprite equipmentMarkerSprite;
+    private float cabinEventRemaining;
+    private int announcedPhase;
+    private bool stormDetected;
+    public ShipEquipment Equipment {get;private set;}
+    public ShipEquipment.Element NearbyEquipment {get;private set;}
+    public ShipEquipment.Element TrackedEquipment {get;private set;}
+    public event Action<ShipEquipment.Element> EquipmentInteractionRequested;
+    public event Action<ShipMissionDefinition> MissionAvailable;
+    public event Action<string> FlightAnnouncement;
+    public bool CheckoutComplete {get{foreach(var pair in missionStatuses)if(pair.Key.missionId==MissionRunPlan.CheckoutId && pair.Value==ShipMissionStatus.Completed)return true;return false;}}
+    public float CabinEventSecondsRemaining => cabinEventRemaining;
+    public bool IsInsideShip => player!=null && player.transform.position.x>=ShipLayout.ToWorldX(175) && player.transform.position.x<=ShipLayout.ToWorldX(2015) &&
+        player.transform.position.y>=ShipLayout.FloorY(0,player.transform.position.x)-.3f && player.transform.position.y<=ShipLayout.FloorY(2,player.transform.position.x)+2.2f;
+    public bool IsInShelter => player!=null && deck==0 && Mathf.Abs(player.transform.position.x-ShipLayout.ToWorldX(1120))<2;
+    public bool IsRadiationProtected => IsInShelter && Equipment!=null && Equipment.ShieldingInstalled && Equipment.ShelterSealed;
+    public float RadiationDamagePerSecond => !IsInsideShip || IsRadiationProtected ? 0 : RadiationLevel*.02f*(IsInShelter && Equipment!=null && Equipment.ShieldingInstalled ? .15f : 1);
     private MissionRunPlan.Entry[] runPlan;
     private int procedureStepIndex;
     private float procedureStepElapsed;
     private string procedureFeedback;
     public int RunSeed { get; private set; }
     public bool RunFinished { get; private set; }
-    public bool IsInterfaceOpen { get; set; }
+    private bool interfaceOpen;
+    public bool IsInterfaceOpen {get=>interfaceOpen;set{interfaceOpen=value;if(value && player!=null){player.SetWalking(false);if(player.IsClimbing)player.SetClimbing(true,0);}}}
     public float MissionSeconds => missionClock;
     public System.Collections.Generic.IReadOnlyList<MissionRunPlan.Entry> RunPlan => runPlan;
     public string PhaseLabel => MissionRunPlan.PhaseNames[MissionRunPlan.PhaseAt(missionClock)];
@@ -100,6 +120,16 @@ public sealed class ShipMission : MonoBehaviour
         if (playerRenderer.sprite == null)
             throw new System.InvalidOperationException("Crew animation has missing sprite references. Rebuild Animated Characters from Tools/Crew.");
         view.transform.position = new Vector3(player.transform.position.x, 0, -10);
+        Equipment=new ShipEquipment(this);
+        equipmentMarkerSprite=Sprite.Create(Texture2D.whiteTexture,new Rect(0,0,1,1),new Vector2(.5f,.5f),1);
+        foreach(var element in ShipEquipment.Elements)
+        {
+            var marker=new GameObject("Equipment: "+element.title,typeof(SpriteRenderer));marker.transform.SetParent(transform,false);
+            marker.transform.position=(Vector3)element.Position+new Vector3(0,1.15f,-.2f);marker.transform.localScale=Vector3.one*.10f;
+            marker.transform.rotation=Quaternion.Euler(0,0,45);
+            var sr=marker.GetComponent<SpriteRenderer>();sr.sprite=equipmentMarkerSprite;sr.sharedMaterial=material;sr.sortingOrder=5;
+            sr.color=new Color(.2f,.8f,.9f,.5f);equipmentMarkers[element.id]=sr;
+        }
         ready = true;
     }
     private void Update()
@@ -109,7 +139,9 @@ public sealed class ShipMission : MonoBehaviour
         if (keys != null && keys.escapeKey.wasPressedThisFrame) { onPauseRequested(); return; }
         if (IsPaused || RunFinished) return;
         float delta = Mathf.Min(Time.deltaTime, MissionRunPlan.RunSeconds - missionClock);
-        missionClock += delta;
+        if(CheckoutComplete) missionClock += delta;
+        UpdateFlightEvents();
+        UpdateCabinRadiation(delta);
         if(IsPaused) return;
         float x = keys == null ? 0 : (keys.dKey.isPressed || keys.rightArrowKey.isPressed ? 1 : 0) - (keys.aKey.isPressed || keys.leftArrowKey.isPressed ? 1 : 0);
         float y = keys == null ? 0 : (keys.wKey.isPressed || keys.upArrowKey.isPressed ? 1 : 0) - (keys.sKey.isPressed || keys.downArrowKey.isPressed ? 1 : 0);
@@ -117,9 +149,17 @@ public sealed class ShipMission : MonoBehaviour
         UpdateActiveMission(delta);
         if (IsPaused) return;
         UpdateNearbyMission();
+        UpdateNearbyEquipment();
         if (missionClock >= MissionRunPlan.RunSeconds) { FinishRun(); return; }
         if (!IsInterfaceOpen && keys != null && keys.eKey.wasPressedThisFrame) TryInteract();
-        if (!IsInterfaceOpen && Mouse.current != null) zoom = ShipLayout.ZoomAfterScroll(zoom, Mouse.current.scroll.ReadValue().y);
+        if (!IsInterfaceOpen && Mouse.current != null)
+        {
+            zoom=ShipLayout.ZoomAfterScroll(zoom,Mouse.current.scroll.ReadValue().y);
+            if(Mouse.current.leftButton.wasPressedThisFrame && (UnityEngine.EventSystems.EventSystem.current==null || !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()))
+            {
+                TryInteractAtPoint(view.ScreenToWorldPoint(Mouse.current.position.ReadValue()));
+            }
+        }
     }
     public bool TryInteract()
     {
@@ -131,25 +171,28 @@ public sealed class ShipMission : MonoBehaviour
             return true;
         }
         UpdateNearbyMission();
-        if(nearbyMission==null) return false;
-        MissionInteractionRequested?.Invoke(nearbyMission);
-        return true;
+        if(nearbyMission!=null && (GetMissionStatus(nearbyMission)==ShipMissionStatus.Available || nearbyMission==activeMission))
+        {MissionInteractionRequested?.Invoke(nearbyMission);return true;}
+        UpdateNearbyEquipment();
+        if(NearbyEquipment!=null) return InteractEquipment(NearbyEquipment.id);
+        if(nearbyMission!=null){MissionInteractionRequested?.Invoke(nearbyMission);return true;}
+        return false;
     }
     public ShipMissionStatus GetMissionStatus(ShipMissionDefinition definition)
     {
         if (definition == null || runPlan == null) return ShipMissionStatus.Unavailable;
         MissionRunPlan.Entry entry=null;
         for(int i=0;i<runPlan.Length;i++) if(runPlan[i].definition==definition){entry=runPlan[i];break;}
-        if (entry == null) return ShipMissionStatus.Unavailable;
+        if (entry == null || definition.missionId!=MissionRunPlan.CheckoutId && !CheckoutComplete) return ShipMissionStatus.Unavailable;
         if (missionStatuses.TryGetValue(definition, out var status)) return status;
         if (RunFinished) return ShipMissionStatus.Expired;
         return missionClock < entry.trigger ? ShipMissionStatus.Unavailable : ShipMissionStatus.Available;
     }
     public bool StartMission(ShipMissionDefinition definition)
     {
-        if (!ready || definition == null || activeMission != null || RunFinished || GetMissionStatus(definition) != ShipMissionStatus.Available)
+        if (!ready || definition == null || activeMission != null || RunFinished || IsPaused || !CanStartAtStation(definition) || GetMissionStatus(definition) != ShipMissionStatus.Available)
             return false;
-        if (definition.missionId=="G-02") IncreaseRadiation(35);
+        if (definition.missionId==MissionRunPlan.StormId && !stormDetected) StartCabinRadiation();
         activeMission = definition;
         activeMissionElapsed = 0;
         procedureStepIndex = 0; procedureStepElapsed = 0; procedureFeedback = "";
@@ -173,10 +216,11 @@ public sealed class ShipMission : MonoBehaviour
     }
     public bool SkipMission(ShipMissionDefinition definition)
     {
-        if (!ready || definition == null || activeMission != null || RunFinished || GetMissionStatus(definition) != ShipMissionStatus.Available)
+        if (!ready || definition == null || definition.missionId==MissionRunPlan.CheckoutId || activeMission != null || RunFinished || IsPaused || GetMissionStatus(definition) != ShipMissionStatus.Available)
             return false;
         missionStatuses[definition] = ShipMissionStatus.Skipped;
-        IncreaseRadiation(definition.radiationIncreaseOnSkip + (definition.missionId=="G-02" ? 35 : 0));
+        if(definition.missionId==MissionRunPlan.StormId && !stormDetected)StartCabinRadiation();
+        IncreaseRadiation(definition.radiationIncreaseOnSkip);
         ResolveFailure(definition);
         UpdateNearbyMission();
         return true;
@@ -209,12 +253,15 @@ public sealed class ShipMission : MonoBehaviour
     {
         if (IsPaused || RunFinished || activeMission == null || CurrentStep == null || CurrentStep.automatic || CurrentStep.requiresShelter) return false;
         var step=CurrentStep;
+        if(activeMission.missionId!=MissionRunPlan.CheckoutId && !CanStartAtStation(activeMission))
+        {procedureFeedback="Return to "+activeMission.locationName+" to operate its equipment.";return false;}
         if (index < 0 || index >= step.options.Length) return false;
         if (index != step.correctChoice)
         {
             procedureFeedback="UNSAFE COMMAND REJECTED — review the indicators and try again.";
             return false;
         }
+        if(activeMission.missionId==MissionRunPlan.StormId)Equipment.ConfigureShelterStep(procedureStepIndex);
         AdvanceProcedure(); return true;
     }
     private void AdvanceProcedure()
@@ -223,6 +270,83 @@ public sealed class ShipMission : MonoBehaviour
         procedureStepIndex++; procedureStepElapsed=0;
         if (targetMarker != null && (CurrentStep == null || !CurrentStep.requiresShelter)) targetMarker.SetActive(false);
         if (activeMission != null && procedureStepIndex >= activeMission.steps.Length) ResolveActiveMission(true);
+    }
+    public bool CanStartAtStation(ShipMissionDefinition definition)
+    {
+        return definition!=null && (definition.missionId==MissionRunPlan.CheckoutId || IsNearMission(definition));
+    }
+    public bool IsStandingInDoor(ShipEquipment.Element element)=>player!=null && deck==element.deck && Mathf.Abs(player.transform.position.x-element.Position.x)<ShipLayout.BodyHalfWidth+.08f;
+    public bool IsNearEquipment(ShipEquipment.Element element)=>element!=null && player!=null && deck==element.deck && Vector2.Distance(player.transform.position,element.Position)<=2.2f;
+    public void TrackStation(ShipMissionDefinition definition)
+    {
+        if(definition==null)return;
+        TrackedEquipment=Array.Find(ShipEquipment.Elements,x=>x.id==definition.stationId) ?? Array.Find(ShipEquipment.Elements,x=>x.station==definition.stationId);
+        FlightAnnouncement?.Invoke("GO TO "+definition.locationName.ToUpperInvariant()+" — DECK "+(definition.deck+1)+" — PRESS E AT THE CONSOLE");
+    }
+    public bool TryInteractAtPoint(Vector2 point)
+    {
+        var clicked=ShipEquipment.Elements.Where(x=>x.Contains(point)).OrderBy(x=>Vector2.Distance(point,x.Position+Vector2.up)).FirstOrDefault();
+        return clicked!=null && InteractEquipment(clicked.id);
+    }
+    public bool InteractEquipment(string id)
+    {
+        if(!ready || IsPaused || RunFinished)return false;
+        var element=Equipment.Find(id);if(element==null)return false;
+        if(!IsNearEquipment(element)){TrackedEquipment=element;FlightAnnouncement?.Invoke("MOVE TO "+element.title.ToUpperInvariant()+" — DECK "+(element.deck+1));return false;}
+        EquipmentInteractionRequested?.Invoke(element);return true;
+    }
+    public bool OperateEquipment(string id,int action)
+    {
+        var element=Equipment.Find(id);
+        if(!ready || IsPaused || RunFinished || !IsNearEquipment(element))return false;
+        string result=Equipment.Operate(element,action);
+        if(element.kind=="ladder" && action==0)MoveCrew(0,element.deck==2?-1:1,.02f);
+        FlightAnnouncement?.Invoke(result);return true;
+    }
+    private void UpdateNearbyEquipment()
+    {
+        NearbyEquipment=null;float closest=float.MaxValue;
+        foreach(var element in ShipEquipment.Elements)
+        {
+            if(!IsNearEquipment(element))continue;
+            float distance=Vector2.Distance(player.transform.position,element.Position);
+            if(distance<closest){closest=distance;NearbyEquipment=element;}
+        }
+        foreach(var pair in equipmentMarkers)
+        {
+            bool near=NearbyEquipment!=null && pair.Key==NearbyEquipment.id;
+            bool tracked=TrackedEquipment!=null && pair.Key==TrackedEquipment.id;
+            pair.Value.color=Equipment.IsDoorClosed(pair.Key) ? new Color(1,.25f,.1f,1) : tracked ? new Color(1,.75f,.15f,1) : near ? Color.cyan : new Color(.2f,.8f,.9f,.5f);
+        }
+    }
+    private void UpdateFlightEvents()
+    {
+        if(runPlan==null)return;
+        int phase=MissionRunPlan.PhaseAt(missionClock);
+        if(phase!=announcedPhase){announcedPhase=phase;FlightAnnouncement?.Invoke(PhaseLabel);}
+        foreach(var entry in runPlan)
+        {
+            if(GetMissionStatus(entry.definition)!=ShipMissionStatus.Available || !announcedMissions.Add(entry.definition))continue;
+            if(entry.definition.missionId==MissionRunPlan.StormId)StartCabinRadiation();
+            MissionAvailable?.Invoke(entry.definition);
+        }
+    }
+    private void StartCabinRadiation()
+    {
+        if(stormDetected)return;
+        stormDetected=true;cabinEventRemaining=120;RadiationLevel=35;
+        FlightAnnouncement?.Invoke("RADIATION DETECTED INSIDE THE SHIP — CREW HP IS FALLING — TAKE SHELTER");
+    }
+    private void UpdateCabinRadiation(float delta)
+    {
+        if(!ready || IsPaused || RunFinished || delta<=0 || RadiationLevel<=0)return;
+        float exposure=cabinEventRemaining>0 ? Mathf.Min(delta,cabinEventRemaining) : delta;
+        Health.TakeDamage(RadiationDamagePerSecond*exposure);
+        if(cabinEventRemaining>0)
+        {
+            cabinEventRemaining=Mathf.Max(0,cabinEventRemaining-delta);
+            if(cabinEventRemaining==0){RadiationLevel=0;FlightAnnouncement?.Invoke("CABIN RADIATION CLEARED — EXPOSURE HAS STOPPED");}
+        }
     }
     private void FinishRun()
     {
@@ -269,7 +393,11 @@ public sealed class ShipMission : MonoBehaviour
         if (targetMarker != null) Destroy(targetMarker);
         targetMarker = null;
         if (targetMarkerSprite != null) { Destroy(targetMarkerSprite); targetMarkerSprite = null; }
-        if (resolved.missionId == "G-02") IncreaseRadiation(success ? -RadiationLevel : 25);
+        if (resolved.missionId==MissionRunPlan.CheckoutId)
+        {
+            if(!success)missionStatuses.Remove(resolved);
+            else FlightAnnouncement?.Invoke("BRIDGE CHECK COMPLETE — FLIGHT EVENT CHAIN ONLINE");
+        }
         if(success) MissionResolved?.Invoke(resolved, true, false);
         else ResolveFailure(resolved);
         UpdateNearbyMission();
@@ -326,7 +454,7 @@ public sealed class ShipMission : MonoBehaviour
                 deck=landing;activeLadder=-1;ladderNeedsRelease=y!=0;
                 player.SetClimbing(false,0);
                 // Step off at walking speed: never teleport across the shaft.
-                p.x=ShipLayout.MoveOnDeck(deck,p.x,p.x+x*2.8f*delta);
+                p.x=Equipment.ClampMovement(deck,p.x,ShipLayout.MoveOnDeck(deck,p.x,p.x+x*2.8f*delta));
                 p.y=ShipLayout.FloorY(deck,p.x);
                 player.SetWalking(true);player.SetFacingLeft(x<0);
             }
@@ -356,7 +484,7 @@ public sealed class ShipMission : MonoBehaviour
         }
         else
         {
-            float next=ShipLayout.MoveOnDeck(deck,p.x,p.x+x*2.8f*delta);
+            float next=Equipment.ClampMovement(deck,p.x,ShipLayout.MoveOnDeck(deck,p.x,p.x+x*2.8f*delta));
             player.SetWalking(Mathf.Abs(next-p.x)>.0001f);
             if(x!=0) player.SetFacingLeft(x<0);
             p.x=next;p.y=ShipLayout.FloorY(deck,p.x);
@@ -384,6 +512,7 @@ public sealed class ShipMission : MonoBehaviour
         if(IsPaused) Time.timeScale=runningTimeScale;
         if (shipSprite != null) Destroy(shipSprite);
         if (targetMarkerSprite != null) Destroy(targetMarkerSprite);
+        if (equipmentMarkerSprite != null) Destroy(equipmentMarkerSprite);
 
     }
 }

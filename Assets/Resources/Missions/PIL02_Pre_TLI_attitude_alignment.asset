@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 30
   difficulty: "Easy"
   briefing: "Align the spacecraft to the displayed TLI attitude reference, stabilize the attitude indicators, and confirm that the vehicle is ready for the planned departure burn. This is a short setup task adapted from the LEO ullage/TLI sequence."
+  stationId: bridge
   originalDiscipline: "PIL"
   globalEvent: 0
   objectiveType: 2

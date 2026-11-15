@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 30
   difficulty: "Easy"
   briefing: "Inspect the propellant-settling indicators, verify that the ullage sequence is required, activate the settling sequence, and confirm that liquid propellant is positioned correctly before the main engine burn. Do not authorize ignition while the propellant is unsettled."
+  stationId: engineering
   originalDiscipline: "ENG"
   globalEvent: 0
   objectiveType: 2

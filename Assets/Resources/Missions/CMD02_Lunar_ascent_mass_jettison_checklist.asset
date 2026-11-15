@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 30
   difficulty: "Easy"
   briefing: "Review the ascent mass limit, identify non-essential equipment to leave on the surface, protect the collected lunar samples, update the mass checklist, and authorize liftoff preparation."
+  stationId: bridge
   originalDiscipline: "CMD"
   globalEvent: 0
   objectiveType: 2

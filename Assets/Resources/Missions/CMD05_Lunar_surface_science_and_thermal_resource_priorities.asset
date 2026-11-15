@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 60
   difficulty: "Medium"
   briefing: "Review the cooling-water reserve and remaining surface timeline, prioritize the available science activities, and set safe duty-cycle limits so science work does not consume the reserve needed for crew survival."
+  stationId: bridge
   originalDiscipline: "CMD"
   globalEvent: 0
   objectiveType: 2

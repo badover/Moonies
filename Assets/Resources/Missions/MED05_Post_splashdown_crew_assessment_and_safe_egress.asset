@@ -20,12 +20,13 @@ MonoBehaviour:
   durationSeconds: 60
   difficulty: "Medium"
   briefing: "Verify that the capsule is upright before egress, confirm that the exit route is safe, and complete a rapid crew-condition assessment before recovery."
+  stationId: medbay
   originalDiscipline: "MED"
   globalEvent: 0
   objectiveType: 2
   locationName: "Medical Bay"
   deck: 1
-  shipPixelX: 1840
+  shipPixelX: 1570
   interactionRadius: 1.6
   targetDeck: 0
   targetShipPixelX: 1030

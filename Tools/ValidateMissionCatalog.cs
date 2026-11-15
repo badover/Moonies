@@ -13,11 +13,11 @@ foreach(var d in catalog){
 var seen=new System.Collections.Generic.HashSet<string>();int two=0,three=0;
 for(int seed=0;seed<2000;seed++){
  var plan=MissionRunPlan.Create(catalog,seed);var shared=plan.Where(x=>!x.definition.globalEvent).ToArray();var globals=plan.Where(x=>x.definition.globalEvent).ToArray();
- Check(plan.Length==7||plan.Length==8,"Wrong event count");Check(shared.Length==5&&globals.Length==plan.Length-5,"Wrong pool counts");
+ Check(plan.Length==7||plan.Length==8,"Wrong event count");Check(plan[0].definition.missionId=="G-01"&&plan[0].trigger==0&&plan.Any(x=>x.definition.missionId=="G-02"),"Mandatory checkout or radiation story beat missing");Check(shared.Length==5&&globals.Length==plan.Length-5,"Wrong pool counts");
  Check(shared.Count(x=>x.definition.difficulty=="Easy")==2&&shared.Count(x=>x.definition.difficulty=="Medium")==2&&shared.Count(x=>x.definition.difficulty=="Hard")==1,"Wrong difficulty mix");
  Check(shared.Select(x=>MissionRunPlan.PhaseAt(x.trigger)).Distinct().Count()>=3,"Insufficient phase diversity");
  Check(plan.Select(x=>x.definition.missionId).Distinct().Count()==plan.Length,"Duplicate events");
- Check(plan.All(x=>x.trigger>=x.definition.availableFromSeconds&&x.trigger<=x.definition.availableUntilSeconds),"Trigger outside allowed window");
+ Check(plan.All(x=>(x.definition.missionId==MissionRunPlan.CheckoutId?x.trigger==0:x.trigger>=x.definition.availableFromSeconds&&x.trigger<=x.definition.availableUntilSeconds)),"Trigger outside allowed window");
  Check(plan.Sum(x=>x.definition.durationSeconds)<=480,"Run exceeds maximum task budget");
  float cursor=0;foreach(var e in plan){cursor=UnityEngine.Mathf.Max(cursor,e.trigger)+MissionRunPlan.EstimatedWork(e.definition);seen.Add(e.definition.missionId);}Check(cursor<=600,"Generated schedule has insufficient expected completion time");
  var repeat=MissionRunPlan.Create(catalog,seed);Check(plan.Zip(repeat,(a,b)=>a.definition==b.definition&&a.trigger==b.trigger).All(x=>x),"Seed is not reproducible");

@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 90
   difficulty: "Hard"
   briefing: "Review the active spacecraft and seismometer positions, choose a controlled disposal trajectory that avoids the crewed vehicle and deployed science equipment, and confirm the intended impact plan."
+  stationId: bridge
   originalDiscipline: "CMD"
   globalEvent: 0
   objectiveType: 2

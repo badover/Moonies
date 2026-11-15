@@ -20,12 +20,13 @@ MonoBehaviour:
   durationSeconds: 60
   difficulty: "Medium"
   briefing: "Review the event radiation log and crew exposure indicators, identify anyone requiring closer observation, and set the follow-up monitoring priority. This is a standalone crew assessment; the player does not need to complete the global shelter event first."
+  stationId: medbay
   originalDiscipline: "MED"
   globalEvent: 0
   objectiveType: 2
   locationName: "Medical Bay"
   deck: 1
-  shipPixelX: 1840
+  shipPixelX: 1570
   interactionRadius: 1.6
   targetDeck: 0
   targetShipPixelX: 1030

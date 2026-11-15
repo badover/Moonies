@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 30
   difficulty: "Easy"
   briefing: "Inspect the damaged engine-arming breaker, choose the safe non-conductive recovery tool, restore the circuit, and verify the engine-arming indicator. Unsafe conductive or liquid fixes must be rejected."
+  stationId: engineering
   originalDiscipline: "ENG"
   globalEvent: 0
   objectiveType: 2

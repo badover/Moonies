@@ -20,12 +20,13 @@ MonoBehaviour:
   durationSeconds: 90
   difficulty: "Hard"
   briefing: "Review the astronaut's suit-temperature and cooling indicators, assess the crew member's condition, decide whether to continue or terminate the EVA, and enforce the walkback limit. Detailed PLSS hardware repair is not part of this Medic task."
+  stationId: medbay
   originalDiscipline: "MED"
   globalEvent: 0
   objectiveType: 2
   locationName: "Medical Bay"
   deck: 1
-  shipPixelX: 1840
+  shipPixelX: 1570
   interactionRadius: 1.6
   targetDeck: 0
   targetShipPixelX: 1030

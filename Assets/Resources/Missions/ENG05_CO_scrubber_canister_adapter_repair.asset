@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 90
   difficulty: "Hard"
   briefing: "Inspect the incompatible backup canister and available materials, identify the correct adapter arrangement, assemble the improvised connection, and verify that airflow is restored and the CO₂ reading begins returning toward safe limits. The player completes the entire repair."
+  stationId: engineering
   originalDiscipline: "ENG"
   globalEvent: 0
   objectiveType: 2

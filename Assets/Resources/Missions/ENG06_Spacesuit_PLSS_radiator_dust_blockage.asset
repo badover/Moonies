@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 90
   difficulty: "Hard"
   briefing: "Inspect the clogged radiator louvers and suit bearings, select the anti-static cleaning tool, clear the affected surfaces, restore the cooling-flow setting, and verify that suit temperature is stabilizing."
+  stationId: engineering
   originalDiscipline: "ENG"
   globalEvent: 0
   objectiveType: 2

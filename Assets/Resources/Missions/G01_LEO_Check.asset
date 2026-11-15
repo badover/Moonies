@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 30
   difficulty: "Easy"
   briefing: "From the general mission interface, verify that the spacecraft is stable in LEO, confirm the Earth/Mission Control telemetry link, and check that the departure systems report ready. This is an in-orbit checkout, not a launch or pre-launch briefing."
+  stationId: bridge
   originalDiscipline: "G"
   globalEvent: 1
   objectiveType: 2

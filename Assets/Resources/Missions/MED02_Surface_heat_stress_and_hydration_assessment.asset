@@ -20,12 +20,13 @@ MonoBehaviour:
   durationSeconds: 30
   difficulty: "Easy"
   briefing: "Review cabin/suit temperature and cooling-water reserve indicators alongside crew heat and hydration status. Select a safe work/rest or hydration response while preserving the required cooling reserve."
+  stationId: medbay
   originalDiscipline: "MED"
   globalEvent: 0
   objectiveType: 2
   locationName: "Medical Bay"
   deck: 1
-  shipPixelX: 1840
+  shipPixelX: 1570
   interactionRadius: 1.6
   targetDeck: 0
   targetShipPixelX: 1030

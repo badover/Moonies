@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 60
   difficulty: "Medium"
   briefing: "Read the changing perilune/apolune indicators, identify the orbit-decay trend, select the appropriate stabilizing correction, and confirm that the orbit is within the safe band."
+  stationId: bridge
   originalDiscipline: "PIL"
   globalEvent: 0
   objectiveType: 2

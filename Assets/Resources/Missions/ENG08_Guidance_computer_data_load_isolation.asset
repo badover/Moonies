@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 60
   difficulty: "Medium"
   briefing: "Inspect the computer-load display during the 1202 alarm, identify the non-essential radar or science-data streams contributing to the overload, isolate those streams, and verify that processor load returns to the safe range while core guidance remains active. This is an engineering systems task, independent of the Commander's operational decision."
+  stationId: engineering
   originalDiscipline: "ENG"
   globalEvent: 0
   objectiveType: 2

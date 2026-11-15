@@ -20,12 +20,13 @@ MonoBehaviour:
   durationSeconds: 60
   difficulty: "Medium"
   briefing: "Inspect the docking latch-lock and transfer-tunnel pressure indicators. If either is outside its safe state, hold separation, perform the available latch/pressure verification, and release only when the indicators are safe. The player performs the complete check."
+  stationId: docking
   originalDiscipline: "G"
   globalEvent: 1
   objectiveType: 2
   locationName: "Docking Control"
-  deck: 2
-  shipPixelX: 1450
+  deck: 1
+  shipPixelX: 260
   interactionRadius: 1.6
   targetDeck: 0
   targetShipPixelX: 1030

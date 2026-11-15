@@ -15,14 +15,20 @@ public sealed class CrewMenu : MonoBehaviour
     private readonly string[] assets = { "Commander", "Medic", "Pilot", "Engineer" };
     private readonly Color cyan = new Color(.25f, .86f, .94f);
     private GameObject home, roles, missionHud, pauseScreen, controlsIntro, stormSuggestion, gameOverScreen;
-    private GameObject taskBoard, procedurePanel;
+    private GameObject taskBoard, procedurePanel, equipmentPanel, shipNotice, cabinDamageFrame;
+    private ShipEquipment.Element selectedEquipment;
+    private Text equipmentTitle,equipmentReadout,nearbyEquipmentButton,shipNoticeText;
+    private readonly Text[] equipmentActions=new Text[2];
+    private float shipNoticeRemaining,lastRadiationRate=-1;
+    private bool lastRadiationProtection;
+    private int lastEquipmentSecond=-1;
     private Text phaseText, procedurePrompt, procedureFeedbackText, runResultTitle, runResultBody;
     private readonly Text[] procedureOptions=new Text[3];
     private readonly Text[] taskRows=new Text[8];
     private readonly ShipMissionDefinition[] taskRowDefinitions=new ShipMissionDefinition[8];
     private float controlsIntroRemaining;
     private const float ControlsIntroSeconds=10;
-    private const string ControlsText="A / D or Left / Right  —  Move\nW / S or Up / Down  —  Climb\nA / D near a floor  —  Leave ladder\nE  —  Interact with a station\nMouse wheel  —  Zoom\nM / Mission Tasks  —  Open mission interface\nEsc  —  Pause / resume";
+    private const string ControlsText="A / D or Left / Right  —  Move\nW / S or Up / Down  —  Climb\nA / D near a floor  —  Leave ladder\nE / Click  —  Interact with equipment\nMouse wheel  —  Zoom\nM / Mission Tasks  —  Open mission interface\nEsc  —  Pause / resume";
     private ShipMission mission;
     private Canvas backgroundCanvas;
     private Image shade;
@@ -210,6 +216,22 @@ public sealed class CrewMenu : MonoBehaviour
         }
         Button(taskBoard.transform,"CLOSE TASKS",.35f,.035f,.65f,.11f,ToggleTaskBoard);
         taskBoard.SetActive(false);
+        equipmentPanel=Panel(missionHud.transform,"Equipment Panel",new Vector2(.17f,.18f),new Vector2(.83f,.82f),new Color(.008f,.03f,.045f,1)).gameObject;
+        equipmentTitle=Label(equipmentPanel.transform,"",.04f,.78f,.96f,.96f,28,cyan);
+        equipmentReadout=Label(equipmentPanel.transform,"",.06f,.34f,.94f,.77f,20,Color.white);
+        for(int i=0;i<2;i++){int action=i;float y=.23f-i*.10f;equipmentActions[i]=Button(equipmentPanel.transform,"EQUIPMENT ACTION "+i,.05f,y,.95f,y+.08f,()=>OperateSelectedEquipment(action));equipmentActions[i].resizeTextMaxSize=18;}
+        Button(equipmentPanel.transform,"OPEN STATION TASK",.05f,.03f,.68f,.11f,OpenEquipmentTask);
+        Button(equipmentPanel.transform,"CLOSE EQUIPMENT",.70f,.03f,.95f,.11f,CloseEquipment);
+        equipmentPanel.SetActive(false);
+        nearbyEquipmentButton=Button(missionHud.transform,"E · EQUIPMENT",.025f,.84f,.29f,.89f,OpenNearbyEquipment);nearbyEquipmentButton.resizeTextMaxSize=15;
+        nearbyEquipmentButton.transform.parent.gameObject.SetActive(false);
+        shipNotice=Panel(missionHud.transform,"Flight Event Announcement",new Vector2(.25f,.72f),new Vector2(.75f,.84f),new Color(.01f,.06f,.09f,1)).gameObject;
+        shipNotice.GetComponent<Image>().raycastTarget=false;
+        shipNoticeText=Label(shipNotice.transform,"",.04f,.08f,.96f,.92f,21,new Color(1,.82f,.25f));shipNotice.SetActive(false);
+        cabinDamageFrame=Node("Cabin Radiation Warning Frame",missionHud.transform,Vector2.zero,Vector2.one).gameObject;
+        foreach(var bounds in new[]{new Vector4(0,0,.006f,1),new Vector4(.994f,0,1,1),new Vector4(0,0,1,.008f),new Vector4(0,.992f,1,1)})
+        {var edge=Panel(cabinDamageFrame.transform,"Radiation warning edge",new Vector2(bounds.x,bounds.y),new Vector2(bounds.z,bounds.w),new Color(1,.22f,.05f,.65f));edge.raycastTarget=false;}
+        cabinDamageFrame.SetActive(false);
         missionCardShade.SetActive(false);
         missionCard.SetActive(false);
         missionHud.SetActive(false);
@@ -235,13 +257,16 @@ public sealed class CrewMenu : MonoBehaviour
         if (mission != null)
         {
             UpdateRadiationStatus();
+            cabinDamageFrame.SetActive(!gameOver && mission.RadiationDamagePerSecond>0);
             if(mission.IsPaused) return;
+            UpdateEquipmentInterface();
             if(UnityEngine.InputSystem.Keyboard.current!=null && UnityEngine.InputSystem.Keyboard.current.mKey.wasPressedThisFrame) ToggleTaskBoard();
             if(taskBoard.activeSelf) UpdateTaskBoard();
             UpdateControlsIntro(Time.deltaTime);
             UpdateMissionHint();
             UpdateBridgeSuggestion();
             UpdateStormSuggestion();
+            UpdateFlightNotice();
             if(stormSuggestion.activeSelf && radiationNoticeRemaining>0) radiationNoticeRemaining=Mathf.Max(0,radiationNoticeRemaining-Time.deltaTime);
             if(missionFeedbackRemaining>0) missionFeedbackRemaining=Mathf.Max(0,missionFeedbackRemaining-Time.deltaTime);
             if (missionCard.activeSelf) UpdateMissionCard();
@@ -350,6 +375,9 @@ public sealed class CrewMenu : MonoBehaviour
             candidate.MissionInteractionRequested += OpenMissionCard;
             candidate.MissionResolved += OnMissionResolved;
             candidate.RunEnded += ShowRunResults;
+            candidate.EquipmentInteractionRequested += OpenEquipment;
+            candidate.MissionAvailable += OnMissionAvailable;
+            candidate.FlightAnnouncement += ShowFlightNotice;
             candidate.Begin(prefab, TogglePause, backgroundVideo);
             ShowVideoBehindShip(Camera.main);
             mission = candidate;
@@ -362,11 +390,12 @@ public sealed class CrewMenu : MonoBehaviour
             gameOver=false;
             gameOverScreen.SetActive(false);
             missionCard.SetActive(false);missionCardShade.SetActive(false);taskBoard.SetActive(false);
-            mission.IsInterfaceOpen=false;
+            mission.IsInterfaceOpen=false;equipmentPanel.SetActive(false);selectedEquipment=null;
+            shipNoticeRemaining=0;shipNotice.SetActive(false);cabinDamageFrame.SetActive(false);lastEquipmentSecond=-1;
             selectedMission=null;missionFeedback=null;missionFeedbackRemaining=0;
             radiationNoticeRemaining=0;lastStormAlertSecond=-1;lastStormAlertTitle=null;
             stormSuggestion.SetActive(false);
-            lastRadiationLevel=-1;UpdateRadiationStatus();
+            lastRadiationLevel=-1;lastRadiationRate=-1;UpdateRadiationStatus();
             home.SetActive(false); roles.SetActive(false);
             shade.gameObject.SetActive(false); backgroundCanvas.gameObject.SetActive(false);
             missionHud.SetActive(true);
@@ -394,6 +423,7 @@ public sealed class CrewMenu : MonoBehaviour
     private void TogglePause()
     {
         if(mission==null || gameOver) return;
+        if(equipmentPanel.activeSelf){CloseEquipment();return;}
         if(missionCard.activeSelf){CloseMissionCard();return;}
         if(taskBoard.activeSelf){ToggleTaskBoard();return;}
         bool paused=!mission.IsPaused;
@@ -406,7 +436,7 @@ public sealed class CrewMenu : MonoBehaviour
     private void UpdateControlsIntro(float delta)
     {
         if(mission==null) return;
-        bool covered=mission.IsPaused || missionCard.activeSelf || taskBoard.activeSelf;
+        bool covered=mission.IsPaused || missionCard.activeSelf || taskBoard.activeSelf || equipmentPanel.activeSelf;
         if(!covered) controlsIntroRemaining=Mathf.Max(0,controlsIntroRemaining-Mathf.Max(0,delta));
         bool visible=controlsIntroRemaining>0 && !covered;
         if(controlsIntro.activeSelf!=visible) controlsIntro.SetActive(visible);
@@ -429,7 +459,7 @@ public sealed class CrewMenu : MonoBehaviour
             hint="PRESS E · " + mission.NearbyMission.locationName.ToUpperInvariant() + " CONTROL";
         else if(mission.RunPlan.Any(x=>mission.GetMissionStatus(x.definition)==ShipMissionStatus.Available))
             hint="NEW MISSION TASK AVAILABLE · PRESS M OR OPEN MISSION TASKS";
-        bool visible = !string.IsNullOrEmpty(hint) && !missionCard.activeSelf && !taskBoard.activeSelf;
+        bool visible = !string.IsNullOrEmpty(hint) && !missionCard.activeSelf && !taskBoard.activeSelf && !equipmentPanel.activeSelf;
         if(missionHintBackdrop.activeSelf!=visible) missionHintBackdrop.SetActive(visible);
         activeTaskProgress.gameObject.SetActive(mission.ActiveMission!=null);
         activeTaskProgress.fillAmount=mission.ActiveMissionProgress;
@@ -439,7 +469,7 @@ public sealed class CrewMenu : MonoBehaviour
     private void UpdateBridgeSuggestion()
     {
         bool visible=mission!=null && bridgeCheck!=null && bridgeCheck.AllowsRole(SelectedRole)
-            && mission.GetMissionStatus(bridgeCheck)==ShipMissionStatus.Available && !missionCard.activeSelf && !taskBoard.activeSelf;
+            && mission.GetMissionStatus(bridgeCheck)==ShipMissionStatus.Available && !missionCard.activeSelf && !taskBoard.activeSelf && !equipmentPanel.activeSelf;
         if(bridgeSuggestion.activeSelf!=visible) bridgeSuggestion.SetActive(visible);
     }
     private void UpdateStormSuggestion()
@@ -448,16 +478,18 @@ public sealed class CrewMenu : MonoBehaviour
         var state=mission.GetMissionStatus(solarStorm);
         bool active=mission.ActiveMission==solarStorm;
         bool available=solarStorm.AllowsRole(SelectedRole) && state==ShipMissionStatus.Available;
-        bool visible=(active || available || radiationNoticeRemaining>0) && !missionCard.activeSelf && !taskBoard.activeSelf && !mission.IsPaused && !gameOver;
+        bool exposed=mission.RadiationLevel>0;
+        bool visible=(active || available || exposed || radiationNoticeRemaining>0) && !missionCard.activeSelf && !taskBoard.activeSelf && !equipmentPanel.activeSelf && !mission.IsPaused && !gameOver;
         if(stormSuggestion.activeSelf!=visible) stormSuggestion.SetActive(visible);
         if(!visible) return;
-        string title=active ? "RADIATION ALERT — CONFIGURE SHELTER" : available ? "SOLAR STORM DETECTED" : "RADIATION LEVEL INCREASED";
-        int remaining=active ? Mathf.CeilToInt(mission.ActiveMissionSecondsRemaining) : -1;
+        string title=active ? "CABIN RADIATION ALERT — CONFIGURE SHELTER" : exposed ? (mission.IsRadiationProtected ? "CABIN RADIATION — SHELTERED" : "CABIN RADIATION — HP LOSS") : available ? "SOLAR STORM DETECTED" : "RADIATION LEVEL INCREASED";
+        int remaining=active ? Mathf.CeilToInt(mission.ActiveMissionSecondsRemaining) : exposed ? Mathf.CeilToInt(mission.CabinEventSecondsRemaining) : -1;
         if(title==lastStormAlertTitle && remaining==lastStormAlertSecond) return;
         lastStormAlertTitle=title;lastStormAlertSecond=remaining;
         stormAlertTitle.text=title;
         stormAlertInstruction.text=active
             ? "CENTRAL SHELTER · LOWER DECK · M TO VIEW PROCEDURE · " + remaining + "s"
+            : exposed ? "CENTRAL SHELTER · LOWER DECK · INSTALL SHIELDING AND CLOSE THE SEAL · " + remaining + "s"
             : available ? "OPEN MISSION TASKS · BEGIN THE SHELTER PROCEDURE"
             : "Radiation detected aboard the ship. Monitor the radiation indicator.";
     }
@@ -466,14 +498,17 @@ public sealed class CrewMenu : MonoBehaviour
     {
         if(radiationStatus==null || mission==null) return;
         int level=Mathf.RoundToInt(mission.RadiationLevel);
-        if(level==lastRadiationLevel) return;
+        float rate=Mathf.Round(mission.RadiationDamagePerSecond*100)/100;
+        bool protectedCrew=mission.IsRadiationProtected;
+        if(level==lastRadiationLevel && rate==lastRadiationRate && protectedCrew==lastRadiationProtection) return;
         if(lastRadiationLevel>=0 && level>lastRadiationLevel) radiationNoticeRemaining=10;
-        lastRadiationLevel=level;
+        lastRadiationLevel=level;lastRadiationRate=rate;lastRadiationProtection=protectedCrew;
         float threshold=solarStorm!=null ? solarStorm.fatalRadiationThreshold : solarStormThreshold;
-        string state=level>=threshold ? "CRITICAL" : level>=30 ? "ELEVATED" : "LOW";
-        radiationStatus.text="RADIATION  " + Mathf.RoundToInt(level) + "%  ·  " + state;
-        radiationStatus.color=level>=threshold ? new Color(1f,.25f,.2f) : level>=30 ? new Color(1f,.72f,.22f) : cyan;
+        string state=level==0 ? "SAFE" : protectedCrew ? "SHIELDED" : level>=threshold ? "CRITICAL" : "EXPOSED";
+        radiationStatus.text="CABIN RADIATION  " + level + "% · " + state + (rate>0 ? "\n−"+rate.ToString("0.00",System.Globalization.CultureInfo.InvariantCulture)+" HP / s · TAKE SHELTER" : protectedCrew ? "\nNO HP LOSS INSIDE THE SHELTER" : "");
+        radiationStatus.color=rate>0 ? new Color(1f,.54f,.17f) : cyan;
     }
+
     private const float solarStormThreshold=60;
     private void OnMissionResolved(ShipMissionDefinition definition, bool success, bool fatal)
     {
@@ -499,7 +534,7 @@ public sealed class CrewMenu : MonoBehaviour
         gameOver=true;missionFeedbackRemaining=0;
         runResultTitle.text="MISSION FAILED";runResultTitle.color=new Color(1f,.22f,.18f);
         runResultBody.text="Crew vitals are critical. Return to the menu to begin a new flight.";
-        taskBoard.SetActive(false);mission.IsInterfaceOpen=true;
+        taskBoard.SetActive(false);equipmentPanel.SetActive(false);shipNotice.SetActive(false);mission.IsInterfaceOpen=true;
         missionCard.SetActive(false);missionCardShade.SetActive(false);
         controlsIntro.SetActive(false);pauseScreen.SetActive(false);
         bridgeSuggestion.SetActive(false);stormSuggestion.SetActive(false);
@@ -512,7 +547,7 @@ public sealed class CrewMenu : MonoBehaviour
         if(mission==null || definition==null || gameOver) return;
         selectedMission = definition;
         lastCardDefinition=null;missionHintBackdrop.SetActive(false);
-        taskBoard.SetActive(false);mission.IsInterfaceOpen=true;
+        taskBoard.SetActive(false);equipmentPanel.SetActive(false);shipNotice.SetActive(false);mission.IsInterfaceOpen=true;
         bridgeSuggestion.SetActive(false);
         if(stormSuggestion!=null) stormSuggestion.SetActive(false);
         controlsIntro.SetActive(false);
@@ -537,12 +572,12 @@ public sealed class CrewMenu : MonoBehaviour
         lastCardSecond=remaining;lastCardFeedback=mission.ProcedureFeedback;lastCardCanStart=canStart;
         missionCardTitle.text=selectedMission.locationName.ToUpperInvariant()+" CONTROL";
         missionStartButton.transform.parent.gameObject.SetActive(canStart);
-        missionSkipButton.transform.parent.gameObject.SetActive(canStart);
-        missionStartButton.text=selectedMission.missionId=="G-01" ? "START SCAN" : "START PROCEDURE";
+        missionSkipButton.transform.parent.gameObject.SetActive(canStart && selectedMission.missionId!=MissionRunPlan.CheckoutId);
+        missionStartButton.text=!mission.CanStartAtStation(selectedMission) ? "GO TO STATION" : selectedMission.missionId=="G-01" ? "START SCAN" : "START PROCEDURE";
         missionSkipButton.text="SKIP TASK";
         missionCardBriefing.gameObject.SetActive(!active);
         missionCardBriefing.text=selectedMission.title+"\n\n"+selectedMission.briefing+
-            "\n\nTimeout or skip: −"+selectedMission.damageOnFailure+" HP.";
+            (selectedMission.missionId==MissionRunPlan.CheckoutId ? "\n\nComplete this scan to start the flight event chain. A failed scan can be retried." : "\n\nOperate this equipment in "+selectedMission.locationName+". Timeout or skip: −"+selectedMission.damageOnFailure+" HP.");
         bool procedure=active && selectedMission.objectiveType==ShipMissionObjectiveType.Procedure;
         procedurePanel.SetActive(procedure);
         procedureFeedbackText.text=active ? mission.ProcedureFeedback : "";
@@ -578,7 +613,7 @@ public sealed class CrewMenu : MonoBehaviour
     {
         if(mission==null || gameOver || mission.IsPaused) return;
         bool show=!taskBoard.activeSelf;
-        missionCard.SetActive(false);selectedMission=null;
+        equipmentPanel.SetActive(false);missionCard.SetActive(false);selectedMission=null;
         taskBoard.SetActive(show);missionCardShade.SetActive(show);
         // The board is above the shade; station cards are reopened above both.
         if(show){taskBoard.transform.SetAsLastSibling();lastBoardSecond=-1;missionHintBackdrop.SetActive(false);}
@@ -611,8 +646,72 @@ public sealed class CrewMenu : MonoBehaviour
         taskBoard.SetActive(false);missionCard.transform.SetAsLastSibling();
         OpenMissionCard(definition);
     }
+    private void ShowFlightNotice(string text)
+    {
+        if(mission==null || gameOver)return;
+        shipNoticeText.text=text;shipNoticeRemaining=9;
+    }
+    private void OnMissionAvailable(ShipMissionDefinition definition)
+    {
+        if(mission==null)return;
+        ShowFlightNotice(definition.missionId==MissionRunPlan.CheckoutId ? "FIRST OBJECTIVE: BRIDGE SYSTEMS CHECK\nPress M or use the Bridge console to start scanning." :
+            "NEW EVENT: "+definition.title+"\nGo to "+definition.locationName+" · Press M to track the task.");
+        lastBoardSecond=-1;
+    }
+    private void UpdateFlightNotice()
+    {
+        bool visible=shipNoticeRemaining>0 && mission.RadiationLevel<=0 && !mission.IsPaused && !gameOver && !missionCard.activeSelf && !equipmentPanel.activeSelf && !taskBoard.activeSelf && !stormSuggestion.activeSelf && !controlsIntro.activeSelf;
+        if(shipNotice.activeSelf!=visible)shipNotice.SetActive(visible);
+        if(visible)shipNoticeRemaining=Mathf.Max(0,shipNoticeRemaining-Time.deltaTime);
+    }
+    private void UpdateEquipmentInterface()
+    {
+        var element=mission.NearbyEquipment;
+        bool visible=element!=null && !mission.IsPaused && !gameOver && !equipmentPanel.activeSelf && !missionCard.activeSelf && !taskBoard.activeSelf && !controlsIntro.activeSelf;
+        nearbyEquipmentButton.transform.parent.gameObject.SetActive(visible);
+        if(visible)nearbyEquipmentButton.text="E · "+element.title;
+        int second=Mathf.FloorToInt(mission.MissionSeconds+Time.unscaledTime);
+        if(equipmentPanel.activeSelf && second!=lastEquipmentSecond){lastEquipmentSecond=second;RefreshEquipment();}
+    }
+    private void OpenNearbyEquipment(){if(mission!=null && mission.NearbyEquipment!=null)mission.InteractEquipment(mission.NearbyEquipment.id);}
+    private void OpenEquipment(ShipEquipment.Element element)
+    {
+        if(gameOver || mission==null)return;
+        selectedEquipment=element;selectedMission=null;
+        missionCard.SetActive(false);taskBoard.SetActive(false);controlsIntro.SetActive(false);stormSuggestion.SetActive(false);bridgeSuggestion.SetActive(false);shipNotice.SetActive(false);missionHintBackdrop.SetActive(false);
+        equipmentPanel.SetActive(true);equipmentPanel.transform.SetAsLastSibling();missionCardShade.SetActive(true);mission.IsInterfaceOpen=true;
+        RefreshEquipment();
+    }
+    private void RefreshEquipment()
+    {
+        if(selectedEquipment==null)return;
+        equipmentTitle.text=selectedEquipment.title.ToUpperInvariant();equipmentReadout.text=mission.Equipment.Status(selectedEquipment);
+        var actions=mission.Equipment.Actions(selectedEquipment);for(int i=0;i<2;i++)equipmentActions[i].text=actions[i];
+    }
+    private void OperateSelectedEquipment(int action)
+    {
+        if(selectedEquipment==null)return;
+        bool ladder=selectedEquipment.kind=="ladder" && action==0;
+        mission.OperateEquipment(selectedEquipment.id,action);
+        if(ladder){CloseEquipment();return;}RefreshEquipment();
+    }
+    private void OpenEquipmentTask()
+    {
+        if(selectedEquipment==null)return;
+        var definition=mission.ActiveMission!=null && mission.ActiveMission.stationId==selectedEquipment.station ? mission.ActiveMission :
+            mission.RunPlan.Select(x=>x.definition).FirstOrDefault(x=>x.stationId==selectedEquipment.station && mission.GetMissionStatus(x)==ShipMissionStatus.Available);
+        if(definition!=null){equipmentPanel.SetActive(false);missionCard.transform.SetAsLastSibling();OpenMissionCard(definition);}
+        else{CloseEquipment();ToggleTaskBoard();}
+    }
+    private void CloseEquipment()
+    {
+        equipmentPanel.SetActive(false);missionCardShade.SetActive(false);selectedEquipment=null;
+        if(mission!=null){mission.IsInterfaceOpen=false;UpdateControlsIntro(0);}
+    }
     private void StartSelectedMission()
     {
+        if(mission!=null && !mission.CanStartAtStation(selectedMission))
+        {mission.TrackStation(selectedMission);CloseMissionCard();return;}
         if (mission != null && mission.StartMission(selectedMission))
         {
             mission.SetPaused(false);

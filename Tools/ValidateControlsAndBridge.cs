@@ -9,7 +9,7 @@ menu.SendMessage("Select",2);menu.SendMessage("Confirm");await System.Threading.
 var mission=UnityEngine.Object.FindAnyObjectByType<ShipMission>();Check(mission!=null,"Boarding failed");
 Check(Intro().activeInHierarchy,"Intro controls not visible at boarding");
 var introText=Intro().GetComponentsInChildren<UnityEngine.UI.Text>().Single(x=>x.text.Contains("Mouse wheel"));
-Check(introText.text.Contains("E  —  Interact") && introText.text.Contains("Leave ladder"),"Controls incomplete");
+Check(introText.text.Contains("E / Click  —  Interact") && introText.text.Contains("Leave ladder"),"Controls incomplete");
 Check(!UnityEngine.Object.FindObjectsByType<UnityEngine.UI.Text>().Any(x=>x.text.Contains("A / D  MOVE")),"Permanent controls strip still visible");
 menu.SendMessage("UpdateControlsIntro",3f);float remaining=Remaining();
 menu.SendMessage("TogglePause");Check(mission.IsPaused&&!Intro().activeSelf,"Intro not hidden by pause");
@@ -31,5 +31,5 @@ var start=(UnityEngine.UI.Text)typeof(CrewMenu).GetField("missionStartButton",fl
 menu.SendMessage("TogglePause");Check(!card.activeSelf&&!mission.IsPaused,"Escape does not close station card");
 typeof(ShipMission).GetField("missionClock",flags).SetValue(mission,0f);Check(mission.TryInteract(),"Available card lost after reviewing expiration");
 menu.SendMessage("StartSelectedMission");Check(mission.ActiveMission==definition,"Check did not start");Click("CLOSE");Check(mission.TryInteract()&&mission.ActiveMission==definition,"Cannot reopen running check");Click("CLOSE");
-while(mission.ActiveMission!=null){var step=mission.CurrentStep;if(step.automatic)mission.SendMessage("UpdateActiveMission",step.durationSeconds);else Check(mission.ChooseProcedureOption(step.correctChoice),"Check decision failed");}Check(mission.GetMissionStatus(definition)==ShipMissionStatus.Completed,"Check did not complete");Check(mission.TryInteract()&&card.activeSelf,"Completed check cannot be reviewed");Click("CLOSE");
+while(mission.ActiveMission!=null){var step=mission.CurrentStep;if(step.automatic)mission.SendMessage("UpdateActiveMission",step.durationSeconds);else Check(mission.ChooseProcedureOption(step.correctChoice),"Check decision failed");}Check(mission.GetMissionStatus(definition)==ShipMissionStatus.Completed,"Check did not complete");menu.SendMessage("OpenMissionCard",definition);Check(card.activeSelf,"Completed check cannot be reviewed");Click("CLOSE");
 return "PASS: 10-second intro, pause freezes countdown, identical controls always in pause, expired intro stays hidden; Bridge CLOSE/reopen repeated, available/running/completed/pending-window review and Escape close preserve input";

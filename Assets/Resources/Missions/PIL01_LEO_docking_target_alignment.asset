@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 30
   difficulty: "Easy"
   briefing: "Align the spacecraft and lunar-module docking references, reduce the displayed relative closing rate to the safe capture range, and confirm target alignment. This is a short in-orbit alignment task, not a launch task."
+  stationId: bridge
   originalDiscipline: "PIL"
   globalEvent: 0
   objectiveType: 2

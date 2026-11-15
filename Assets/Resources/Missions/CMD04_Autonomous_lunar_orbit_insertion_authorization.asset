@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 60
   difficulty: "Medium"
   briefing: "Review the planned loss-of-signal period, verify the preloaded LOI burn parameters and autonomous execution plan, and authorize the sequence before the spacecraft passes behind the Moon. This does not require the player to be the Pilot."
+  stationId: bridge
   originalDiscipline: "CMD"
   globalEvent: 0
   objectiveType: 2

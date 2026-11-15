@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 60
   difficulty: "Medium"
   briefing: "Review the descent-stage propellant pressure warning, run the available venting and avionics safety checks, and decide whether conditions permit the crew to remain on the surface or require an early departure. The decision and checks are available to every role."
+  stationId: bridge
   originalDiscipline: "G"
   globalEvent: 1
   objectiveType: 2

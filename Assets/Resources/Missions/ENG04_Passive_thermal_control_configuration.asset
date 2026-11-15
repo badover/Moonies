@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 60
   difficulty: "Medium"
   briefing: "Set the spacecraft to the specified Sun-relative orientation, initiate the slow passive thermal-control roll, and verify that the roll rate is within the target range. This is an independent engineering control task; it does not require a Pilot task."
+  stationId: engineering
   originalDiscipline: "ENG"
   globalEvent: 0
   objectiveType: 2

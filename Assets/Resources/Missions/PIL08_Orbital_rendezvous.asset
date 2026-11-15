@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 90
   difficulty: "Hard"
   briefing: "Read the relative orbit and phase-angle indicators, select the lower-orbit catch-up approach, execute the transfer burn at the indicated point, and confirm rendezvous with the command/service module."
+  stationId: bridge
   originalDiscipline: "PIL"
   globalEvent: 0
   objectiveType: 2

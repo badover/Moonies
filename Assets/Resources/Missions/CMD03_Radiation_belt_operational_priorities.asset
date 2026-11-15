@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 60
   difficulty: "Medium"
   briefing: "Review the radiation warning, choose which non-essential instruments to power down, and select the available water/food shielding arrangement for the crew and critical equipment. This is a complete operational/resource decision."
+  stationId: bridge
   originalDiscipline: "CMD"
   globalEvent: 0
   objectiveType: 2

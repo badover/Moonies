@@ -63,3 +63,22 @@ Unity 6000.6.9f1 validation:
 - `ValidateSolarStorm`, `ValidateControlsAndBridge`, `ValidateMenuHint`, `ValidateMenuClicks`, `ValidateHealthHud`, `ValidatePauseAndLadders`: passed warning/countdown, station review, controls, menu, HP and all-role movement/pause regressions. Older fixed-mission tests updated to isolate their target task from the randomized production draw.
 
 This implementation presents flight/repair/crew-screening procedures through the ship's mission console. The existing ship scene remains the play space as phases advance.
+
+## Mandatory checkout, physical equipment and cabin exposure — 2026-11-15
+
+User-requested progression override: G-01 is guaranteed, available immediately, unskippable and retryable. Its completion unlocks the phase clock / subsequent events; an early shared follow-up releases within its allowed LEO window. G-02 is guaranteed as an actual cabin hazard rather than an optional indicator activated only by accepting a task. Selected task counts/difficulty/phase diversity remain intact. Other role tasks remain shared.
+
+Added 33 world interaction regions across the ship. E, nearby-equipment button and world-point clicks open console/door/supply/medical/bunk/life-support/laboratory/waste/ladder panels. Distant clicks provide a waypoint. Equipment tasks require their physical station. Closed doors block walking; reopening restores passage. First aid/bunk recovery is limited per flight. Shielding, shelter seal and power actions share the state used by the shelter procedure.
+
+Cabin field: 35% level, 0.70 HP/s exposed, 120 seconds maximum; starts at story release without acceptance. Damage continues while walking or reading dialogs and after mission failure, freezes in pause, and stops outside the ship, inside a shielded/sealed central shelter, or when the field clears. Leaving protection restores damage. Zero HP stops gameplay. Added exposed/protected HUD states, rate text and warning edges. Generic notices cannot cover hazard warnings. Interface opening holds the character's walk/climb animation.
+
+Unity 6000.6.9f1 checks:
+
+- `ValidateMissionCatalog`: 2000 generated plans; mandatory G-01 at zero, guaranteed G-02, counts, unique selections, caps, phase diversity and all-35 coverage.
+- `ValidateFlightChainAndEquipment`: all four roles, first-checkout retry/gating, follow-up announcements, station restrictions, automatic field, actual HP loss, paused/protected/outside/clear behavior; all 33 world-point interaction paths, real door collisions/reopening, limited medical recovery, real-frame damage while a dialog is open, radiation death and replay reset.
+- `ValidateEquipmentInterface`: rendered pointer raycasts for first aid, station task, ladder grip, shielding/seal and Close; exposed/protected captures and assertion that phase notices do not cover radiation.
+- Existing mission-procedure, solar-storm, interface, controls/Bridge, menu, HP and ladder checks updated for mandatory checkout and physical stations.
+
+Captures: `equipment-panel.png`, `cabin-radiation.png`, `cabin-radiation-protected.png`.
+
+Final verification repeated after deleting the isolated project's imported-asset cache and performing a clean Unity import. All ten catalog/procedure/chain/equipment/solar/controls/menu/health/ladder check scripts passed on the fresh import. The exposed capture shows cabin damage at 0.70 HP/s with 69% vitals; the protected capture retains that health with SHIELDED / no HP loss. Phase notices are hidden while radiation is present.

@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 90
   difficulty: "Hard"
   briefing: "Identify the unsafe landing area from the surface view, select semi-manual descent control, translate toward safe terrain, and complete the landing within the displayed fuel and tilt limits."
+  stationId: bridge
   originalDiscipline: "PIL"
   globalEvent: 0
   objectiveType: 2

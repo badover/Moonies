@@ -20,15 +20,16 @@ MonoBehaviour:
   durationSeconds: 90
   difficulty: "Hard"
   briefing: "Move the crew to the protected central equipment area, arrange available water and food stores as shielding, power down non-essential electronics, and confirm the shelter configuration. All actions are available to every role."
+  stationId: shelter
   originalDiscipline: "G"
   globalEvent: 1
   objectiveType: 2
   locationName: "Central Shelter"
   deck: 0
-  shipPixelX: 1030
+  shipPixelX: 1120
   interactionRadius: 1.6
   targetDeck: 0
-  targetShipPixelX: 1030
+  targetShipPixelX: 1120
   radiationIncreaseOnSkip: 0
   radiationIncreaseOnExpiry: 0
   damageOnFailure: 25

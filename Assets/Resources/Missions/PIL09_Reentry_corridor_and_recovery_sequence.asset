@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 90
   difficulty: "Hard"
   briefing: "Maintain the specified reentry corridor, monitor the entry profile, deploy the main parachutes at the indicated condition, and confirm that the capsule reaches the correct post-splashdown orientation for recovery."
+  stationId: bridge
   originalDiscipline: "PIL"
   globalEvent: 0
   objectiveType: 2

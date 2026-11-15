@@ -36,6 +36,7 @@ public sealed class ShipMissionDefinition : ScriptableObject
     [HideInInspector] public bool startsQuestionCampaign;
     [HideInInspector] public int questionPhase;
 
+    public string stationId;
     public string originalDiscipline;
     public bool globalEvent;
     public MissionProcedureStep[] steps = new MissionProcedureStep[0];

@@ -6,6 +6,7 @@ using System.Linq;
 public static class MissionRunPlan
 {
     public const float RunSeconds = 600;
+    public const string CheckoutId="G-01", StormId="G-02";
     public static readonly float[] PhaseStarts = { 0, 80, 135, 230, 295, 345, 410, 470 };
     public static readonly string[] PhaseNames = {
         "LEO CHECKOUT · 185 KM PARKING ORBIT", "TLI / EARTH DEPARTURE", "DEEP-SPACE TRANSIT",
@@ -38,17 +39,22 @@ public static class MissionRunPlan
                 if (pool.Count < group.Item2) throw new InvalidOperationException("Incomplete mission difficulty pool.");
                 for (int i = 0; i < group.Item2; i++) { int index = random.Next(pool.Count); selected.Add(pool[index]); pool.RemoveAt(index); }
             }
-            if (selected.Select(x => PhaseAt(x.availableFromSeconds)).Distinct().Count() < 3) continue;
-            var globals = all.Where(x => x.globalEvent).ToList();
-            int count = random.Next(2, 4);
-            if (globals.Count < count) throw new InvalidOperationException("Incomplete global event pool.");
-            for (int i = 0; i < count; i++) { int index = random.Next(globals.Count); selected.Add(globals[index]); globals.RemoveAt(index); }
-            var entries = selected.Select(x => new Entry { definition = x, trigger = x.availableFromSeconds +
-                (float)random.NextDouble() * (Math.Min(x.availableUntilSeconds, RunSeconds - EstimatedWork(x)) - x.availableFromSeconds) }).OrderBy(x => x.trigger).ToArray();
+            if (selected.Select(x => PhaseAt(x.availableFromSeconds)).Distinct().Count() < 3 || !selected.Any(x=>x.availableFromSeconds<80)) continue;
+            // The Bridge checkout and cabin-radiation event are guaranteed story beats.
+            var checkout=all.Single(x=>x.missionId==CheckoutId);
+            var storm=all.Single(x=>x.missionId==StormId);
+            selected.Add(checkout);selected.Add(storm);
+            var globals=all.Where(x=>x.globalEvent && x!=checkout && x!=storm).ToList();
+            if(random.Next(2)==1) selected.Add(globals[random.Next(globals.Count)]);
+            var first=selected.Where(x=>!x.globalEvent).OrderBy(x=>x.availableFromSeconds).First();
+            var entries=selected.Select(x=>new Entry{definition=x,trigger=x==checkout ? 0 :
+                x==first ? x.availableFromSeconds + (float)random.NextDouble()*Math.Min(7,x.availableUntilSeconds-x.availableFromSeconds) :
+                x==storm ? 135 + (float)random.NextDouble()*10 :
+                x.availableFromSeconds + (float)random.NextDouble()*(Math.Min(x.availableUntilSeconds,RunSeconds-EstimatedWork(x))-x.availableFromSeconds) }).OrderBy(x=>x.trigger).ToArray();
             // Reserve procedure verification time, decision time and transitions. Late return tasks remain feasible.
             float cursor = 0;
             foreach (var entry in entries) cursor = Math.Max(cursor, entry.trigger) + EstimatedWork(entry.definition);
-            if (cursor <= RunSeconds && entries.Where(x=>!x.definition.globalEvent).Select(x=>PhaseAt(x.trigger)).Distinct().Count() >= 3 && entries.All(x => x.trigger >= x.definition.availableFromSeconds && x.trigger <= x.definition.availableUntilSeconds)) return entries;
+            if (cursor <= RunSeconds && entries.Where(x=>!x.definition.globalEvent).Select(x=>PhaseAt(x.trigger)).Distinct().Count() >= 3 && entries.All(x => (x.definition==checkout ? x.trigger==0 : x.trigger >= x.definition.availableFromSeconds && x.trigger <= x.definition.availableUntilSeconds))) return entries;
         }
         throw new InvalidOperationException("Could not generate a feasible ten-minute mission plan.");
     }

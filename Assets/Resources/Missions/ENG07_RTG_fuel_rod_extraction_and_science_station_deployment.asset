@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 90
   difficulty: "Hard"
   briefing: "Inspect the thermally bound fuel rod and deployment cask, select the insulated long-handled tool, gently rock and rotate the rod to release the binding, insert it into the RTG, and confirm that the science station is positioned at a safe distance from the lander. The task is the mechanical equipment procedure; any separate crew radiation screening is not a prerequisite."
+  stationId: engineering
   originalDiscipline: "ENG"
   globalEvent: 0
   objectiveType: 2

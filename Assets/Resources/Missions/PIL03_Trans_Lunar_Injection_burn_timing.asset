@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 60
   difficulty: "Medium"
   briefing: "Review the target burn profile, start the TLI burn, monitor the velocity/energy indicator, and shut down when the target is reached. The player controls the full timing and cutoff sequence."
+  stationId: bridge
   originalDiscipline: "PIL"
   globalEvent: 0
   objectiveType: 2

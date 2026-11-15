@@ -20,6 +20,7 @@ MonoBehaviour:
   durationSeconds: 60
   difficulty: "Medium"
   briefing: "Verify the preloaded retrograde burn parameters, align the inertial reference, execute the autonomous LOI burn during the planned loss-of-signal window, and confirm lunar-orbit capture."
+  stationId: bridge
   originalDiscipline: "PIL"
   globalEvent: 0
   objectiveType: 2

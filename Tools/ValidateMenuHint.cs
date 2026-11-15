@@ -38,15 +38,15 @@ try{
  Check(!definition.briefing.Contains("fault")&&!definition.briefing.Contains("trouble"),"Briefing still threatens consequences");
  var player=UnityEngine.Object.FindAnyObjectByType<CrewCharacter>();player.transform.position=new UnityEngine.Vector3(definition.WorldPosition.x,definition.WorldPosition.y,-1);typeof(ShipMission).GetField("deck",flags).SetValue(mission,definition.deck);mission.SendMessage("UpdateNearbyMission");
  menu.SendMessage("OpenMissionCard",definition);Check(!suggestion.activeSelf,"Suggestion overlaps mission card");
- menu.SendMessage("SkipSelectedMission");
- var status=(UnityEngine.UI.Text)typeof(CrewMenu).GetField("missionCardStatus",flags).GetValue(menu);Check(status.text=="TASK SKIPPED","Skip status still warns about consequences");
- menu.SendMessage("CloseMissionCard");menu.SendMessage("Update");Check(!suggestion.activeSelf,"Suggestion remains after skipped check");
+ Check(!mission.SkipMission(definition),"Mandatory first checkout can be skipped");
+ var skip=(UnityEngine.UI.Text)typeof(CrewMenu).GetField("missionSkipButton",flags).GetValue(menu);Check(!skip.transform.parent.gameObject.activeSelf,"Mandatory checkout exposes skip button");
+ menu.SendMessage("CloseMissionCard");menu.SendMessage("Update");Check(suggestion.activeSelf,"First checkout hint disappears before completion");
  menu.SendMessage("ReturnToMenu");await System.Threading.Tasks.Task.Delay(100);
  menu.SendMessage("Confirm");mission=UnityEngine.Object.FindAnyObjectByType<ShipMission>();player=UnityEngine.Object.FindAnyObjectByType<CrewCharacter>();Release();
  player.transform.position=new UnityEngine.Vector3(definition.WorldPosition.x,definition.WorldPosition.y,-1);typeof(ShipMission).GetField("deck",flags).SetValue(mission,definition.deck);mission.SendMessage("UpdateNearbyMission");
  menu.SendMessage("OpenMissionCard",definition);menu.SendMessage("StartSelectedMission");while(mission.ActiveMission!=null){var step=mission.CurrentStep;if(step.automatic)mission.SendMessage("UpdateActiveMission",step.durationSeconds);else Check(mission.ChooseProcedureOption(step.correctChoice),"Check decision failed");}menu.SendMessage("CloseMissionCard");menu.SendMessage("Update");
  Check(mission.GetMissionStatus(definition)==ShipMissionStatus.Completed&&!suggestion.activeSelf,"Suggestion remains after completion");
- return "PASS: START and four roles remain clickable with no hover/focus/pressed/selected blue tint; opaque yellow Bridge hint; neutral briefing/skip; hint hides for card, skip and completion";
+ return "PASS: START and four roles remain clickable with no hover/focus/pressed/selected blue tint; opaque yellow Bridge hint; neutral briefing, mandatory unskippable first scan; hint hides for card and completion";
 }finally{
  camera.targetTexture=null;UnityEngine.RenderTexture.active=null;foreach(var canvas in canvases){if(canvas!=null){canvas.renderMode=UnityEngine.RenderMode.ScreenSpaceOverlay;canvas.worldCamera=null;}}target.Release();UnityEngine.Object.Destroy(target);
 }
