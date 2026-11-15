@@ -28,6 +28,8 @@ public sealed class CrewMenu : MonoBehaviour
     private GameObject missionCardShade, missionCard, missionTaskProgressTrack;
     private Image missionTaskProgress;
     private ShipMissionDefinition selectedMission;
+    private ShipMissionDefinition bridgeCheck;
+    private GameObject bridgeSuggestion;
     private Font font;
     private int selected;
     private float missionElapsed;
@@ -76,12 +78,8 @@ public sealed class CrewMenu : MonoBehaviour
         var startHit = Panel(artwork.transform, "START", new Vector2(.30f,.30f), new Vector2(.70f,.51f), new Color(1,1,1,0));
         var startButton = startHit.gameObject.AddComponent<Button>();
         startButton.onClick.AddListener(() => ShowRoles(true));
-        var startColors = startButton.colors;
-        startColors.normalColor = Color.clear;
-        startColors.highlightedColor = new Color(.2f,.9f,1,.16f);
-        startColors.selectedColor = startColors.highlightedColor;
-        startButton.colors = startColors;
-        startHit.color = Color.white;
+        startButton.transition=Selectable.Transition.None;
+        startHit.color=Color.clear;
         startHit.canvasRenderer.cullTransparentMesh=false;
         roles = Node("Role Selection", root.transform, Vector2.zero, Vector2.one).gameObject;
         var roleBounds = Node("Role Artwork Bounds", roles.transform, new Vector2(.04f,.04f), new Vector2(.96f,.96f));
@@ -114,6 +112,15 @@ public sealed class CrewMenu : MonoBehaviour
         missionProgress.fillAmount = 0;
         missionHint = Label(missionHud.transform, "", .20f,.105f,.80f,.15f,18,cyan);
         missionHint.gameObject.SetActive(false);
+        var hintGold=new Color(1,.82f,.24f,1);
+        bridgeSuggestion=Panel(missionHud.transform,"Bridge Suggestion",new Vector2(.27f,.155f),new Vector2(.73f,.208f),hintGold).gameObject;
+        bridgeSuggestion.GetComponent<Image>().raycastTarget=false;
+        var hintBacking=Panel(bridgeSuggestion.transform,"Opaque Hint Backing",Vector2.zero,Vector2.one,new Color(.045f,.035f,.015f,1));
+        hintBacking.raycastTarget=false;
+        hintBacking.rectTransform.offsetMin=new Vector2(2,2);hintBacking.rectTransform.offsetMax=new Vector2(-2,-2);
+        Label(bridgeSuggestion.transform,"Maybe it's a good idea to check the Bridge.",.025f,.05f,.975f,.95f,16,hintGold);
+        bridgeSuggestion.SetActive(false);
+        bridgeCheck=Resources.Load<ShipMissionDefinition>("Missions/G01_LEO_Check");
         missionCardShade = Panel(missionHud.transform,"Mission Card Shade",Vector2.zero,Vector2.one,new Color(.005f,.015f,.03f,.82f)).gameObject;
         missionCard = Panel(missionHud.transform,"Mission Briefing",new Vector2(.18f,.18f),new Vector2(.82f,.82f),new Color(.015f,.055f,.08f,.99f)).gameObject;
         missionCardTitle = Label(missionCard.transform,"",.05f,.82f,.95f,.96f,34,cyan);
@@ -148,6 +155,7 @@ public sealed class CrewMenu : MonoBehaviour
         {
             if(mission.IsPaused) return;
             UpdateMissionHint();
+            UpdateBridgeSuggestion();
             if (missionCard.activeSelf) UpdateMissionCard();
             missionElapsed = Mathf.Min(missionElapsed + Time.deltaTime, MissionGoalSeconds);
             int seconds = Mathf.FloorToInt(missionElapsed);
@@ -209,10 +217,10 @@ public sealed class CrewMenu : MonoBehaviour
     private void Select(int index)
     {
         selected = index;
-        for (int i = 0; i < cards.Length; i++) cards[i].color = i == index ? new Color(.15f,.8f,1,.22f) : Color.clear;
+        for (int i = 0; i < cards.Length; i++) cards[i].color = Color.clear;
         status.text = "";
         status.gameObject.SetActive(false);
-        confirmText.text = "BOARD SHIP";
+        confirmText.text = "BOARD AS " + names[index].ToUpperInvariant();
     }
     private void Confirm()
     {
@@ -235,6 +243,7 @@ public sealed class CrewMenu : MonoBehaviour
             home.SetActive(false); roles.SetActive(false);
             shade.gameObject.SetActive(false); backgroundCanvas.gameObject.SetActive(false);
             missionHud.SetActive(true);
+            UpdateBridgeSuggestion();
         }
         catch (System.Exception error)
         {
@@ -250,6 +259,7 @@ public sealed class CrewMenu : MonoBehaviour
         cards[role]=image;
         image.canvasRenderer.cullTransparentMesh=false;
         var button=image.gameObject.AddComponent<Button>();
+        button.transition=Selectable.Transition.None;
         button.onClick.AddListener(()=>Select(role));
     }
     private void TogglePause()
@@ -276,9 +286,16 @@ public sealed class CrewMenu : MonoBehaviour
         if (missionHint.gameObject.activeSelf != visible) missionHint.gameObject.SetActive(visible);
         if (visible && missionHint.text != hint) missionHint.text = hint;
     }
+    private void UpdateBridgeSuggestion()
+    {
+        bool visible=mission!=null && bridgeCheck!=null && bridgeCheck.AllowsRole(SelectedRole)
+            && mission.GetMissionStatus(bridgeCheck)==ShipMissionStatus.Available && !missionCard.activeSelf;
+        if(bridgeSuggestion.activeSelf!=visible) bridgeSuggestion.SetActive(visible);
+    }
     private void OpenMissionCard(ShipMissionDefinition definition)
     {
         selectedMission = definition;
+        bridgeSuggestion.SetActive(false);
         mission.SetPaused(true);
         missionCardShade.SetActive(true);
         missionCard.SetActive(true);
@@ -311,7 +328,7 @@ public sealed class CrewMenu : MonoBehaviour
                 : "CHECK PAUSED  ·  RETURN TO " + selectedMission.locationName.ToUpperInvariant();
         }
         else if (state == ShipMissionStatus.Completed) missionCardStatus.text = "SYSTEMS CHECK COMPLETE";
-        else if (state == ShipMissionStatus.Skipped) missionCardStatus.text = "CHECK SKIPPED  ·  THE FAULT REMAINS UNCHECKED";
+        else if (state == ShipMissionStatus.Skipped) missionCardStatus.text = "CHECK SKIPPED";
         else if (state == ShipMissionStatus.Expired) missionCardStatus.text = "MISSION WINDOW CLOSED";
         else missionCardStatus.text = "START THE CHECK OR SKIP THIS MISSION";
     }
@@ -376,7 +393,7 @@ public sealed class CrewMenu : MonoBehaviour
     private Text Button(Transform parent, string value, float x, float y, float xx, float yy, UnityEngine.Events.UnityAction action)
     {
         var image = Panel(parent, value, new Vector2(x,y), new Vector2(xx,yy), new Color(.05f,.25f,.32f,.98f));
-        var button = image.gameObject.AddComponent<Button>(); button.onClick.AddListener(action);
+        var button = image.gameObject.AddComponent<Button>(); button.transition=Selectable.Transition.None; button.onClick.AddListener(action);
         var colors = button.colors; colors.highlightedColor = new Color(.6f,1,1); colors.selectedColor = colors.highlightedColor; button.colors = colors;
         return Label(image.transform, value, .03f,.05f,.97f,.95f, 23, Color.white);
     }

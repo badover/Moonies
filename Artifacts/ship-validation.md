@@ -17,3 +17,5 @@ Renders: ship-check.png, ship-ladder.png, role-selection.png, modern-with-progre
 Integrated origin/adrian commit 5b191c62: updated starfield and playback timing, and progress color transitioning from cyan to gold. Pause remains intact.
 
 Current ladder regression: continuous W/S passes the middle deck without detaching; A/D is the only exit command beside a floor. Entry alignment and horizontal exit move at bounded speed, never teleport. No-input movement holds position. A fixed Idle pose eliminates frame-to-frame visual drift; 200 idle updates were checked for each role. New holographic role artwork is used with Commander/Pilot/Engineer/Medic click areas.
+
+Menu/Bridge guidance: START and all four role hit areas remain clickable with no hover, focus, pressed or selected fill. The Bridge suggestion is yellow on an opaque backing/border, appears only while the check is available, and hides for the mission card, skip and completion. Briefing and skip status no longer describe negative consequences. Validated with Tools/ValidateMenuHint.cs.

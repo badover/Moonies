@@ -19,7 +19,7 @@ MonoBehaviour:
   availableUntilSeconds: 80
   durationSeconds: 30
   difficulty: Easy
-  briefing: You are in the cockpit. Mission Control requests a systems check before leaving orbit. If you skip the check, a fault will go undetected and cause trouble later.
+  briefing: Mission Control requests a systems check on the Bridge before leaving orbit.
   locationName: Bridge
   deck: 2
   shipPixelX: 420
