@@ -82,3 +82,11 @@ Unity 6000.6.9f1 checks:
 Captures: `equipment-panel.png`, `cabin-radiation.png`, `cabin-radiation-protected.png`.
 
 Final verification repeated after deleting the isolated project's imported-asset cache and performing a clean Unity import. All ten catalog/procedure/chain/equipment/solar/controls/menu/health/ladder check scripts passed on the fresh import. The exposed capture shows cabin damage at 0.70 HP/s with 69% vitals; the protected capture retains that health with SHIELDED / no HP loss. Phase notices are hidden while radiation is present.
+
+## Final cinematic, Credits and soundtrack — 2026-11-15
+
+Imported source Credits.png unchanged; converted source Final cinematic.mp4 (17.44s, 1920×1080, 30fps, including audio) to VP8/Vorbis WebM. The source folder contains Music.mp3 rather than Music.mp4; converted its 129.49s stereo track to streamed Vorbis audio. Credits textures use the existing uncompressed menu import policy.
+
+Victory requires the living crew, all selected procedures completed and the full 600-second progress bar. It routes to an overlay cinematic while the ship/starfield are paused, then automatically to Credits with RETURN TO MAIN MENU. Incomplete/dead flights retain their result screens. The soundtrack loops across menu/game/pause/Credits, stops during cinematic preparation/playback, and resumes only after cinematic audio stops. Unscaled video timing works at the finished flight's timeScale=0. Skip and decoder failure both lead to Credits; returning restores the title screen and time scale for replay.
+
+Unity Play Mode `ValidateFlightEnding.cs` passed: actual streaming music wrap; victory gates; incomplete/dead exclusions; actual full 17s decoded playback and natural loopPointReached event with audio track routing and no soundtrack overlap; Credits music resume; rendered pointer raycasts for main-menu/skip buttons; replay and error fallback. Capture: `credits.png`.

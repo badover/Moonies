@@ -35,3 +35,9 @@ With the Unity Pipeline CLI connected to the project, run checks as `unity comma
 - `ValidateMissionProcedures`: all 35 procedures for all four roles; real-frame CLOSE/walk-away scan regression; queue, failure and flight-end behavior.
 - `ValidateMissionInterface`: rendered pointer/raycast checks for task board, scan controls and safe/unsafe actions; captures in `Artifacts`.
 - `ValidateSolarStorm`, `ValidateControlsAndBridge`, `ValidateHealthHud`, `ValidatePauseAndLadders`, `ValidateMenuHint`, `ValidateMenuClicks`: warnings, health, pause, ladders, controls and menu regressions.
+
+A successful flight requires the crew to survive and complete every selected procedure before the 600-second phase clock ends. When the progress bar fills, the supplied final cinematic plays with its own sound, then Credits opens with RETURN TO MAIN MENU. Incomplete or fatal flights do not play the victory movie. SKIP CINEMATIC leads to Credits; playback failure also falls back to Credits instead of trapping the player.
+
+The source `Music.mp3` is streamed as a looping 2D soundtrack throughout menus, gameplay, pause and Credits. It stops during the cinematic so only the movie's own audio is heard. The cinematic uses unscaled playback because the finished flight remains paused. The source MP4 is shipped as 1080p VP8/Vorbis WebM for Linux/Windows Unity playback; source Credits artwork is unchanged.
+
+Ending/audio regression: `ValidateFlightEnding.cs` verifies an actual soundtrack wrap, successful/incomplete/fatal results, full natural movie playback at time scale zero, exclusive audio, Credits, rendered return/skip buttons, replay and decoder-error fallback.

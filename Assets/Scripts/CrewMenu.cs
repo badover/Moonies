@@ -30,6 +30,7 @@ public sealed class CrewMenu : MonoBehaviour
     private const float ControlsIntroSeconds=10;
     private const string ControlsText="A / D or Left / Right  —  Move\nW / S or Up / Down  —  Climb\nA / D near a floor  —  Leave ladder\nE / Click  —  Interact with equipment\nMouse wheel  —  Zoom\nM / Mission Tasks  —  Open mission interface\nEsc  —  Pause / resume";
     private ShipMission mission;
+    private FlightPresentation presentation;
     private Canvas backgroundCanvas;
     private Image shade;
     private RawImage stars;
@@ -249,6 +250,7 @@ public sealed class CrewMenu : MonoBehaviour
         runResultBody=Label(gameOverScreen.transform,"Crew vitals are critical. Return to the menu to begin a new flight.",.08f,.34f,.92f,.66f,24,Color.white);
         Button(gameOverScreen.transform,"RETURN TO MENU",.30f,.10f,.70f,.27f,ReturnToMenu);
         gameOverScreen.SetActive(false);
+        presentation=gameObject.AddComponent<FlightPresentation>();presentation.Initialize(ReturnToTitleFromCredits);
         Select(selected);
     }
 
@@ -524,7 +526,11 @@ public sealed class CrewMenu : MonoBehaviour
         missionElapsed=MissionGoalSeconds;missionProgress.fillAmount=1;missionProgress.color=MissionProgressGold;
         missionTime.text="MISSION TIME  10:00 / 10:00 · FLIGHT COMPLETE";
         int complete=mission.RunPlan.Count(x=>mission.GetMissionStatus(x.definition)==ShipMissionStatus.Completed);
-        runResultTitle.text="FLIGHT COMPLETE";
+        if(mission.RunSucceeded)
+        {
+            gameOverScreen.SetActive(false);missionHud.SetActive(false);backgroundVideo.Pause();presentation.PlayEnding();return;
+        }
+        runResultTitle.text="FLIGHT INCOMPLETE";
         runResultTitle.color=cyan;
         runResultBody.text="Earth recovery reached.\nProcedures completed: " + complete + " / " + mission.RunPlan.Count +
             "\nCrew vitals: " + Mathf.CeilToInt(mission.Health.Fraction*100) + "%";
@@ -735,8 +741,13 @@ public sealed class CrewMenu : MonoBehaviour
         if(EventSystem.current!=null) EventSystem.current.SetSelectedGameObject(null);
         if(mission!=null){mission.SetPaused(false);UpdateControlsIntro(0);UpdateStormSuggestion();}
     }
+    private void ReturnToTitleFromCredits()
+    {
+        ReturnToMenu();ShowRoles(false);
+    }
     private void ReturnToMenu()
     {
+        presentation?.ResetToGame();
         mission.SetPaused(false);
         pauseScreen.SetActive(false);
         BindHealth(null);
