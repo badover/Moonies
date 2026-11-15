@@ -13,7 +13,10 @@ public sealed class CrewMenu : MonoBehaviour
     private readonly string[] descriptions = { "Coordinate your crew\nand lead the mission.", "Monitor crew health\nand provide medical care.", "Control the flight\nand navigate to the Moon.", "Maintain ship systems\nand repair equipment." };
     private readonly string[] assets = { "Commander", "Medic", "Pilot", "Engineer" };
     private readonly Color cyan = new Color(.25f, .86f, .94f);
-    private GameObject home, roles, missionHud, pauseScreen;
+    private GameObject home, roles, missionHud, pauseScreen, controlsIntro;
+    private float controlsIntroRemaining;
+    private const float ControlsIntroSeconds=10;
+    private const string ControlsText="A / D or Left / Right  —  Move\nW / S or Up / Down  —  Climb\nA / D near a floor  —  Leave ladder\nE  —  Interact with a station\nMouse wheel  —  Zoom\nEsc  —  Pause / resume";
     private ShipMission mission;
     private Canvas backgroundCanvas;
     private Image shade;
@@ -99,7 +102,12 @@ public sealed class CrewMenu : MonoBehaviour
         confirmText = Button(roleArt.transform,"BOARD SHIP",.384f,.128f,.617f,.218f,Confirm);
         confirmText.transform.parent.GetComponent<Image>().color=new Color(.015f,.06f,.08f,1);
         missionHud = Node("Mission HUD", root.transform, Vector2.zero, Vector2.one).gameObject;
-        Label(missionHud.transform, "A / D  MOVE    ·    W / S  LADDER    ·    SCROLL  ZOOM    ·    ESC  PAUSE", .05f,.02f,.95f,.09f, 18, cyan);
+        controlsIntro=Panel(missionHud.transform,"Controls Intro",new Vector2(.045f,.61f),new Vector2(.43f,.85f),new Color(.015f,.04f,.06f,.96f)).gameObject;
+        controlsIntro.GetComponent<Image>().raycastTarget=false;
+        Label(controlsIntro.transform,"CONTROLS",.07f,.78f,.93f,.96f,22,cyan);
+        var introText=Label(controlsIntro.transform,ControlsText,.07f,.06f,.93f,.77f,17,Color.white);
+        introText.alignment=TextAnchor.MiddleLeft;
+        controlsIntro.SetActive(false);
         missionTime = Label(missionHud.transform, "MISSION TIME  00:00 / 10:00", .35f,.91f,.65f,.96f, 18, cyan);
         Panel(missionHud.transform, "Mission Progress Track", new Vector2(.35f,.875f), new Vector2(.65f,.895f), new Color(.02f,.08f,.12f,.9f));
         missionProgress = Panel(missionHud.transform, "Mission Progress", new Vector2(.35f,.875f), new Vector2(.65f,.895f), cyan);
@@ -142,8 +150,11 @@ public sealed class CrewMenu : MonoBehaviour
         missionHud.SetActive(false);
         pauseScreen=Node("Pause Screen",root.transform,Vector2.zero,Vector2.one).gameObject;
         Panel(pauseScreen.transform,"Pause Shade",Vector2.zero,Vector2.one,new Color(.01f,.025f,.05f,.88f));
-        Label(pauseScreen.transform,"PAUSED",.2f,.52f,.8f,.68f,48,cyan);
-        Button(pauseScreen.transform,"RESUME",.35f,.34f,.65f,.46f,TogglePause);
+        Label(pauseScreen.transform,"PAUSED",.2f,.75f,.8f,.88f,48,cyan);
+        Label(pauseScreen.transform,"CONTROLS",.25f,.65f,.75f,.72f,22,cyan);
+        var pauseControls=Label(pauseScreen.transform,ControlsText,.27f,.32f,.73f,.65f,22,Color.white);
+        pauseControls.alignment=TextAnchor.MiddleLeft;
+        Button(pauseScreen.transform,"RESUME",.35f,.16f,.65f,.27f,TogglePause);
         pauseScreen.SetActive(false);
         roles.SetActive(false);
         Select(selected);
@@ -154,6 +165,7 @@ public sealed class CrewMenu : MonoBehaviour
         if (mission != null)
         {
             if(mission.IsPaused) return;
+            UpdateControlsIntro(Time.deltaTime);
             UpdateMissionHint();
             UpdateBridgeSuggestion();
             if (missionCard.activeSelf) UpdateMissionCard();
@@ -243,6 +255,8 @@ public sealed class CrewMenu : MonoBehaviour
             home.SetActive(false); roles.SetActive(false);
             shade.gameObject.SetActive(false); backgroundCanvas.gameObject.SetActive(false);
             missionHud.SetActive(true);
+            controlsIntroRemaining=ControlsIntroSeconds;
+            UpdateControlsIntro(0);
             UpdateBridgeSuggestion();
         }
         catch (System.Exception error)
@@ -265,10 +279,20 @@ public sealed class CrewMenu : MonoBehaviour
     private void TogglePause()
     {
         if(mission==null) return;
+        if(missionCard.activeSelf){CloseMissionCard();return;}
         bool paused=!mission.IsPaused;
         mission.SetPaused(paused);pauseScreen.SetActive(paused);
+        UpdateControlsIntro(0);
         if(EventSystem.current!=null)
             EventSystem.current.SetSelectedGameObject(paused?pauseScreen.GetComponentInChildren<Button>().gameObject:null);
+    }
+    private void UpdateControlsIntro(float delta)
+    {
+        if(mission==null) return;
+        bool covered=mission.IsPaused || missionCard.activeSelf;
+        if(!covered) controlsIntroRemaining=Mathf.Max(0,controlsIntroRemaining-Mathf.Max(0,delta));
+        bool visible=controlsIntroRemaining>0 && !covered;
+        if(controlsIntro.activeSelf!=visible) controlsIntro.SetActive(visible);
     }
     private void UpdateMissionHint()
     {
@@ -276,9 +300,9 @@ public sealed class CrewMenu : MonoBehaviour
         if (mission.NearbyMission != null)
         {
             var status = mission.GetMissionStatus(mission.NearbyMission);
-            hint = status == ShipMissionStatus.InProgress
-                ? "PRESS E TO VIEW CHECK  ·  " + mission.NearbyMission.title
-                : "PRESS E TO INTERACT  ·  " + mission.NearbyMission.title;
+            hint = status == ShipMissionStatus.Available
+                ? "PRESS E TO INTERACT  ·  " + mission.NearbyMission.title
+                : "PRESS E TO VIEW CHECK  ·  " + mission.NearbyMission.title;
         }
         else if (mission.ActiveMission != null)
             hint = "CHECK PAUSED  ·  RETURN TO " + mission.ActiveMission.locationName.ToUpperInvariant();
@@ -294,8 +318,10 @@ public sealed class CrewMenu : MonoBehaviour
     }
     private void OpenMissionCard(ShipMissionDefinition definition)
     {
+        if(mission==null || definition==null) return;
         selectedMission = definition;
         bridgeSuggestion.SetActive(false);
+        controlsIntro.SetActive(false);
         mission.SetPaused(true);
         missionCardShade.SetActive(true);
         missionCard.SetActive(true);
@@ -350,10 +376,12 @@ public sealed class CrewMenu : MonoBehaviour
     }
     private void CloseMissionCard()
     {
-        if (mission != null) mission.SetPaused(false);
         missionCard.SetActive(false);
         missionCardShade.SetActive(false);
-        selectedMission = null;
+        selectedMission=null;
+        pauseScreen.SetActive(false);
+        if(EventSystem.current!=null) EventSystem.current.SetSelectedGameObject(null);
+        if(mission!=null){mission.SetPaused(false);UpdateControlsIntro(0);}
     }
     private void ReturnToMenu()
     {
@@ -361,6 +389,7 @@ public sealed class CrewMenu : MonoBehaviour
         pauseScreen.SetActive(false);
         Destroy(mission.gameObject); mission = null;
         missionHud.SetActive(false);
+        controlsIntroRemaining=0;controlsIntro.SetActive(false);
         ShowVideoInMenu();
         shade.gameObject.SetActive(true); backgroundCanvas.gameObject.SetActive(true);
         ShowRoles(true);

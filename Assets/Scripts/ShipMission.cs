@@ -84,9 +84,16 @@ public sealed class ShipMission : MonoBehaviour
         MoveCrew(x, y, delta);
         UpdateActiveMission(delta);
         UpdateNearbyMission();
-        if (keys != null && keys.eKey.wasPressedThisFrame && nearbyMission != null)
-            MissionInteractionRequested?.Invoke(nearbyMission);
+        if (keys != null && keys.eKey.wasPressedThisFrame) TryInteract();
         if (Mouse.current != null) zoom = ShipLayout.ZoomAfterScroll(zoom, Mouse.current.scroll.ReadValue().y);
+    }
+    public bool TryInteract()
+    {
+        if(!ready || IsPaused) return false;
+        UpdateNearbyMission();
+        if(nearbyMission==null) return false;
+        MissionInteractionRequested?.Invoke(nearbyMission);
+        return true;
     }
     public ShipMissionStatus GetMissionStatus(ShipMissionDefinition definition)
     {
@@ -137,7 +144,8 @@ public sealed class ShipMission : MonoBehaviour
         {
             if (definition == null || !definition.AllowsRole(player.Role)) continue;
             var status = GetMissionStatus(definition);
-            if (status != ShipMissionStatus.Available && status != ShipMissionStatus.InProgress) continue;
+            // Viewing the card is independent from whether its check can still be started.
+            if (status == ShipMissionStatus.Unavailable) continue;
             if (!IsNearMission(definition)) continue;
             float distance = Mathf.Abs(player.transform.position.x - definition.WorldPosition.x);
             if (distance < closest) { closest = distance; nearbyMission = definition; }

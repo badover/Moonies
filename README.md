@@ -16,3 +16,5 @@ The mission HUD includes a ten-minute progress timer.
 For automated verification with the Unity Pipeline CLI, start Play Mode, then run `unity command --project-path . "script eval" --file Tools/ValidateMenuClicks.cs` and `unity command --project-path . "script eval" --file Tools/ValidateModernShip.cs`. They run UI pointer/raycast checks and verify all roles, floor bounds, ladders, smooth zoom and progress fill geometry. Test render captures are written to the system temporary directory.
 
 Pause/ladder regression check: `unity command --project-path . "script eval" --file Tools/ValidatePauseAndLadders.cs`.
+
+Controls are shown for the first 10 seconds of gameplay and remain available in the pause menu. The introduction timer stops while paused or reading a mission card. E can reopen a station card to review its status even after its start window closes.
