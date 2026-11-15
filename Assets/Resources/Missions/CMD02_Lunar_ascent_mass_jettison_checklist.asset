@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: CMD02_Lunar_ascent_mass_jettison_checklist
   m_EditorClassIdentifier:
   missionId: "CMD-02"
-  title: "Lunar ascent mass-jettison checklist"
+  title: "Prepare the ascent mass checklist"
   timeWindowLabel: "6:50–7:50"
   availableFromSeconds: 410
   availableUntilSeconds: 470
-  durationSeconds: 30
+  durationSeconds: 35
   difficulty: "Easy"
-  briefing: "Review the ascent mass limit, identify non-essential equipment to leave on the surface, protect the collected lunar samples, update the mass checklist, and authorize liftoff preparation."
+  briefing: "The ascent stage is too heavy. Keep the samples and remove non-essential gear."
   stationId: bridge
   originalDiscipline: "CMD"
   globalEvent: 0
@@ -37,40 +37,40 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Ascent mass exceeds the limit. Samples and non-essential equipment are listed."
+  - prompt: "The ascent stage is over its weight limit. Choose what to leave behind."
     options:
-    - "Ignore the ascent mass limit"
-    - "Mark non-essential equipment for surface jettison"
-    - "Discard all lunar samples first"
+    - "Ignore the limit"
+    - "Leave non-essential gear"
+    - "Discard all samples"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Protect the collected lunar samples and update the manifest."
+    result: "Non-essential gear selected for removal."
+  - prompt: "Keep the samples and update the checklist."
     options:
-    - "Retain samples and remove the listed non-essential mass"
-    - "Jettison the sample container"
-    - "Keep every expendable item"
+    - "Keep samples; remove extra gear"
+    - "Discard the samples"
+    - "Keep all gear"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Mass checklist verification."
+    result: "Samples protected; mass checklist updated."
+  - prompt: "Checking the ascent weight..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 16
-    result: "Verification complete."
-  - prompt: "Updated ascent mass inside the limit; samples secured."
+    result: "Weight check complete."
+  - prompt: "The weight is safe. Prepare for liftoff."
     options:
-    - "Cancel the verified checklist"
-    - "Authorize liftoff preparation"
-    - "Authorize launch while over the limit"
+    - "Cancel the checklist"
+    - "Prepare for liftoff"
+    - "Launch while over the limit"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Liftoff preparation authorized."

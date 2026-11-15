@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: CMD01_Guidance_computer_1202_alarm_response
   m_EditorClassIdentifier:
   missionId: "CMD-01"
-  title: "Guidance-computer 1202 alarm response"
+  title: "1202 alarm: protect guidance"
   timeWindowLabel: "4:55–5:45"
   availableFromSeconds: 295
   availableUntilSeconds: 345
   durationSeconds: 30
   difficulty: "Easy"
-  briefing: "Review the alarm status, distinguish core guidance functions from non-essential data streams, and authorize shedding non-essential sensor/radar data while preserving active landing guidance."
+  briefing: "Turn off extra radar and sensor data while keeping landing guidance on."
   stationId: bridge
   originalDiscipline: "CMD"
   globalEvent: 0
@@ -37,30 +37,30 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "1202 alarm. Core guidance is healthy; non-essential streams overload the queue."
+  - prompt: "The 1202 alarm shows a data overload. Guidance is working; extra sensor data is not."
     options:
-    - "Authorize shutdown of core guidance"
-    - "Ignore the overload and add more data"
-    - "Authorize shedding non-essential radar/sensor data"
+    - "Turn off core guidance"
+    - "Add more data"
+    - "Turn off extra radar and sensor data"
     correctChoice: 2
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Guidance continuity verification."
+    result: "Safe data plan selected."
+  - prompt: "Checking that guidance stays online..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 16
-    result: "Verification complete."
-  - prompt: "Core guidance remains active; load is safe."
+    result: "Guidance check complete."
+  - prompt: "Guidance is stable. Continue the landing."
     options:
-    - "Authorize continued controlled landing"
-    - "Disable the recovered computer"
-    - "Authorize landing with core guidance unavailable"
+    - "Continue with guidance on"
+    - "Turn off the computer"
+    - "Land without guidance"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Landing may continue safely."

@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: PIL02_Pre_TLI_attitude_alignment
   m_EditorClassIdentifier:
   missionId: "PIL-02"
-  title: "Pre-TLI attitude alignment"
+  title: "Align for Earth departure"
   timeWindowLabel: "1:20–2:15"
   availableFromSeconds: 80
   availableUntilSeconds: 135
   durationSeconds: 30
   difficulty: "Easy"
-  briefing: "Align the spacecraft to the displayed TLI attitude reference, stabilize the attitude indicators, and confirm that the vehicle is ready for the planned departure burn. This is a short setup task adapted from the LEO ullage/TLI sequence."
+  briefing: "Point the spacecraft at the marked departure angle. Wait for it to stabilize, then confirm burn readiness."
   stationId: bridge
   originalDiscipline: "PIL"
   globalEvent: 0
@@ -37,30 +37,30 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "TLI attitude target is displayed; current attitude is offset."
+  - prompt: "Align with the marked departure angle."
     options:
-    - "Point at an arbitrary star"
+    - "Point at any star"
     - "Start the burn while misaligned"
-    - "Align with the displayed departure reference"
+    - "Use the marked angle"
     correctChoice: 2
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Attitude stabilization verification."
+    result: "Departure angle set."
+  - prompt: "Checking attitude stability..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 16
-    result: "Verification complete."
-  - prompt: "Attitude error inside the target band; rates stable."
+    result: "Stability check complete."
+  - prompt: "The spacecraft is steady and on target. Confirm burn readiness."
     options:
-    - "Confirm readiness for the TLI burn"
-    - "Authorize departure with unstable rates"
-    - "Command an unplanned attitude change"
+    - "Confirm burn readiness"
+    - "Depart while unstable"
+    - "Make an unplanned turn"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Burn readiness confirmed."

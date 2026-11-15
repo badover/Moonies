@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: PIL03_Trans_Lunar_Injection_burn_timing
   m_EditorClassIdentifier:
   missionId: "PIL-03"
-  title: "Trans-Lunar Injection burn timing"
+  title: "Perform the Earth-departure burn"
   timeWindowLabel: "1:20–2:15"
   availableFromSeconds: 80
   availableUntilSeconds: 135
   durationSeconds: 60
   difficulty: "Medium"
-  briefing: "Review the target burn profile, start the TLI burn, monitor the velocity/energy indicator, and shut down when the target is reached. The player controls the full timing and cutoff sequence."
+  briefing: "Check the planned burn and cutoff point. Start the burn, then stop when the target energy is reached."
   stationId: bridge
   originalDiscipline: "PIL"
   globalEvent: 0
@@ -37,40 +37,40 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "TLI target energy and cutoff reference loaded; attitude READY."
+  - prompt: "Check the burn plan and prepare the Earth-departure burn."
     options:
-    - "Ignore the cutoff reference"
-    - "Review the burn profile and arm the planned TLI sequence"
-    - "Start a retrograde deorbit burn"
+    - "Ignore the cutoff point"
+    - "Check the plan and arm the burn"
+    - "Start a return-to-Earth burn"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Burn profile verified. Energy is below target."
+    result: "Burn plan checked."
+  - prompt: "Energy is below target. Start the planned burn."
     options:
-    - "Start the TLI burn"
-    - "Shut down before ignition"
-    - "Disable energy monitoring"
+    - "Start the burn"
+    - "Shut down before starting"
+    - "Turn off energy checks"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Burn running; velocity / energy indicator approaching the target."
+    result: "Burn started."
+  - prompt: "Burning; checking energy..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 24
-    result: "Verification complete."
-  - prompt: "Target energy REACHED. Cutoff cue illuminated."
+    result: "Burn check complete."
+  - prompt: "Target energy reached. Stop the burn."
     options:
-    - "Reverse the burn direction"
-    - "Shut down at the target and confirm Earth departure"
-    - "Continue burning beyond the cutoff cue"
+    - "Reverse the burn"
+    - "Stop at the target"
+    - "Keep burning past the target"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Burn stopped at target."

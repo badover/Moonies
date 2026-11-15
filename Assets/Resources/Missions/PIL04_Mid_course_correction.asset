@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: PIL04_Mid_course_correction
   m_EditorClassIdentifier:
   missionId: "PIL-04"
-  title: "Mid-course correction"
+  title: "Correct the course"
   timeWindowLabel: "2:15–3:50"
   availableFromSeconds: 135
   availableUntilSeconds: 230
   durationSeconds: 60
   difficulty: "Medium"
-  briefing: "Compare the onboard star-angle reference with the course-error indicator, select the correction direction and magnitude, and complete the short correction burn."
+  briefing: "The star reference shows a course error. Apply the marked short correction, then check the new course."
   stationId: bridge
   originalDiscipline: "PIL"
   globalEvent: 0
@@ -37,40 +37,40 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Star-angle reference shows a positive course error; correction table calls for the displayed negative trim."
+  - prompt: "The course error calls for a left correction."
     options:
-    - "Compare the star reference and select negative trim"
-    - "Apply positive trim and increase the error"
-    - "Ignore the star-angle reference"
+    - "Apply the marked left correction"
+    - "Correct right to increase error"
+    - "Ignore the reference"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Magnitude cue: SHORT CORRECTION PULSE."
+    result: "Correction direction selected."
+  - prompt: "Apply the short pulse shown on the display."
     options:
-    - "Apply a full-duration departure burn"
-    - "Disable navigation before correction"
-    - "Apply the indicated short burn"
+    - "Run a full departure burn"
+    - "Turn off navigation"
+    - "Apply the short pulse"
     correctChoice: 2
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Trajectory correction verification."
+    result: "Short correction applied."
+  - prompt: "Checking the new course..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 24
-    result: "Verification complete."
-  - prompt: "Course error inside tolerance."
+    result: "Course check complete."
+  - prompt: "The course is within limits. Confirm the correction."
     options:
-    - "Confirm corrected trajectory"
-    - "Record success with increasing error"
-    - "Repeat the full correction unnecessarily"
+    - "Confirm while error rises"
+    - "Confirm the corrected course"
+    - "Repeat the full correction"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Course correction confirmed."

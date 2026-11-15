@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: PIL07_Lunar_hazard_avoidance_and_landing
   m_EditorClassIdentifier:
   missionId: "PIL-07"
-  title: "Lunar hazard avoidance and landing"
+  title: "Land safely"
   timeWindowLabel: "4:55–5:45"
   availableFromSeconds: 295
   availableUntilSeconds: 345
   durationSeconds: 90
   difficulty: "Hard"
-  briefing: "Identify the unsafe landing area from the surface view, select semi-manual descent control, translate toward safe terrain, and complete the landing within the displayed fuel and tilt limits."
+  briefing: "The main landing area has boulders. Choose the clear site, stay within tilt and fuel limits, and confirm touchdown."
   stationId: bridge
   originalDiscipline: "PIL"
   globalEvent: 0
@@ -37,50 +37,50 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Surface view: boulders in the primary landing area; clear site to the right."
+  - prompt: "Choose the clear site to the right."
     options:
-    - "Select semi-manual control and the clear site"
-    - "Commit to the boulder field"
-    - "Disable surface guidance"
+    - "Use guided control and choose the clear site"
+    - "Land among the boulders"
+    - "Turn off landing guidance"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Fuel reserve and tilt limits are displayed."
+    result: "Clear landing site selected."
+  - prompt: "Stay within the tilt and fuel limits."
     options:
-    - "Exceed the tilt limit to save time"
-    - "Hover until the fuel reserve is empty"
-    - "Translate toward clear terrain within the tilt limit"
+    - "Exceed the tilt limit"
+    - "Use all remaining fuel"
+    - "Move to clear ground within limits"
     correctChoice: 2
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Clear site acquired; descent path stable."
+    result: "Safe descent path selected."
+  - prompt: "The landing site is clear. Slow the descent and save fuel."
     options:
-    - "Abandon attitude monitoring"
-    - "Reduce descent rate and maintain fuel margin"
-    - "Accelerate down at the hazard"
+    - "Turn off attitude checks"
+    - "Slow down and save fuel"
+    - "Speed up toward the hazards"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Touchdown and engine-state verification."
+    result: "Stable descent confirmed."
+  - prompt: "Checking touchdown and engine state..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 40
-    result: "Verification complete."
-  - prompt: "Touchdown confirmed; tilt safe; fuel margin retained."
+    result: "Touchdown check complete."
+  - prompt: "Touchdown is stable. Secure the landing."
     options:
-    - "Continue thrust after touchdown"
-    - "Declare touchdown above the surface"
-    - "Secure the landing and confirm touchdown"
+    - "Keep thrusting after touchdown"
+    - "Confirm before touchdown"
+    - "Secure and confirm touchdown"
     correctChoice: 2
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Landing secured."

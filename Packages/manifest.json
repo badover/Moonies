@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.cysharp.unitask": "file:com.cysharp.unitask",
     "com.unity.2d.animation": "16.0.1",
     "com.unity.2d.aseprite": "6.0.0",
     "com.unity.2d.psdimporter": "15.0.1",
@@ -54,6 +55,21 @@
     "com.unity.modules.vehicles": "1.0.0",
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
-    "com.unity.modules.xr": "1.0.0"
-  }
+    "com.unity.modules.xr": "1.0.0",
+    "dev.voltstro.unitywebbrowser": "2.2.8",
+    "dev.voltstro.unitywebbrowser.engine.cef": "2.2.8",
+    "dev.voltstro.unitywebbrowser.engine.cef.linux.x64": "2.2.8",
+    "dev.voltstro.unitywebbrowser.engine.cef.win.x64": "2.2.8"
+  },
+  "scopedRegistries": [
+    {
+      "name": "VoltUPR",
+      "url": "https://upm-pkgs.voltstro.dev",
+      "scopes": [
+        "dev.voltstro",
+        "org.nuget",
+        "com.cysharp"
+      ]
+    }
+  ]
 }

@@ -2,8 +2,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
-using UnityEngine.Video;
 using System.IO;
+using VoltstroStudios.UnityWebBrowser.Core.Engines;
+using VoltstroStudios.UnityWebBrowser.Shared.Core;
 using System.Linq;
 
 /// <summary>Two-screen entry flow with persistent crew selection and ship boarding.</summary>
@@ -33,8 +34,11 @@ public sealed class CrewMenu : MonoBehaviour
     private Canvas backgroundCanvas;
     private Image shade;
     private RawImage stars;
-    private VideoPlayer backgroundVideo;
-    private RenderTexture backgroundVideoTexture;
+    private YouTubeBackgroundPlayer backgroundBrowser;
+    private bool backgroundBrowserReady;
+    private EngineConfiguration backgroundBrowserEngine;
+    private const int BackgroundBrowserWidth=1280, BackgroundBrowserHeight=720, BackgroundBrowserFps=24;
+    private const string YouTubeBackgroundUrl="https://www.youtube-nocookie.com/embed/Zk02hJI5XhU?autoplay=1&mute=1&controls=0&loop=1&playlist=Zk02hJI5XhU&playsinline=1&rel=0";
     private Image[] cards = new Image[4];
     private Image missionProgress,healthFill;
     private Text healthValue;
@@ -58,7 +62,8 @@ public sealed class CrewMenu : MonoBehaviour
     private ShipMissionDefinition selectedMission;
     private ShipMissionDefinition bridgeCheck;
     private ShipMissionDefinition solarStorm;
-    private GameObject bridgeSuggestion;
+    private GameObject bridgeSuggestion, solarStormHint;
+    private Text missionSuggestionText;
     private string missionFeedback;
     private float missionFeedbackRemaining;
     private bool gameOver;
@@ -95,7 +100,7 @@ public sealed class CrewMenu : MonoBehaviour
         backgroundCanvas.sortingOrder = -10;
         stars = Node("Animated Bg.gif", skyCanvas.transform, Vector2.zero, Vector2.one).gameObject.AddComponent<RawImage>();
         stars.raycastTarget = false;
-        SetupBackgroundVideo();
+        SetupYouTubeBackground();
         shade = Panel(root.transform, "Shade", Vector2.zero, Vector2.one, new Color(.01f,.025f,.05f,.45f));
         shade.raycastTarget = false;
         home = Node("Start Screen", root.transform, Vector2.zero, Vector2.one).gameObject;
@@ -164,15 +169,22 @@ public sealed class CrewMenu : MonoBehaviour
         activeTaskProgress.fillMethod=Image.FillMethod.Horizontal;activeTaskProgress.fillOrigin=0;
         missionHint.gameObject.SetActive(false);missionHintBackdrop.SetActive(false);
         var hintGold=new Color(1,.82f,.24f,1);
-        bridgeSuggestion=Panel(missionHud.transform,"Bridge Suggestion",new Vector2(.27f,.18f),new Vector2(.73f,.233f),hintGold).gameObject;
+        bridgeSuggestion=Panel(missionHud.transform,"Mission Location Hint",new Vector2(.16f,.18f),new Vector2(.84f,.233f),hintGold).gameObject;
         bridgeSuggestion.GetComponent<Image>().raycastTarget=false;
         var hintBacking=Panel(bridgeSuggestion.transform,"Opaque Hint Backing",Vector2.zero,Vector2.one,new Color(.045f,.035f,.015f,1));
         hintBacking.raycastTarget=false;
         hintBacking.rectTransform.offsetMin=new Vector2(2,2);hintBacking.rectTransform.offsetMax=new Vector2(-2,-2);
-        Label(bridgeSuggestion.transform,"Maybe it's a good idea to check the Bridge.",.025f,.05f,.975f,.95f,16,hintGold);
+        missionSuggestionText=Label(bridgeSuggestion.transform,"Maybe it's a good idea to check the Bridge.",.025f,.05f,.975f,.95f,16,hintGold);
         bridgeSuggestion.SetActive(false);
         bridgeCheck=Resources.Load<ShipMissionDefinition>("Missions/G01_LEO_Check");
         solarStorm=Resources.Load<ShipMissionDefinition>("Missions/G02_Solar_Storm");
+        solarStormHint=Panel(missionHud.transform,"Solar Storm Mission Hint",new Vector2(.20f,.18f),new Vector2(.80f,.233f),hintGold).gameObject;
+        solarStormHint.GetComponent<Image>().raycastTarget=false;
+        var solarHintBacking=Panel(solarStormHint.transform,"Opaque Hint Backing",Vector2.zero,Vector2.one,new Color(.045f,.035f,.015f,1));
+        solarHintBacking.raycastTarget=false;
+        solarHintBacking.rectTransform.offsetMin=new Vector2(2,2);solarHintBacking.rectTransform.offsetMax=new Vector2(-2,-2);
+        Label(solarStormHint.transform,"Solar storm: go down to the lower deck, reach the Central Shelter midship, and press E to begin G-02.",.025f,.05f,.975f,.95f,16,hintGold);
+        solarStormHint.SetActive(false);
         stormSuggestion=Panel(missionHud.transform,"Solar Storm Alert",new Vector2(.18f,.72f),new Vector2(.82f,.84f),new Color(1f,.65f,.13f,1)).gameObject;
         stormSuggestion.GetComponent<Image>().raycastTarget=false;
         var stormBacking=Panel(stormSuggestion.transform,"Alert Opaque Backing",Vector2.zero,Vector2.one,new Color(.13f,.025f,.012f,1));
@@ -254,8 +266,13 @@ public sealed class CrewMenu : MonoBehaviour
 
     private void Update()
     {
+        backgroundBrowserReady=backgroundBrowser!=null && backgroundBrowser.IsReady;
+        var browserTexture=backgroundBrowserReady ? backgroundBrowser.Texture : null;
+        if(backgroundCanvas!=null && backgroundCanvas.gameObject.activeSelf && browserTexture!=null)
+            stars.texture=browserTexture;
         if (mission != null)
         {
+            if(backgroundBrowserReady && browserTexture!=null) mission.SetBackgroundTexture(browserTexture);
             UpdateRadiationStatus();
             cabinDamageFrame.SetActive(!gameOver && mission.RadiationDamagePerSecond>0);
             if(mission.IsPaused) return;
@@ -314,45 +331,52 @@ public sealed class CrewMenu : MonoBehaviour
         healthValue.text=Mathf.CeilToInt(health.Fraction*100)+"%";
         if(health.Current<=0 && mission!=null) ShowGameOver();
     }
-    private void SetupBackgroundVideo()
+    private void SetupYouTubeBackground()
     {
-        backgroundVideoTexture = new RenderTexture(2560,1440,0,RenderTextureFormat.ARGB32);
-        backgroundVideoTexture.name = "Starfield Video Output";
-        backgroundVideoTexture.Create();
-        stars.texture = backgroundVideoTexture;
-
-        var playerObject = new GameObject("Starfield Video Player");
-        playerObject.transform.SetParent(transform,false);
-        backgroundVideo = playerObject.AddComponent<VideoPlayer>();
-        backgroundVideo.playOnAwake = false;
-        backgroundVideo.isLooping = true;
-        backgroundVideo.source = VideoSource.Url;
-        backgroundVideo.url = Path.Combine(Application.streamingAssetsPath,"StarfieldLoop.webm");
-        backgroundVideo.renderMode = VideoRenderMode.RenderTexture;
-        backgroundVideo.targetTexture = backgroundVideoTexture;
-        backgroundVideo.aspectRatio = VideoAspectRatio.FitOutside;
-        backgroundVideo.audioOutputMode = VideoAudioOutputMode.None;
-        backgroundVideo.waitForFirstFrame = true;
-        backgroundVideo.skipOnDrop = true;
-        backgroundVideo.errorReceived += (player,error) => Debug.LogError("Unable to play starfield video: " + error);
-        backgroundVideo.prepareCompleted += player => player.Play();
-        backgroundVideo.Prepare();
+        stars.texture=Resources.Load<Texture2D>("Menu/Starfield");
+        SetupBackgroundBrowser();
     }
-    private void ShowVideoBehindShip(Camera camera)
+    private void SetupBackgroundBrowser()
     {
-        backgroundVideo.renderMode = VideoRenderMode.CameraFarPlane;
-        backgroundVideo.targetTexture = null;
-        backgroundVideo.targetCamera = camera;
-        backgroundVideo.aspectRatio = VideoAspectRatio.FitOutside;
-        backgroundVideo.Play();
+        backgroundBrowser=stars.gameObject.AddComponent<YouTubeBackgroundPlayer>();
+        SetupBackgroundEngine();
+        backgroundBrowser.Initialize(backgroundBrowserEngine,YouTubeBackgroundUrl,BackgroundBrowserWidth,BackgroundBrowserHeight,BackgroundBrowserFps);
     }
-    private void ShowVideoInMenu()
+    private void SetupBackgroundEngine()
     {
-        if (backgroundVideo == null) return;
-        backgroundVideo.renderMode = VideoRenderMode.RenderTexture;
-        backgroundVideo.targetTexture = backgroundVideoTexture;
-        backgroundVideo.targetCamera = null;
-        backgroundVideo.Play();
+        backgroundBrowserEngine=ScriptableObject.CreateInstance<EngineConfiguration>();
+        backgroundBrowserEngine.engineAppName="UnityWebBrowser.Engine.Cef";
+        var windowsEngine=new Engine.EnginePlatformFiles
+        {
+            platform=Platform.Windows64,
+            engineBaseAppLocation=string.Empty,
+            engineRuntimeLocation="UWB/"
+        };
+        var linuxEngine=new Engine.EnginePlatformFiles
+        {
+            platform=Platform.Linux64,
+            engineBaseAppLocation=string.Empty,
+            engineRuntimeLocation="UWB/"
+        };
+#if UNITY_EDITOR
+        windowsEngine.engineEditorLocation=GetCefPackageEnginePath("dev.voltstro.unitywebbrowser.engine.cef.win.x64");
+        linuxEngine.engineEditorLocation=GetCefPackageEnginePath("dev.voltstro.unitywebbrowser.engine.cef.linux.x64");
+#endif
+        backgroundBrowserEngine.engineFiles=new[]{windowsEngine,linuxEngine};
+    }
+#if UNITY_EDITOR
+    private static string GetCefPackageEnginePath(string packageName)
+    {
+        string packageAssetPath="Packages/"+packageName+"/package.json";
+        var packageInfo=UnityEditor.PackageManager.PackageInfo.FindForAssetPath(packageAssetPath);
+        if(packageInfo==null) throw new System.InvalidOperationException("CEF package is not resolved: "+packageName);
+        return Path.Combine(packageInfo.resolvedPath,"Engine~")+Path.DirectorySeparatorChar;
+    }
+#endif
+    private void ShowYouTubeBackgroundInMenu()
+    {
+        if(backgroundBrowserReady && backgroundBrowser!=null && backgroundBrowser.Texture!=null)
+            stars.texture=backgroundBrowser.Texture;
     }
     private void ShowRoles(bool show) { home.SetActive(!show); roles.SetActive(show); }
     private void Select(int index)
@@ -378,8 +402,8 @@ public sealed class CrewMenu : MonoBehaviour
             candidate.EquipmentInteractionRequested += OpenEquipment;
             candidate.MissionAvailable += OnMissionAvailable;
             candidate.FlightAnnouncement += ShowFlightNotice;
-            candidate.Begin(prefab, TogglePause, backgroundVideo);
-            ShowVideoBehindShip(Camera.main);
+            candidate.Begin(prefab, TogglePause);
+            candidate.SetBackgroundTexture(backgroundBrowserReady && backgroundBrowser!=null ? backgroundBrowser.Texture : Resources.Load<Texture2D>("Menu/Starfield"));
             mission = candidate;
             BindHealth(mission.Health);
             missionElapsed = 0;
@@ -458,7 +482,7 @@ public sealed class CrewMenu : MonoBehaviour
         else if (mission.NearbyMission != null)
             hint="PRESS E · " + mission.NearbyMission.locationName.ToUpperInvariant() + " CONTROL";
         else if(mission.RunPlan.Any(x=>mission.GetMissionStatus(x.definition)==ShipMissionStatus.Available))
-            hint="NEW MISSION TASK AVAILABLE · PRESS M OR OPEN MISSION TASKS";
+            hint="TASK AVAILABLE · PRESS M TO VIEW MISSION TASKS";
         bool visible = !string.IsNullOrEmpty(hint) && !missionCard.activeSelf && !taskBoard.activeSelf && !equipmentPanel.activeSelf;
         if(missionHintBackdrop.activeSelf!=visible) missionHintBackdrop.SetActive(visible);
         activeTaskProgress.gameObject.SetActive(mission.ActiveMission!=null);
@@ -468,9 +492,33 @@ public sealed class CrewMenu : MonoBehaviour
     }
     private void UpdateBridgeSuggestion()
     {
-        bool visible=mission!=null && bridgeCheck!=null && bridgeCheck.AllowsRole(SelectedRole)
-            && mission.GetMissionStatus(bridgeCheck)==ShipMissionStatus.Available && !missionCard.activeSelf && !taskBoard.activeSelf && !equipmentPanel.activeSelf;
+        ShipMissionDefinition suggestion=null;
+        if(mission!=null && mission.ActiveMission==null && solarStorm!=null && mission.GetMissionStatus(solarStorm)!=ShipMissionStatus.Available && mission.GetMissionStatus(solarStorm)!=ShipMissionStatus.InProgress)
+            suggestion=mission.RunPlan.Select(x=>x.definition).FirstOrDefault(definition=>definition!=solarStorm && definition.AllowsRole(SelectedRole) && mission.GetMissionStatus(definition)==ShipMissionStatus.Available);
+        bool visible=suggestion!=null && !missionCard.activeSelf && !taskBoard.activeSelf && !equipmentPanel.activeSelf && !mission.IsPaused && !gameOver;
         if(bridgeSuggestion.activeSelf!=visible) bridgeSuggestion.SetActive(visible);
+        if(visible)
+        {
+            string hint=suggestion==bridgeCheck
+                ? "Maybe it's a good idea to check the Bridge."
+                : suggestion.missionId+": "+suggestion.title+" · Go to "+MissionHintLocation(suggestion)+" and press E.";
+            if(missionSuggestionText.text!=hint) missionSuggestionText.text=hint;
+        }
+    }
+    private static string MissionHintLocation(ShipMissionDefinition definition)
+    {
+        string station;
+        switch((definition.stationId??"").ToLowerInvariant())
+        {
+            case "bridge": station="Bridge console"; break;
+            case "medbay": station="Medical Bay"; break;
+            case "engineering": station="Engine diagnostic console"; break;
+            case "docking": station="Docking control"; break;
+            case "shelter": station="Central Shelter"; break;
+            default: station=string.IsNullOrWhiteSpace(definition.locationName)?"mission marker":definition.locationName; break;
+        }
+        string deck=definition.deck==2?"upper deck":definition.deck==1?"middle deck":"lower deck";
+        return station+" on the "+deck;
     }
     private void UpdateStormSuggestion()
     {
@@ -478,6 +526,8 @@ public sealed class CrewMenu : MonoBehaviour
         var state=mission.GetMissionStatus(solarStorm);
         bool active=mission.ActiveMission==solarStorm;
         bool available=solarStorm.AllowsRole(SelectedRole) && state==ShipMissionStatus.Available;
+        bool showHint=available && !missionCard.activeSelf && !taskBoard.activeSelf && !equipmentPanel.activeSelf && !mission.IsPaused && !gameOver;
+        if(solarStormHint!=null && solarStormHint.activeSelf!=showHint) solarStormHint.SetActive(showHint);
         bool exposed=mission.RadiationLevel>0;
         bool visible=(active || available || exposed || radiationNoticeRemaining>0) && !missionCard.activeSelf && !taskBoard.activeSelf && !equipmentPanel.activeSelf && !mission.IsPaused && !gameOver;
         if(stormSuggestion.activeSelf!=visible) stormSuggestion.SetActive(visible);
@@ -490,7 +540,7 @@ public sealed class CrewMenu : MonoBehaviour
         stormAlertInstruction.text=active
             ? "CENTRAL SHELTER · LOWER DECK · M TO VIEW PROCEDURE · " + remaining + "s"
             : exposed ? "CENTRAL SHELTER · LOWER DECK · INSTALL SHIELDING AND CLOSE THE SEAL · " + remaining + "s"
-            : available ? "OPEN MISSION TASKS · BEGIN THE SHELTER PROCEDURE"
+            : available ? "LOWER DECK · CENTRAL SHELTER · PRESS E TO BEGIN"
             : "Radiation detected aboard the ship. Monitor the radiation indicator.";
     }
 
@@ -594,8 +644,11 @@ public sealed class CrewMenu : MonoBehaviour
         }
         missionTaskProgressTrack.SetActive(active || state==ShipMissionStatus.Completed);
         missionCardStatus.text=active
-            ? "STEP " + (mission.ProcedureStepIndex+1) + " / " + selectedMission.steps.Length + " · " + Mathf.CeilToInt(mission.ActiveMissionSecondsRemaining) + "s REMAINING" +
-                (mission.CurrentStep!=null && mission.CurrentStep.automatic ? " · SCANNING" : mission.CurrentStep!=null && mission.CurrentStep.requiresShelter ? " · CLOSE TO WALK" : "")
+            ? "STEP " + (mission.ProcedureStepIndex+1) + " / " + selectedMission.steps.Length +
+                (mission.CurrentStep!=null && mission.CurrentStep.automatic
+                    ? " · CHECK " + Mathf.CeilToInt(mission.ProcedureStepSecondsRemaining) + "s · TASK " + Mathf.CeilToInt(mission.ActiveMissionSecondsRemaining) + "s LEFT"
+                    : " · TASK " + Mathf.CeilToInt(mission.ActiveMissionSecondsRemaining) + "s LEFT") +
+                (mission.CurrentStep!=null && mission.CurrentStep.requiresShelter ? " · REACH MARKER" : "")
             : state==ShipMissionStatus.Completed ? "PROCEDURE COMPLETE"
             : state==ShipMissionStatus.Skipped ? "TASK SKIPPED"
             : state==ShipMissionStatus.Failed ? "PROCEDURE TIMED OUT"
@@ -655,7 +708,7 @@ public sealed class CrewMenu : MonoBehaviour
     {
         if(mission==null)return;
         ShowFlightNotice(definition.missionId==MissionRunPlan.CheckoutId ? "FIRST OBJECTIVE: BRIDGE SYSTEMS CHECK\nPress M or use the Bridge console to start scanning." :
-            "NEW EVENT: "+definition.title+"\nGo to "+definition.locationName+" · Press M to track the task.");
+            "NEW TASK: "+definition.title+"\nGo to "+MissionHintLocation(definition)+" and press E.");
         lastBoardSecond=-1;
     }
     private void UpdateFlightNotice()
@@ -743,15 +796,14 @@ public sealed class CrewMenu : MonoBehaviour
         Destroy(mission.gameObject); mission = null;
         missionHud.SetActive(false);
         controlsIntroRemaining=0;controlsIntro.SetActive(false);
-        ShowVideoInMenu();
+        ShowYouTubeBackgroundInMenu();
         shade.gameObject.SetActive(true); backgroundCanvas.gameObject.SetActive(true);
         ShowRoles(true);
     }
     private void OnDestroy()
     {
         BindHealth(null);
-        if(backgroundVideo!=null) backgroundVideo.Stop();
-        if(backgroundVideoTexture!=null){backgroundVideoTexture.Release();Destroy(backgroundVideoTexture);}
+        if(backgroundBrowserEngine!=null) Destroy(backgroundBrowserEngine);
         if(progressSprite!=null) Destroy(progressSprite);
     }
     private RectTransform Node(string name, Transform parent, Vector2 min, Vector2 max)

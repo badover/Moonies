@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Video;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +16,9 @@ public sealed class ShipMission : MonoBehaviour
     private float zoom = 4.5f;
     private float zoomVelocity;
     private Sprite shipSprite;
+    private Sprite backgroundSprite;
+    private SpriteRenderer backgroundRenderer;
+    private Texture2D backgroundTexture;
     private Sprite targetMarkerSprite;
     private GameObject targetMarker;
     private bool ready;
@@ -60,6 +62,7 @@ public sealed class ShipMission : MonoBehaviour
     public string ProcedureFeedback => procedureFeedback;
     public MissionProcedureStep CurrentStep => activeMission != null && activeMission.steps != null && procedureStepIndex < activeMission.steps.Length ? activeMission.steps[procedureStepIndex] : null;
     public float ProcedureStepProgress => CurrentStep == null ? 0 : CurrentStep.durationSeconds <= 0 ? 1 : Mathf.Clamp01(procedureStepElapsed / CurrentStep.durationSeconds);
+    public float ProcedureStepSecondsRemaining => CurrentStep == null || !CurrentStep.automatic ? 0 : Mathf.Max(0, CurrentStep.durationSeconds - procedureStepElapsed);
     private ShipMissionDefinition nearbyMission;
     private ShipMissionDefinition activeMission;
     private readonly Dictionary<ShipMissionDefinition, ShipMissionStatus> missionStatuses = new Dictionary<ShipMissionDefinition, ShipMissionStatus>();
@@ -76,7 +79,7 @@ public sealed class ShipMission : MonoBehaviour
     public float ActiveMissionSecondsRemaining => activeMission == null ? 0 : Mathf.Max(0, activeMission.durationSeconds - activeMissionElapsed);
     public bool IsNearActiveTarget => activeMission != null && (activeMission.objectiveType == ShipMissionObjectiveType.ReachTarget || CurrentStep != null && CurrentStep.requiresShelter) && IsAtTarget(activeMission);
 
-    public void Begin(CrewCharacter prefab, System.Action pauseRequested, VideoPlayer videoBackground)
+    public void Begin(CrewCharacter prefab, System.Action pauseRequested)
     {
         onPauseRequested = pauseRequested;
         missionDefinitions = Resources.LoadAll<ShipMissionDefinition>("Missions")
@@ -87,7 +90,7 @@ public sealed class ShipMission : MonoBehaviour
         if (prefab == null) throw new System.InvalidOperationException("Selected crew prefab is missing.");
         var texture = Resources.Load<Texture2D>("Menu/ModernSpacecraft");
         var material = Resources.Load<Material>("ShipSprite");
-        if (texture == null || material == null || videoBackground == null)
+        if (texture == null || material == null)
             throw new System.InvalidOperationException("Ship assets are missing. Wait for Unity to finish importing.");
         view = Camera.main;
         if (view == null) throw new System.InvalidOperationException("Main Camera is missing.");
@@ -131,6 +134,21 @@ public sealed class ShipMission : MonoBehaviour
             sr.color=new Color(.2f,.8f,.9f,.5f);equipmentMarkers[element.id]=sr;
         }
         ready = true;
+    }
+    public void SetBackgroundTexture(Texture2D texture)
+    {
+        if (texture == null || backgroundTexture == texture) return;
+        backgroundTexture = texture;
+        if (backgroundRenderer == null)
+        {
+            backgroundRenderer = new GameObject("YouTube space background", typeof(SpriteRenderer)).GetComponent<SpriteRenderer>();
+            backgroundRenderer.transform.SetParent(transform, false);
+            backgroundRenderer.sortingOrder = -100;
+        }
+        if (backgroundSprite != null) Destroy(backgroundSprite);
+        backgroundSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100, 0, SpriteMeshType.FullRect);
+        backgroundRenderer.sprite = backgroundSprite;
+        backgroundRenderer.color = Color.white;
     }
     private void Update()
     {
@@ -506,11 +524,19 @@ public sealed class ShipMission : MonoBehaviour
         float limit = Mathf.Max(0, 20-halfWidth);
         Vector3 target = new Vector3(Mathf.Clamp(player.transform.position.x, -limit,limit), player.transform.position.y*.3f, -10);
         view.transform.position = Vector3.SmoothDamp(view.transform.position, target, ref velocity, .09f, Mathf.Infinity, Time.unscaledDeltaTime);
+        if (backgroundRenderer != null && backgroundSprite != null)
+        {
+            backgroundRenderer.transform.position = new Vector3(view.transform.position.x, view.transform.position.y, 10);
+            Vector2 size = backgroundSprite.bounds.size;
+            float scale = Mathf.Max(view.orthographicSize * 2 / size.y, view.orthographicSize * 2 * view.aspect / size.x);
+            backgroundRenderer.transform.localScale = Vector3.one * scale;
+        }
     }
     private void OnDestroy()
     {
         if(IsPaused) Time.timeScale=runningTimeScale;
         if (shipSprite != null) Destroy(shipSprite);
+        if (backgroundSprite != null) Destroy(backgroundSprite);
         if (targetMarkerSprite != null) Destroy(targetMarkerSprite);
         if (equipmentMarkerSprite != null) Destroy(equipmentMarkerSprite);
 

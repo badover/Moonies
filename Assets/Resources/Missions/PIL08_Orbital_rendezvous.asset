@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: PIL08_Orbital_rendezvous
   m_EditorClassIdentifier:
   missionId: "PIL-08"
-  title: "Orbital rendezvous"
+  title: "Rendezvous with the command module"
   timeWindowLabel: "6:50–7:50"
   availableFromSeconds: 410
   availableUntilSeconds: 470
   durationSeconds: 90
   difficulty: "Hard"
-  briefing: "Read the relative orbit and phase-angle indicators, select the lower-orbit catch-up approach, execute the transfer burn at the indicated point, and confirm rendezvous with the command/service module."
+  briefing: "Use a lower orbit to catch the target. Wait for the marked transfer point, complete the burn, then confirm a safe approach."
   stationId: bridge
   originalDiscipline: "PIL"
   globalEvent: 0
@@ -37,50 +37,50 @@ MonoBehaviour:
   fatalRadiationThreshold: 60
   allowedRoles: []
   steps:
-  - prompt: "Target ahead in orbital phase. A lower orbit provides faster catch-up."
+  - prompt: "The target is ahead. A lower orbit helps catch up."
     options:
-    - "Raise orbit to fall further behind"
-    - "Fly directly at the target without phasing"
-    - "Select the lower-orbit catch-up approach"
+    - "Raise orbit and fall behind"
+    - "Fly straight at the target"
+    - "Use a lower orbit to catch up"
     correctChoice: 2
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Transfer point and burn cue approaching."
+    result: "Catch-up orbit selected."
+  - prompt: "Wait for the marked transfer point."
     options:
-    - "Cancel relative-navigation tracking"
-    - "Wait for the indicated transfer point"
-    - "Burn at an arbitrary point"
+    - "Turn off tracking"
+    - "Wait for the transfer cue"
+    - "Burn at a random point"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Transfer cue reached."
+    result: "Transfer cue reached."
+  - prompt: "The transfer cue is here. Run the planned burn."
     options:
-    - "Execute the planned transfer burn"
-    - "Continue phasing past the cue"
-    - "Reverse the intended transfer"
+    - "Run the planned transfer burn"
+    - "Wait past the cue"
+    - "Reverse the transfer"
     correctChoice: 0
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
-  - prompt: "Relative position and closure verification."
+    result: "Transfer burn complete."
+  - prompt: "Checking position and closing speed..."
     options: []
     correctChoice: 0
     automatic: 1
     requiresShelter: 0
     durationSeconds: 40
-    result: "Verification complete."
-  - prompt: "Rendezvous solution stable; relative rate safe."
+    result: "Rendezvous check complete."
+  - prompt: "The approach is stable. Confirm rendezvous."
     options:
-    - "Command an unplanned escape burn"
-    - "Confirm rendezvous with the command/service module"
-    - "Declare rendezvous with increasing separation"
+    - "Start an escape burn"
+    - "Confirm safe rendezvous"
+    - "Confirm while separation grows"
     correctChoice: 1
     automatic: 0
     requiresShelter: 0
     durationSeconds: 0
-    result: "Command accepted. Safe configuration verified."
+    result: "Rendezvous confirmed."
