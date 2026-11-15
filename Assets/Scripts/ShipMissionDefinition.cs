@@ -7,7 +7,14 @@ public enum ShipMissionStatus
     InProgress,
     Completed,
     Skipped,
-    Expired
+    Expired,
+    Failed
+}
+
+public enum ShipMissionObjectiveType
+{
+    TimedCheck,
+    ReachTarget
 }
 
 /// <summary>Authorable mission content and its ship location. Add assets under Resources/Missions to add missions.</summary>
@@ -25,10 +32,19 @@ public sealed class ShipMissionDefinition : ScriptableObject
     [TextArea(3, 6)] public string briefing;
 
     [Header("Ship interaction")]
+    public ShipMissionObjectiveType objectiveType = ShipMissionObjectiveType.TimedCheck;
     public string locationName = "Bridge";
     [Range(0, 2)] public int deck = 2;
     [Min(0)] public float shipPixelX = 380;
     [Min(.1f)] public float interactionRadius = 1.5f;
+    [Header("Reach-target objective")]
+    [Range(0, 2)] public int targetDeck;
+    [Min(0)] public float targetShipPixelX;
+    [Header("Radiation consequences")]
+    [Range(0, 100)] public float radiationIncreaseOnSkip;
+    [Range(0, 100)] public float radiationIncreaseOnExpiry;
+    public bool failureIsFatalAtHighRadiation;
+    [Range(0, 100)] public float fatalRadiationThreshold = 60;
     [Tooltip("Leave empty to allow every crew role.")]
     public CrewRole[] allowedRoles = new CrewRole[0];
 
@@ -46,6 +62,15 @@ public sealed class ShipMissionDefinition : ScriptableObject
         {
             float x = ShipLayout.ToWorldX(shipPixelX);
             return new Vector2(x, ShipLayout.FloorY(deck, x));
+        }
+    }
+
+    public Vector2 TargetWorldPosition
+    {
+        get
+        {
+            float x = ShipLayout.ToWorldX(targetShipPixelX);
+            return new Vector2(x, ShipLayout.FloorY(targetDeck, x));
         }
     }
 }

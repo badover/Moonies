@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7f2da03b4b4f579a23fbec71d1779a, type: 3}
+  m_Name: Moonies_Phase_01
+  m_EditorClassIdentifier: 
+  missionId: M-01
+  title: MOONIES — Briefing Suite
+  timeWindowLabel: ALWAYS AVAILABLE
+  availableFromSeconds: 0
+  availableUntilSeconds: 999999
+  durationSeconds: 30
+  difficulty: Mission phase
+  briefing: "MOONIES phase: Prologue and Preparation. Coordinate the crew, confirm mission readiness, and choose a safe plan before launch."
+  startsQuestionCampaign: 1
+  questionPhase: 0
+  locationName: Briefing Suite
+  deck: 2
+  shipPixelX: 600
+  interactionRadius: 1.6
+  allowedRoles: []
