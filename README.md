@@ -2,7 +2,7 @@
 
 ### Are you ready to go to the moon?
 
-This game was made with the purpose in order to help educate people about some of the challenges astronauts face while being in the space and operating the spacecraft.
+This game was made with the purpose to help to educate people about some of the challenges astronauts face while being in the space and while they operate the spacecraft.
 
 A 2D space adventure where every decision matters. Choose your crew character, explore a three-deck spacecraft, and keep its systems running from Earth orbit to the Moon and back.
 
